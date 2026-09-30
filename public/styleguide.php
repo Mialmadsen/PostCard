@@ -115,6 +115,29 @@ require __DIR__ . '/../views/partials/header.php';
             </div>
         </section>
 
+        <!-- Forms -->
+        <section class="card flow" aria-labelledby="forms-heading">
+            <h2 id="forms-heading">Formularer</h2>
+            <p class="alert alert--error" role="alert">Forkert e-mail eller adgangskode.</p>
+            <p class="alert alert--success" role="status">Linket er sendt.</p>
+            <form class="form" action="#" method="post">
+                <div class="field">
+                    <label class="field__label" for="demo-name">Normalt felt</label>
+                    <input class="field__input" id="demo-name" type="text" aria-describedby="demo-name-hint">
+                    <p class="field__hint" id="demo-name-hint">En hjælpetekst under feltet.</p>
+                </div>
+                <div class="field">
+                    <label class="field__label" for="demo-email">Felt med fejl</label>
+                    <input class="field__input" id="demo-email" type="email" value="mia@" aria-invalid="true" aria-describedby="demo-email-error">
+                    <p class="field__error" id="demo-email-error">Skriv en gyldig e-mail, fx mia@eksempel.dk.</p>
+                </div>
+                <div class="field field--checkbox">
+                    <input class="field__checkbox" id="demo-check" type="checkbox">
+                    <label for="demo-check">Et afkrydsningsfelt</label>
+                </div>
+            </form>
+        </section>
+
         <!-- Spacing -->
         <section class="card flow" aria-labelledby="space-heading">
             <h2 id="space-heading">Afstande</h2>

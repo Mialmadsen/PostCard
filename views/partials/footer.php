@@ -4,8 +4,8 @@
 
             <nav aria-label="Sidefod">
                 <ul class="site-footer__links">
-                    <li><a href="rules.php">Regler</a></li>
-                    <li><a href="contact.php">Kontakt</a></li>
+                    <li><a class="site-footer__link" href="rules.php">Regler</a></li>
+                    <li><a class="site-footer__link" href="contact.php">Kontakt</a></li>
                 </ul>
             </nav>
 

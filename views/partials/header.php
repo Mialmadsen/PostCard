@@ -27,6 +27,7 @@ $pageStyle = $pageStyle ?? null;
     <link rel="stylesheet" href="assets/css/components/buttons.css">
     <link rel="stylesheet" href="assets/css/components/card.css">
     <link rel="stylesheet" href="assets/css/components/envelope.css">
+    <link rel="stylesheet" href="assets/css/components/forms.css">
     <link rel="stylesheet" href="assets/css/components/postmark.css">
     <link rel="stylesheet" href="assets/css/components/site-header.css">
     <link rel="stylesheet" href="assets/css/components/site-footer.css">

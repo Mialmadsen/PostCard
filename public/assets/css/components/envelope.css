@@ -37,7 +37,16 @@
   isolation: isolate;            /* keeps the z-index values inside this box */
   max-width: 36rem;
   margin-inline: auto;
+  display: flow-root;            /* stops the letter's bottom margin from "collapsing" out of the envelope */
   clip-path: inset(-100vh -100vw 0 -100vw);   /* nothing may show below the envelope's bottom edge */
+}
+
+/* The envelope parts are decoration: clicks go through them to the letter.
+   Without this, the transparent part of the front would block links and buttons. */
+.envelope__back,
+.envelope__front,
+.envelope__lid {
+  pointer-events: none;
 }
 
 /* 1. Inside of the envelope */
@@ -125,6 +134,14 @@
   transform: perspective(40rem) rotateX(90deg);
   opacity: 0;
   animation: envelope-lid-open 0.5s ease-in 0.3s both;
+}
+
+/* Still envelope: already open, no animation.
+   Used on form pages, which are often reloaded (e.g. after a wrong password). */
+.envelope--still .envelope__back::before,
+.envelope--still .envelope__letter,
+.envelope--still .envelope__lid {
+  animation: none;
 }
 
 /* --- Opening animation --- */

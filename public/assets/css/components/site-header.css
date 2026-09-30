@@ -28,10 +28,6 @@
   text-transform: uppercase;   /* written "PostCard" in HTML, shown as POSTCARD */
 }
 
-.logo:hover {
-  color: var(--color-text);
-}
-
 /* Small screens: only the stamp is shown (the link keeps its name via aria-label) */
 .logo__text {
   display: none;
@@ -88,7 +84,6 @@
 }
 
 .site-nav__link:hover {
-  color: var(--color-text);
   text-decoration: underline;
 }
 
@@ -167,7 +162,6 @@
 
 .user-menu__item:hover {
   background-color: var(--color-surface-alt);
-  color: var(--color-text);
 }
 
 /* The name is hidden on small screens — the avatar is enough there */

@@ -30,11 +30,11 @@
   list-style: none;
 }
 
-.site-footer__links a {
+.site-footer__link {
   color: var(--color-text);
 }
 
-.site-footer__links a:hover {
+.site-footer__link:hover {
   color: var(--color-text);
   text-decoration-thickness: 2px;
 }
