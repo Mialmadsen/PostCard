@@ -1,0 +1,50 @@
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# Local databases / dumps
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.sql.bak
+
+# Uploaded / generated media
+uploads/
+storage/uploads/
+public/uploads/
+
+# Claude / AI development instructions and internal logs
+CLAUDE.md
+.agents/
+agents-private/
+.claude/
+claude-*.log
+ai-*.log
+prompts-private/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Dependency/cache/build artefacts
+node_modules/
+vendor/
+.cache/
+dist/
+build/
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
