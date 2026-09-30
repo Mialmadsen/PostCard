@@ -1,0 +1,37 @@
+/* ============================================================
+   POSTMARK — a round cancellation stamp with wavy lines
+   Used for step numbers now, and for date/place on posts later.
+
+   <span class="postmark">1</span>
+
+   The element itself is the circle and holds the text.
+   ::before draws the stamp (two rings + waves) from an SVG mask,
+   so its colour comes from CSS and can be changed with a token.
+   ============================================================ */
+
+.postmark {
+  position: relative;
+  isolation: isolate;                     /* keeps the stamp (z-index -1) behind the text */
+  display: inline-grid;
+  place-items: center;
+  width: 4.5rem;
+  aspect-ratio: 1;
+  margin-inline-end: 3.5rem;              /* room for the waves on the right (78.6% of the width) */
+  color: var(--color-text);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-semibold);
+  transform: rotate(-8deg);               /* stamped by hand, never perfectly straight */
+}
+
+.postmark::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 178.6%;                          /* the SVG is 100 wide, the circle 56: 100 / 56 */
+  height: 100%;
+  background-color: var(--color-postmark);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 56' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='28' cy='28' r='26'/%3E%3Ccircle cx='28' cy='28' r='20' stroke-dasharray='70 8 40 8'/%3E%3Cpath d='M42 17q5-5 10 0t10 0 10 0 10 0 10 0M42 24q5-5 10 0t10 0 10 0 10 0 10 0M42 31q5-5 10 0t10 0 10 0 10 0 10 0M42 38q5-5 10 0t10 0 10 0 10 0 10 0'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 56' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='28' cy='28' r='26'/%3E%3Ccircle cx='28' cy='28' r='20' stroke-dasharray='70 8 40 8'/%3E%3Cpath d='M42 17q5-5 10 0t10 0 10 0 10 0 10 0M42 24q5-5 10 0t10 0 10 0 10 0 10 0M42 31q5-5 10 0t10 0 10 0 10 0 10 0M42 38q5-5 10 0t10 0 10 0 10 0 10 0'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}

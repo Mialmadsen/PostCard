@@ -8,7 +8,7 @@ require __DIR__ . '/../views/partials/header.php';
 <main id="main" class="site-main">
     <div class="container flow">
         <h1>Style guide</h1>
-        <p>Design tokens and components for PostCard. Developer page, not linked from the site.</p>
+        <p>Design tokens and components for <span class="brand">PostCard</span>. Developer page, not linked from the site.</p>
 
         <!-- Colours -->
         <section class="card flow" aria-labelledby="colours-heading">
@@ -87,7 +87,8 @@ require __DIR__ . '/../views/partials/header.php';
             </div>
             <div>
                 <p class="type-sample__meta">Body · Jost Regular · 16px</p>
-                <p>Del din oplevelse – ikke hele dit liv. PostCard er et privat sted at dele rejseminder med de mennesker, der betyder noget.</p>
+                <p>Del din oplevelse – ikke hele dit liv. <span class="brand">PostCard</span> er et privat sted at dele rejseminder med de
+                    mennesker, der betyder noget.</p>
             </div>
             <div>
                 <p class="type-sample__meta">Small · muted · 14px</p>
@@ -106,7 +107,8 @@ require __DIR__ . '/../views/partials/header.php';
         <!-- Buttons -->
         <section class="card flow" aria-labelledby="buttons-heading">
             <h2 id="buttons-heading">Knapper</h2>
-            <p class="type-sample__meta">One primary button per screen. Links that look like buttons use &lt;a&gt;, actions use &lt;button&gt;.</p>
+            <p class="type-sample__meta">One primary button per screen. Links that look like buttons use &lt;a&gt;,
+                actions use &lt;button&gt;.</p>
             <div class="button-row">
                 <button class="button button--primary" type="button">Opret bruger</button>
                 <button class="button button--secondary" type="button">Annuller</button>
@@ -117,30 +119,23 @@ require __DIR__ . '/../views/partials/header.php';
         <section class="card flow" aria-labelledby="space-heading">
             <h2 id="space-heading">Afstande</h2>
             <ul class="space-list">
-                <li class="space-list__item"><span class="space-list__bar" style="width: var(--space-2xs)"></span> 2xs · 4px</li>
-                <li class="space-list__item"><span class="space-list__bar" style="width: var(--space-xs)"></span> xs · 8px</li>
-                <li class="space-list__item"><span class="space-list__bar" style="width: var(--space-sm)"></span> sm · 16px</li>
-                <li class="space-list__item"><span class="space-list__bar" style="width: var(--space-md)"></span> md · 24px</li>
-                <li class="space-list__item"><span class="space-list__bar" style="width: var(--space-lg)"></span> lg · 32px</li>
-                <li class="space-list__item"><span class="space-list__bar" style="width: var(--space-xl)"></span> xl · 48px</li>
+                <li class="space-list__item"><span class="space-list__bar" style="width: var(--space-2xs)"></span> 2xs ·
+                    4px</li>
+                <li class="space-list__item"><span class="space-list__bar" style="width: var(--space-xs)"></span> xs ·
+                    8px</li>
+                <li class="space-list__item"><span class="space-list__bar" style="width: var(--space-sm)"></span> sm ·
+                    16px</li>
+                <li class="space-list__item"><span class="space-list__bar" style="width: var(--space-md)"></span> md ·
+                    24px</li>
+                <li class="space-list__item"><span class="space-list__bar" style="width: var(--space-lg)"></span> lg ·
+                    32px</li>
+                <li class="space-list__item"><span class="space-list__bar" style="width: var(--space-xl)"></span> xl ·
+                    48px</li>
             </ul>
         </section>
 
-        <!-- Envelope -->
-        <section class="flow" aria-labelledby="envelope-heading">
-            <h2 id="envelope-heading">Konvolut</h2>
-            <p>For important single messages: landing page, login, register, invitation.</p>
-            <div class="envelope">
-                <div class="envelope__back" aria-hidden="true"></div>
-                <div class="envelope__letter flow">
-                    <p class="eyebrow">Trin 1 af 2</p>
-                    <h3>Et brev i konvolutten</h3>
-                    <p>Teksten står over konvolutten og er altid synlig.</p>
-                </div>
-                <div class="envelope__front" aria-hidden="true"></div>
-                <div class="envelope__lid" aria-hidden="true"></div>
-            </div>
-        </section>
+
+
     </div>
 </main>
 

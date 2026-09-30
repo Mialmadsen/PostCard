@@ -17,7 +17,7 @@ $pageStyle = $pageStyle ?? null;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($pageTitle) ?> · PostCard</title>
+    <title><?= htmlspecialchars($pageTitle) ?> · POSTCARD</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,6 +27,7 @@ $pageStyle = $pageStyle ?? null;
     <link rel="stylesheet" href="assets/css/components/buttons.css">
     <link rel="stylesheet" href="assets/css/components/card.css">
     <link rel="stylesheet" href="assets/css/components/envelope.css">
+    <link rel="stylesheet" href="assets/css/components/postmark.css">
     <link rel="stylesheet" href="assets/css/components/site-header.css">
     <link rel="stylesheet" href="assets/css/components/site-footer.css">
 

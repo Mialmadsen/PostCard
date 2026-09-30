@@ -1,0 +1,72 @@
+/* ============================================================
+   LANDING PAGE — public front page (index.php)
+   ============================================================ */
+
+.landing-section {
+  margin-top: var(--space-section);
+}
+
+.landing-section__title {
+  margin-bottom: var(--space-lg);
+  text-align: center;
+}
+
+/* Both lists: one column on phones, more columns on larger screens (see below) */
+.feature-list,
+.step-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+  padding: 0;
+  list-style: none;
+}
+
+/* --- "Hvorfor PostCard?" — four features --- */
+
+.feature {
+  text-align: center;
+}
+
+/* Small icon-sized illustrations: every drawing fits the same square box */
+.feature__illustration {
+  width: 6.5rem;
+  height: 6.5rem;
+  margin-inline: auto;
+  object-fit: contain;
+}
+
+/* --- "Sådan virker det" — three steps --- */
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+
+.step__number {
+  flex-shrink: 0;
+}
+
+/* --- Larger screens --- */
+
+@media (min-width: 40rem) {
+  .feature-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 64rem) {
+  .feature-list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .step-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .step {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}

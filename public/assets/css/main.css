@@ -48,6 +48,7 @@
   --color-decor-dark: var(--color-apricot-dark);  /* envelope inside */
   --color-decor-light: var(--color-apricot-light);/* envelope bottom flap and lid */
   --color-stripe: var(--color-deep-blue);         /* airmail stripes on header and footer */
+  --color-postmark: var(--color-apricot);         /* postmark rings and waves — decoration only */
   --color-error: #9b2f2f;                         /* 6.5:1 on cream */
   --color-success: #2f6b45;                       /* 5.6:1 on cream */
 
@@ -199,6 +200,13 @@ small {
   font-size: var(--text-small);
 }
 
+/* The site name is always shown in capitals: <span class="brand">PostCard</span>.
+   Written normally in HTML so screen readers say the word, not the letters. */
+.brand {
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
 /* Small label above a heading, e.g. "TRIN 1 · OPRET BRUGER" */
 .eyebrow {
   color: var(--color-link);
@@ -272,9 +280,19 @@ small {
   margin-inline: auto;
 }
 
+/* Narrow column for reading text, e.g. rules and contact */
+.container--text {
+  width: min(var(--width-text), 100% - 2 * var(--page-gutter));
+}
+
 /* Even vertical space between the children of a box: class="card flow" */
 .flow > * + * {
   margin-top: var(--space-sm);
+}
+
+/* More space before a new section heading inside a flow */
+.flow > * + h2 {
+  margin-top: var(--space-lg);
 }
 
 /* Airmail stripe framing the page: under the header, above the footer */
