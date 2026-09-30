@@ -1,0 +1,169 @@
+/* ============================================================
+   ENVELOPE — a letter sticking out of an open envelope
+   Used for important single messages: landing hero, login,
+   register, invitation.
+
+   <div class="envelope">
+       <div class="envelope__back" aria-hidden="true"></div>
+       <div class="envelope__letter"> …content… </div>
+       <div class="envelope__front" aria-hidden="true"></div>
+       <div class="envelope__lid" aria-hidden="true"></div>
+   </div>
+
+   Layers, back to front:
+   1. .envelope__back          — inside of the envelope
+      .envelope__back::before  — open flap with a rounded tip
+   2. .envelope__letter        — the paper
+   3. .envelope__front::before — side flaps
+      .envelope__front::after  — bottom flap
+   4. .envelope__lid           — closed flap, only visible during the opening animation
+
+   All sizes are shares of the envelope's width, so the
+   proportions stay the same on every screen.
+
+   Opening animation (runs once on page load):
+   0.3s  closed lid folds up        (envelope-lid-open)
+   0.8s  open flap unfolds behind   (envelope-flap-open)
+   1.2s  letter slides up and out   (envelope-letter-out)
+   The default styles are the FINISHED state, so without animation
+   (or with "reduce motion") the envelope is simply open.
+   ============================================================ */
+
+.envelope {
+  --body-ratio: 16 / 9;          /* the envelope body is 16:9, like a C-envelope */
+  --body-height: 56.25%;         /* the same, as % of the width (9 / 16) */
+
+  position: relative;
+  isolation: isolate;            /* keeps the z-index values inside this box */
+  max-width: 36rem;
+  margin-inline: auto;
+  clip-path: inset(-100vh -100vw 0 -100vw);   /* nothing may show below the envelope's bottom edge */
+}
+
+/* 1. Inside of the envelope */
+.envelope__back {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  aspect-ratio: var(--body-ratio);
+  background-color: var(--color-decor-dark);
+  border-radius: var(--radius-card);
+}
+
+/* The open flap: a square turned 45° and flattened.
+   Big radius = the tip, small radius = the two side corners. */
+.envelope__back::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 70.71%;                 /* makes the square's diagonal = the envelope's width */
+  aspect-ratio: 1;
+  background-color: var(--color-decor-dark);
+  border-radius: 3rem var(--radius-card) var(--radius-card) var(--radius-card);
+  transform: translate(-50%, -50%) perspective(40rem) rotateX(0deg) scaleY(0.4) rotate(45deg);
+  animation: envelope-flap-open 0.4s ease-out 0.8s both;
+}
+
+/* 2. The letter — its bottom part sits inside the envelope body */
+.envelope__letter {
+  position: relative;
+  z-index: 1;
+  margin: 0 8% 20%;                /* the letter ends inside the envelope, below the V */
+  padding: var(--space-xl) var(--space-md) calc(var(--body-height) - 20% + var(--space-md));
+  background-color: var(--color-surface-paper);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+  animation: envelope-letter-out 0.8s ease-out 1.2s both;
+}
+
+/* 3. Front of the envelope, same size as the back */
+.envelope__front {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  aspect-ratio: var(--body-ratio);
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  filter: drop-shadow(var(--shadow-edge));
+}
+
+/* Side flaps: a V-shaped opening */
+.envelope__front::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-decor);
+  clip-path: polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Bottom flap: a triangle folded up over the side flaps */
+.envelope__front::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-decor-light);
+  clip-path: polygon(0 100%, 50% 55%, 100% 100%);
+}
+
+/* 4. Closed flap — folds up at the start of the animation.
+   Finished state: turned 90° (edge-on) and invisible. */
+.envelope__lid {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  aspect-ratio: var(--body-ratio);
+  background-color: var(--color-decor-light);
+  clip-path: polygon(0 0, 100% 0, 50% 55%);
+  transform-origin: top;          /* the hinge is the top edge */
+  transform: perspective(40rem) rotateX(90deg);
+  opacity: 0;
+  animation: envelope-lid-open 0.5s ease-in 0.3s both;
+}
+
+/* --- Opening animation --- */
+
+@keyframes envelope-lid-open {
+  from {
+    opacity: 1;
+    transform: perspective(40rem) rotateX(0deg);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(40rem) rotateX(90deg);
+  }
+}
+
+@keyframes envelope-flap-open {
+  from {
+    transform: translate(-50%, -50%) perspective(40rem) rotateX(90deg) scaleY(0.4) rotate(45deg);
+  }
+  to {
+    transform: translate(-50%, -50%) perspective(40rem) rotateX(0deg) scaleY(0.4) rotate(45deg);
+  }
+}
+
+@keyframes envelope-letter-out {
+  from {
+    opacity: 0;
+    transform: translateY(4rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Larger screens --- */
+
+@media (min-width: 30rem) {
+  .envelope__letter {
+    padding-inline: var(--space-xl);
+  }
+}

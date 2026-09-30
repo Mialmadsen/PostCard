@@ -1,24 +1,24 @@
-# Postkort
+# PostCard
 
 > _Del din oplevelse – ikke hele dit liv._
 
-Postkort is a private, group-based photo and video sharing web application for small groups of people who know each other: families, classmates, colleagues, sports clubs and friends.
+PostCard is a private, group-based photo sharing web application for small groups of people who know each other: families, classmates, colleagues, sports clubs and friends.
 
-Instead of a public feed built around likes and followers, Postkort works like a shared digital photo album. Each group is closed and independent, and a post shared in one group is never visible in another.
+Instead of a public feed built around followers and endless scrolling, PostCard works like a shared digital travel album. Each group is closed and independent, and a post shared in one group is never visible in another.
 
 Semester project: **Web Programming** and **Backend & Databases**.
 
 ## Key features
 
 - Registration and login with email and password
-- **My Groups** home screen. There is no global feed.
+- A personal front page with trending and sticky posts, the newest comments and your groups. Everything comes only from your own groups.
 - Groups created by any user and joined through invitation links
-- Posts with up to 3 photos or 1 video, a caption, date, time, location and who you were with
+- **Experiences** (e.g. a trip), each collecting the posts from one period
+- Posts with up to 5 photos, a caption, a date and a location
 - Two posting modes per group:
-  - **Open posting:** all members can post
-  - **Permission-based posting:** a member asks the group admin for a time period and a number of posts
-- Comments on posts, including old posts in the archive
-- A count of how many members have seen a post, without likes, rankings or popularity scores
+  - **Open posting:** members create experiences freely
+  - **Permission-based posting:** a member asks the group admin to approve an experience with dates and a post limit
+- Comments and likes on posts, including old posts in the archive
 - Two admin roles:
   - **Group Admin:** manages members, invitations and posting permissions for their own group
   - **Platform Admin:** a protected backend for site content, users, posts and blocking/banning

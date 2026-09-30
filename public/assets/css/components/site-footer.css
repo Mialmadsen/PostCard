@@ -1,0 +1,40 @@
+/* ============================================================
+   SITE FOOTER
+   Background is sand: links use ink, because terracotta
+   is only 4.3:1 on sand (below WCAG AA).
+   ============================================================ */
+
+.site-footer {
+  background-color: var(--color-surface-alt);
+}
+
+.site-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm) var(--space-lg);
+  padding-block: var(--space-lg);
+}
+
+.site-footer__tagline {
+  font-family: var(--font-hand);
+  font-size: var(--text-hand);
+  line-height: var(--leading-tight);
+}
+
+.site-footer__links {
+  display: flex;
+  gap: var(--space-md);
+  padding: 0;
+  list-style: none;
+}
+
+.site-footer__links a {
+  color: var(--color-text);
+}
+
+.site-footer__links a:hover {
+  color: var(--color-text);
+  text-decoration-thickness: 2px;
+}

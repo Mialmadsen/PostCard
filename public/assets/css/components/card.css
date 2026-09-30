@@ -1,0 +1,11 @@
+/* ============================================================
+   CARD — a cream "postcard" lying on the blue background
+   Straight edges, soft shadow. Add "flow" for even spacing: class="card flow"
+   ============================================================ */
+
+.card {
+  padding: var(--space-lg);
+  background-color: var(--color-surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
