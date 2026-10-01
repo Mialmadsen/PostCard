@@ -23,23 +23,23 @@ require __DIR__ . '/../views/partials/header.php';
             <div class="flow">
                 <article class="polaroid post-polaroid">
                     <!-- LOOP: post_images — alt text comes from post_images.alt_text -->
-                    <ul class="post-photos">
+                    <ul class="post-photos js-lightbox-gallery">
                         <li class="post-photos__item">
-                            <a class="post-photos__link js-lightbox-link" href="assets/images/sample/photo-4.jpg">
+                            <a class="post-photos__link js-lightbox-link" href="assets/images/sample/photo-4.jpg" data-pswp-width="800" data-pswp-height="600">
                                 <img class="polaroid__photo" src="assets/images/sample/photo-4.jpg" width="800" height="600"
                                     alt="Udsigt fra Prækestolen ned over Lysefjorden med stejle klipper og blåt vand.">
                                 <span class="visually-hidden">(vis billedet stort)</span>
                             </a>
                         </li>
                         <li class="post-photos__item">
-                            <a class="post-photos__link js-lightbox-link" href="assets/images/sample/photo-1.jpg">
+                            <a class="post-photos__link js-lightbox-link" href="assets/images/sample/photo-1.jpg" data-pswp-width="800" data-pswp-height="600">
                                 <img class="polaroid__photo" src="assets/images/sample/photo-1.jpg" width="800" height="600" loading="lazy"
                                     alt="Granskov og en høj klippevæg ved en stille sø.">
                                 <span class="visually-hidden">(vis billedet stort)</span>
                             </a>
                         </li>
                         <li class="post-photos__item">
-                            <a class="post-photos__link js-lightbox-link" href="assets/images/sample/photo-3.jpg">
+                            <a class="post-photos__link js-lightbox-link" href="assets/images/sample/photo-3.jpg" data-pswp-width="800" data-pswp-height="600">
                                 <img class="polaroid__photo" src="assets/images/sample/photo-3.jpg" width="800" height="600" loading="lazy"
                                     alt="Et vandfald der falder ned i en grøn kløft.">
                                 <span class="visually-hidden">(vis billedet stort)</span>
@@ -55,8 +55,15 @@ require __DIR__ . '/../views/partials/header.php';
 
                 <!-- Previous / next post in the same experience (by posts.created_at) -->
                 <nav class="post-pager" aria-label="Flere opslag i Sommer i Norge">
-                    <a class="post-pager__link" href="post.php?id=5">← Forrige opslag</a>
-                    <!-- IF a newer post exists: <a class="post-pager__link post-pager__link--next" href="post.php?id=…">Næste opslag →</a> -->
+                    <a class="post-pager__link" href="post.php?id=5">
+                        <img class="post-pager__arrow" src="assets/images/icons/arrow.svg" alt="" width="40" height="35">
+                        Forrige<span class="visually-hidden"> opslag</span>
+                    </a>
+                    <!-- IF a newer post exists:
+                    <a class="post-pager__link post-pager__link--next" href="post.php?id=…">
+                        Næste<span class="visually-hidden"> opslag</span>
+                        <img class="post-pager__arrow post-pager__arrow--next" src="assets/images/icons/arrow.svg" alt="" width="40" height="35">
+                    </a> -->
                 </nav>
             </div>
 
@@ -143,14 +150,5 @@ require __DIR__ . '/../views/partials/header.php';
         </div>
     </div>
 </main>
-
-<!-- The large photo view, opened by lightbox.js -->
-<dialog class="lightbox js-lightbox" aria-label="Billedet i stor størrelse">
-    <img class="lightbox__image js-lightbox-image" src="" alt="">
-    <p class="lightbox__counter js-lightbox-counter" aria-live="polite"></p>
-    <button class="lightbox__button lightbox__button--close js-lightbox-close" type="button" aria-label="Luk">×</button>
-    <button class="lightbox__button lightbox__button--prev js-lightbox-prev" type="button" aria-label="Forrige billede">‹</button>
-    <button class="lightbox__button lightbox__button--next js-lightbox-next" type="button" aria-label="Næste billede">›</button>
-</dialog>
 
 <?php require __DIR__ . '/../views/partials/footer.php'; ?>

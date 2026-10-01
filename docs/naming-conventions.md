@@ -73,7 +73,7 @@ We follow **PSR-1 and PSR-12**, the standard PHP style guides.
 - `id` is only for linking a `<label for="">`, `aria-controls` or anchor links. Use kebab-case: `id="post-caption"`.
 - State classes start with `is-`: `.is-open`, `.is-active`. JavaScript switches these on and off.
 - JavaScript hooks start with `js-` and are never styled: `.js-photo-input`.
-- Utility classes do one small job and have no BEM parts: `.container`, `.flow` (even spacing between children), `.visually-hidden`, `.eyebrow`, `.brand`, `.meta` (small grey text), `.group-label`.
+- Utility classes do one small job and have no BEM parts: `.container`, `.flow` (even spacing between children), `.visually-hidden`, `.eyebrow`, `.brand`, `.meta` (small grey text), `.group-label`, `.stretched-link` (makes a whole card clickable).
 - **The site name is always shown in capitals.** In running text write `<span class="brand">PostCard</span>`: CSS shows it as POSTCARD, and screen readers still read it as a word. Where CSS can't reach (e.g. `<title>`), write `POSTCARD`.
 
 **CSS custom properties (design tokens):**

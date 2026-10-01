@@ -1,49 +1,24 @@
-// Opens a post's photos large in a dialog, with previous/next and a counter.
-// Without JavaScript each link simply opens the image file, so it still works.
+// Shows a post's photos large with PhotoSwipe, a free MIT-licensed library
+// stored in assets/lib/photoswipe/ (no external CDN).
+// Phones: pinch with two fingers to zoom and swipe between photos, like Instagram.
+// Computers: arrows, keyboard (← → Esc) and click to zoom.
+// Without JavaScript each link simply opens the image file.
 
-const lightboxLinks = [...document.querySelectorAll('.js-lightbox-link')];
-const lightbox = document.querySelector('.js-lightbox');
+import PhotoSwipeLightbox from '../lib/photoswipe/photoswipe-lightbox.esm.min.js';
 
-if (lightbox && lightboxLinks.length > 0) {
-    const image = lightbox.querySelector('.js-lightbox-image');
-    const counter = lightbox.querySelector('.js-lightbox-counter');
-    let current = 0;
+const lightbox = new PhotoSwipeLightbox({
+    gallery: '.js-lightbox-gallery',     // the list that holds the photos
+    children: '.js-lightbox-link',       // each photo link inside it
+    pswpModule: () => import('../lib/photoswipe/photoswipe.esm.min.js'),   // loaded only when a photo is opened
+    bgOpacity: 0.95,
 
-    // Show photo number "index"; going past the last photo starts again at the first
-    const showPhoto = (index) => {
-        current = (index + lightboxLinks.length) % lightboxLinks.length;
-        const thumbnail = lightboxLinks[current].querySelector('img');
-        image.src = lightboxLinks[current].href;
-        image.alt = thumbnail.alt;
-        counter.textContent = `Billede ${current + 1} af ${lightboxLinks.length}`;
-    };
+    // Danish labels, read aloud by screen readers and shown as tooltips
+    closeTitle: 'Luk',
+    zoomTitle: 'Zoom',
+    arrowPrevTitle: 'Forrige billede',
+    arrowNextTitle: 'Næste billede',
+    errorMsg: 'Billedet kunne ikke vises.',
+    indexIndicatorSep: ' af ',
+});
 
-    // Only one photo: no previous/next buttons
-    if (lightboxLinks.length === 1) {
-        lightbox.querySelector('.js-lightbox-prev').hidden = true;
-        lightbox.querySelector('.js-lightbox-next').hidden = true;
-    }
-
-    lightboxLinks.forEach((link, index) => {
-        link.addEventListener('click', (event) => {
-            event.preventDefault();          // stay on the page instead of opening the file
-            showPhoto(index);
-            lightbox.showModal();            // the browser handles focus, Escape and the backdrop
-        });
-    });
-
-    lightbox.querySelector('.js-lightbox-close').addEventListener('click', () => lightbox.close());
-    lightbox.querySelector('.js-lightbox-prev').addEventListener('click', () => showPhoto(current - 1));
-    lightbox.querySelector('.js-lightbox-next').addEventListener('click', () => showPhoto(current + 1));
-
-    // Arrow keys switch photos
-    lightbox.addEventListener('keydown', (event) => {
-        if (event.key === 'ArrowLeft') showPhoto(current - 1);
-        if (event.key === 'ArrowRight') showPhoto(current + 1);
-    });
-
-    // A click on the dark backdrop (outside the photo) closes the dialog
-    lightbox.addEventListener('click', (event) => {
-        if (event.target === lightbox) lightbox.close();
-    });
-}
+lightbox.init();

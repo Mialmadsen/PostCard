@@ -30,3 +30,10 @@
   grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
   gap: var(--space-lg);
 }
+
+/* The whole card is clickable: the title link is a .stretched-link over the text area,
+   and the photo has its own link to the same page (hidden from screen readers,
+   so they only hear one link per card). */
+.experience-card:hover .polaroid__link {
+  text-decoration: underline;
+}

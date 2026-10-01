@@ -47,7 +47,6 @@
   --color-decor: var(--color-apricot);            /* stamps, postmarks, envelope front */
   --color-decor-dark: var(--color-apricot-dark);  /* envelope inside */
   --color-decor-light: var(--color-apricot-light);/* envelope bottom flap and lid */
-  --color-overlay: rgba(30, 30, 28, 0.9);         /* dark backdrop behind the large photo view */
   --color-stripe: var(--color-deep-blue);         /* airmail stripes on header and footer */
   --color-postmark: var(--color-apricot);         /* postmark rings and waves — decoration only */
   --color-error: #9b2f2f;                         /* 6.5:1 on cream */
@@ -250,8 +249,10 @@ small {
    4. ACCESSIBILITY HELPERS
    ============================================================ */
 
-/* Visible focus for keyboard users only */
-:focus-visible {
+/* Visible focus for keyboard users only.
+   A stretched link shows the frame around the whole card, not just its text. */
+:focus-visible,
+.stretched-link:focus-visible::after {
   outline: 3px solid var(--color-focus);
   outline-offset: 3px;
 }
@@ -267,6 +268,18 @@ small {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* Stretched link: the link covers its nearest positioned box (e.g. a whole card).
+   <a class="polaroid__link stretched-link" href="…">…</a> */
+.stretched-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.stretched-link:focus-visible {
+  outline: none;                           /* the frame is drawn on ::after instead */
 }
 
 /* "Spring til indhold" — appears when reached with Tab */

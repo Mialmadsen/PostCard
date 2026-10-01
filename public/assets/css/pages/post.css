@@ -77,8 +77,24 @@
 }
 
 .post-pager__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: 2.75rem;                     /* 44px touch target */
   color: var(--color-text);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+}
+
+/* The arrow is decoration (alt=""): the word "Forrige" or "Næste" carries the meaning */
+.post-pager__arrow {
+  width: 2.5rem;
+  height: auto;
+}
+
+/* One arrow file: mirrored for "Næste" */
+.post-pager__arrow--next {
+  transform: scaleX(-1);
 }
 
 /* "Next" stays on the right, also when there is no "previous" */

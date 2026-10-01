@@ -47,12 +47,16 @@ require_once __DIR__ . '/../../app/Helpers/asset.php';
         <link rel="stylesheet" href="<?= asset('assets/css/pages/' . $pageStyle . '.css') ?>">
     <?php endif; ?>
 
+    <?php if (in_array('lightbox', $pageScripts, true)): ?>
+        <link rel="stylesheet" href="<?= asset('assets/lib/photoswipe/photoswipe.css') ?>">
+    <?php endif; ?>
+
     <?php if ($isLoggedIn): ?>
         <script src="<?= asset('assets/js/user-menu.js') ?>" defer></script>
     <?php endif; ?>
 
     <?php foreach ($pageScripts as $script): ?>
-        <script src="<?= asset('assets/js/' . $script . '.js') ?>" defer></script>
+        <script src="<?= asset('assets/js/' . $script . '.js') ?>" type="module"></script>
     <?php endforeach; ?>
 </head>
 
