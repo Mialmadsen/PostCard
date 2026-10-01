@@ -1,0 +1,87 @@
+/* ============================================================
+   POST — one post with its photos, likes and comments (post.php)
+   Phone: one column. Desktop: photos left, text and comments right.
+   ============================================================ */
+
+.post-layout {
+  display: grid;
+  gap: var(--space-lg);
+  margin-top: var(--space-md);
+}
+
+/* --- Photos: one big polaroid with up to 5 photos --- */
+
+.post-photos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xs);
+}
+
+/* The first photo is the big one */
+.post-photos__item:first-child {
+  grid-column: 1 / -1;
+}
+
+/* A lone second photo is not left half-empty */
+.post-photos__item:last-child:nth-child(2) {
+  grid-column: 1 / -1;
+}
+
+.post-photos__link .polaroid__photo {
+  height: 100%;
+}
+
+/* The place, handwritten on the polaroid's bottom edge */
+.post-polaroid .polaroid__body {
+  padding-top: var(--space-md);
+}
+
+.post-polaroid .polaroid__title {
+  font-size: var(--text-display);
+}
+
+/* --- Comments --- */
+
+.comment-form {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.comment-form .button {
+  justify-self: start;
+}
+
+/* --- Larger screens --- */
+
+@media (min-width: 56rem) {
+  .post-layout {
+    grid-template-columns: 3fr 2fr;
+    align-items: start;
+  }
+}
+
+/* --- Photos can be clicked to open them large --- */
+
+.post-photos__link {
+  display: block;
+  height: 100%;
+  cursor: zoom-in;
+}
+
+/* --- Previous / next post --- */
+
+.post-pager {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.post-pager__link {
+  color: var(--color-text);
+  font-weight: var(--weight-medium);
+}
+
+/* "Next" stays on the right, also when there is no "previous" */
+.post-pager__link--next {
+  margin-left: auto;
+}

@@ -42,16 +42,3 @@
   font-weight: var(--weight-medium);
 }
 
-/* --- Nyeste kommentarer --- */
-
-.comment-list {
-  display: grid;
-  gap: var(--space-md);
-}
-
-.comment-item {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-sm);
-}
-

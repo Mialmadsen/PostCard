@@ -1,0 +1,74 @@
+/* ============================================================
+   LIGHTBOX — a photo shown large in a native <dialog>
+   Opened by lightbox.js. Escape, focus and the backdrop are
+   handled by the browser because it is a real <dialog>.
+   ============================================================ */
+
+.lightbox {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+  padding: var(--space-xl) var(--space-lg);
+  background: transparent;
+  border: 0;
+}
+
+.lightbox::backdrop {
+  background-color: var(--color-overlay);
+}
+
+.lightbox[open] {
+  display: grid;
+  place-items: center;
+}
+
+.lightbox__image {
+  max-width: 100%;
+  max-height: 85vh;
+  object-fit: contain;
+  border: var(--space-xs) solid var(--color-surface-paper);   /* a white polaroid edge */
+}
+
+.lightbox__counter {
+  color: var(--color-paper-white);
+  font-size: var(--text-small);
+}
+
+/* Round buttons: close, previous, next — 44px touch targets */
+.lightbox__button {
+  position: fixed;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  background-color: var(--color-surface-paper);
+  border: 0;
+  border-radius: 50%;
+  color: var(--color-text);
+  font-size: var(--text-h3);
+  line-height: 1;
+}
+
+.lightbox__button:hover {
+  background-color: var(--color-surface-alt);
+}
+
+.lightbox__button--close {
+  top: var(--space-sm);
+  right: var(--space-sm);
+}
+
+.lightbox__button--prev,
+.lightbox__button--next {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.lightbox__button--prev {
+  left: var(--space-sm);
+}
+
+.lightbox__button--next {
+  right: var(--space-sm);
+}

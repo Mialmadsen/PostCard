@@ -42,3 +42,10 @@
   background-color: var(--color-secondary);
   color: var(--color-on-secondary);
 }
+
+/* A row of buttons that wraps onto a new line on small screens */
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}

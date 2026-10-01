@@ -39,12 +39,6 @@
   line-height: var(--leading-tight);
 }
 
-.button-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-}
-
 .space-list {
   display: grid;
   gap: var(--space-xs);

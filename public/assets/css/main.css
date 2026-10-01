@@ -47,6 +47,7 @@
   --color-decor: var(--color-apricot);            /* stamps, postmarks, envelope front */
   --color-decor-dark: var(--color-apricot-dark);  /* envelope inside */
   --color-decor-light: var(--color-apricot-light);/* envelope bottom flap and lid */
+  --color-overlay: rgba(30, 30, 28, 0.9);         /* dark backdrop behind the large photo view */
   --color-stripe: var(--color-deep-blue);         /* airmail stripes on header and footer */
   --color-postmark: var(--color-apricot);         /* postmark rings and waves — decoration only */
   --color-error: #9b2f2f;                         /* 6.5:1 on cream */
