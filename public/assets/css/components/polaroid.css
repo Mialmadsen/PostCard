@@ -1,0 +1,51 @@
+/* ============================================================
+   POLAROID — the shared photo frame for post cards and experience cards
+
+   <article class="polaroid post-card">
+       <img class="polaroid__photo" …>
+       <div class="polaroid__body"> …
+           <p class="postmark … polaroid__postmark">…</p>
+           <h3><a class="polaroid__link" href="…">…</a></h3>
+       </div>
+   </article>
+
+   post-card.css and experience-card.css only add what is different.
+   ============================================================ */
+
+.polaroid {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-sm) var(--space-sm) var(--space-md);
+  background-color: var(--color-surface-paper);
+  box-shadow: var(--shadow-card);
+}
+
+.polaroid__photo {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.polaroid__body {
+  position: relative;
+  display: grid;
+  gap: var(--space-xs);
+  padding-top: var(--space-sm);
+}
+
+.polaroid__link {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.polaroid__link:hover {
+  text-decoration: underline;
+}
+
+/* A postmark stamped over the photo's bottom corner (position set per card type) */
+.polaroid__postmark {
+  position: absolute;
+  background-color: var(--color-surface-paper);   /* keeps the text readable over the photo */
+  border-radius: 50%;
+}

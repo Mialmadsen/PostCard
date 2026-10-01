@@ -327,6 +327,26 @@ small {
   background: var(--pattern-airmail);
 }
 
+/* Two columns: narrow sidebar on the left, wide content on the right.
+   Phone: one column. The HTML order is the same as the visual order. */
+.sidebar-layout {
+  display: grid;
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+}
+
+@media (min-width: 56rem) {
+  .sidebar-layout {
+    grid-template-columns: 18rem 1fr;
+    align-items: start;
+  }
+}
+
+/* Space under a section heading */
+.section-title {
+  margin-bottom: var(--space-md);
+}
+
 /* Main content grows, so the footer stays at the bottom on short pages */
 .site-main {
   flex: 1;

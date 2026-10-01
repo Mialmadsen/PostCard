@@ -1,0 +1,30 @@
+/* ============================================================
+   GROUP — one group's page (group.php)
+   Layout: .sidebar-layout in main.css
+   ============================================================ */
+
+/* Member avatars, overlapping a little */
+.avatar-stack {
+  display: flex;
+}
+
+.avatar-stack > * + * {
+  margin-left: calc(var(--space-2xs) * -1);
+}
+
+.avatar-stack .avatar {
+  border: 2px solid var(--color-surface);
+}
+
+/* Admin box: only shown to the group admin */
+.admin-box {
+  border-top: var(--stripe-height) solid transparent;
+  background:
+    linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+    var(--pattern-airmail) border-box;
+}
+
+.admin-links {
+  display: grid;
+  gap: var(--space-xs);
+}

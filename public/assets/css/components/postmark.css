@@ -33,6 +33,16 @@
   text-transform: uppercase;
 }
 
+/* Larger postmark with a status word, e.g. on experience cards */
+.postmark--status {
+  width: 5.5rem;
+  margin-inline-end: 0;
+  font-size: 0.6875rem;                   /* 11px — the longest word, AFSLUTTET, must fit */
+  font-weight: var(--weight-semibold);
+  text-align: center;
+  text-transform: uppercase;
+}
+
 .postmark::before {
   content: "";
   position: absolute;
@@ -44,4 +54,10 @@
   background-color: var(--color-postmark);
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 56' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='28' cy='28' r='26'/%3E%3Ccircle cx='28' cy='28' r='20' stroke-dasharray='70 8 40 8'/%3E%3Cpath d='M42 17q5-5 10 0t10 0 10 0 10 0 10 0M42 24q5-5 10 0t10 0 10 0 10 0 10 0M42 31q5-5 10 0t10 0 10 0 10 0 10 0M42 38q5-5 10 0t10 0 10 0 10 0 10 0'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 56' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='28' cy='28' r='26'/%3E%3Ccircle cx='28' cy='28' r='20' stroke-dasharray='70 8 40 8'/%3E%3Cpath d='M42 17q5-5 10 0t10 0 10 0 10 0 10 0M42 24q5-5 10 0t10 0 10 0 10 0 10 0M42 31q5-5 10 0t10 0 10 0 10 0 10 0M42 38q5-5 10 0t10 0 10 0 10 0 10 0'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+
+/* Status stamp: the waves start outside the ring, so they never cross the word */
+.postmark--status::before {
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 56' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='28' cy='28' r='26'/%3E%3Ccircle cx='28' cy='28' r='22' stroke-dasharray='70 8 40 8'/%3E%3Cpath d='M56 17q5-5 10 0t10 0 10 0 10 0M56 24q5-5 10 0t10 0 10 0 10 0M56 31q5-5 10 0t10 0 10 0 10 0M56 38q5-5 10 0t10 0 10 0 10 0'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 56' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='28' cy='28' r='26'/%3E%3Ccircle cx='28' cy='28' r='22' stroke-dasharray='70 8 40 8'/%3E%3Cpath d='M56 17q5-5 10 0t10 0 10 0 10 0M56 24q5-5 10 0t10 0 10 0 10 0M56 31q5-5 10 0t10 0 10 0 10 0M56 38q5-5 10 0t10 0 10 0 10 0'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
 }

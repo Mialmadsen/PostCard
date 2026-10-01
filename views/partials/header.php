@@ -32,7 +32,9 @@ require_once __DIR__ . '/../../app/Helpers/asset.php';
     <link rel="stylesheet" href="<?= asset('assets/css/components/envelope.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/forms.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/postmark.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/polaroid.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/post-card.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/experience-card.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/site-header.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/site-footer.css') ?>">
 

@@ -1,16 +1,7 @@
 /* ============================================================
-   POST CARD — a post shown as a polaroid photo
+   POST CARD — a post shown as a polaroid (frame: polaroid.css)
    Used on the front page, group page, experience page and profile.
    ============================================================ */
-
-.post-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  padding: var(--space-sm) var(--space-sm) var(--space-md);
-  background-color: var(--color-surface-paper);
-  box-shadow: var(--shadow-card);
-}
 
 /* Pinned by the group admin: airmail stripe along the top */
 .post-card--sticky {
@@ -20,39 +11,17 @@
     var(--pattern-airmail) border-box;
 }
 
-.post-card__photo {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-}
-
-.post-card--sticky .post-card__photo {
+.post-card--sticky .polaroid__photo {
   aspect-ratio: 16 / 9;
 }
 
-.post-card__body {
-  position: relative;
-  display: grid;
-  gap: var(--space-xs);
-  padding-top: var(--space-sm);
-}
-
 /* Room for the postmark next to the group label */
-.post-card__body > .group-label {
+.post-card .group-label {
   padding-right: 7rem;
 }
 
 .post-card__title {
   font-size: var(--text-h3);
-}
-
-.post-card__title-link {
-  color: var(--color-text);
-  text-decoration: none;
-}
-
-.post-card__title-link:hover {
-  text-decoration: underline;
 }
 
 .post-card__caption {
@@ -64,11 +33,8 @@
 
 /* Date stamped over the photo's bottom corner, like on a posted card */
 .post-card__postmark {
-  position: absolute;
   top: -1.75rem;
   right: 2.75rem;                          /* the waves fill the space to the card edge */
-  background-color: var(--color-surface-paper);   /* keeps the date readable over the photo */
-  border-radius: 50%;
 }
 
 /* --- Likes, comments, views --- */

@@ -1,0 +1,40 @@
+/* ============================================================
+   EXPERIENCE CARD — one experience (a trip) as a polaroid (frame: polaroid.css)
+   Handwritten title, and a postmark with the status (I gang / Afsluttet)
+   stamped over the photo's corner.
+   Used on the group page and the profile page.
+   ============================================================ */
+
+.experience-card__body {
+  padding-top: 3.25rem;                  /* the title starts below the postmark */
+}
+
+/* Handwriting: short names only, large and semibold so it stays readable */
+.experience-card__title {
+  font-family: var(--font-hand);
+  font-size: var(--text-hand);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+}
+
+/* Status stamped over the photo's bottom corner */
+.experience-card__postmark {
+  top: -2.75rem;
+  right: 4.3rem;                           /* the waves fill the space to the card edge */
+}
+
+/* Status colours: the word carries the meaning, the colour only supports it */
+.experience-card__postmark--active {
+  color: var(--color-success);
+}
+
+.experience-card__postmark--ended {
+  color: var(--color-text-muted);
+}
+
+/* A grid of experience cards */
+.experience-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: var(--space-lg);
+}
