@@ -23,6 +23,16 @@
   transform: rotate(-8deg);               /* stamped by hand, never perfectly straight */
 }
 
+/* Small postmark with a date, e.g. on post cards */
+.postmark--date {
+  width: 3.5rem;
+  margin-inline-end: 0;
+  font-size: var(--text-small);
+  line-height: 1.1;
+  text-align: center;
+  text-transform: uppercase;
+}
+
 .postmark::before {
   content: "";
   position: absolute;

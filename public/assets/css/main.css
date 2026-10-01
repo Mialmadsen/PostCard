@@ -134,6 +134,12 @@ video {
   height: auto;
 }
 
+/* Lists with a class are layout, not bullet lists: no bullets, no indent */
+ul[class] {
+  padding: 0;
+  list-style: none;
+}
+
 input,
 button,
 textarea,
@@ -205,6 +211,21 @@ small {
 /* The site name is always shown in capitals: <span class="brand">PostCard</span>.
    Written normally in HTML so screen readers say the word, not the letters. */
 .brand {
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+}
+
+/* Small grey secondary text: dates, counts, hints */
+.meta {
+  color: var(--color-text-muted);
+  font-size: var(--text-small);
+}
+
+/* Which group something belongs to — always visible (privacy) */
+.group-label {
+  color: var(--color-text-muted);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
 }

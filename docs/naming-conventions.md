@@ -68,11 +68,12 @@ We follow **PSR-1 and PSR-12**, the standard PHP style guides.
 ```
 
 - Class names are kebab-case and in English.
+- A `<ul>` with a class has no bullets or indent (reset in `main.css`); a plain `<ol>`/`<ul>` in text keeps them.
 - Style with **classes only**, never with an `id` or a bare element selector inside a component.
 - `id` is only for linking a `<label for="">`, `aria-controls` or anchor links. Use kebab-case: `id="post-caption"`.
 - State classes start with `is-`: `.is-open`, `.is-active`. JavaScript switches these on and off.
 - JavaScript hooks start with `js-` and are never styled: `.js-photo-input`.
-- Utility classes do one small job and have no BEM parts: `.container`, `.flow` (even spacing between children), `.visually-hidden`, `.eyebrow`, `.brand`.
+- Utility classes do one small job and have no BEM parts: `.container`, `.flow` (even spacing between children), `.visually-hidden`, `.eyebrow`, `.brand`, `.meta` (small grey text), `.group-label`.
 - **The site name is always shown in capitals.** In running text write `<span class="brand">PostCard</span>`: CSS shows it as POSTCARD, and screen readers still read it as a word. Where CSS can't reach (e.g. `<title>`), write `POSTCARD`.
 
 **CSS custom properties (design tokens):**

@@ -7,8 +7,6 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
   gap: var(--space-sm);
-  padding: 0;
-  list-style: none;
 }
 
 .swatch {
@@ -25,12 +23,6 @@
   padding: var(--space-xs);
   font-size: var(--text-small);
   line-height: 1.4;
-}
-
-.type-sample__meta,
-.type-sample__muted {
-  color: var(--color-text-muted);
-  font-size: var(--text-small);
 }
 
 .type-sample--display {
@@ -56,8 +48,6 @@
 .space-list {
   display: grid;
   gap: var(--space-xs);
-  padding: 0;
-  list-style: none;
 }
 
 .space-list__item {

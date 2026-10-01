@@ -1,0 +1,121 @@
+/* ============================================================
+   POST CARD — a post shown as a polaroid photo
+   Used on the front page, group page, experience page and profile.
+   ============================================================ */
+
+.post-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-sm) var(--space-sm) var(--space-md);
+  background-color: var(--color-surface-paper);
+  box-shadow: var(--shadow-card);
+}
+
+/* Pinned by the group admin: airmail stripe along the top */
+.post-card--sticky {
+  border-top: var(--stripe-height) solid transparent;
+  background:
+    linear-gradient(var(--color-surface-paper), var(--color-surface-paper)) padding-box,
+    var(--pattern-airmail) border-box;
+}
+
+.post-card__photo {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.post-card--sticky .post-card__photo {
+  aspect-ratio: 16 / 9;
+}
+
+.post-card__body {
+  position: relative;
+  display: grid;
+  gap: var(--space-xs);
+  padding-top: var(--space-sm);
+}
+
+/* Room for the postmark next to the group label */
+.post-card__body > .group-label {
+  padding-right: 7rem;
+}
+
+.post-card__title {
+  font-size: var(--text-h3);
+}
+
+.post-card__title-link {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.post-card__title-link:hover {
+  text-decoration: underline;
+}
+
+.post-card__caption {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;                   /* max two lines; the full text is on the post page */
+  overflow: hidden;
+}
+
+/* Date stamped over the photo's bottom corner, like on a posted card */
+.post-card__postmark {
+  position: absolute;
+  top: -1.75rem;
+  right: 2.75rem;                          /* the waves fill the space to the card edge */
+  background-color: var(--color-surface-paper);   /* keeps the date readable over the photo */
+  border-radius: 50%;
+}
+
+/* --- Likes, comments, views --- */
+
+.post-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-xs);
+  font-size: var(--text-small);
+}
+
+.post-stats__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  min-height: 2.75rem;                     /* 44px touch target */
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.post-stats__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+}
+
+.like-button {
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+/* Liked: the heart is filled */
+.like-button[aria-pressed="true"] .post-stats__icon {
+  fill: var(--color-primary);
+  stroke: var(--color-primary);
+}
+
+/* --- A grid of post cards --- */
+
+.post-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--space-lg);
+}

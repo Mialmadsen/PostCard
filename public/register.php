@@ -33,7 +33,7 @@ require __DIR__ . '/../views/partials/header.php';
                         <input class="field__input" id="username" name="username" type="text"
                             autocomplete="username" maxlength="50" required
                             aria-describedby="username-hint">
-                        <p class="field__hint" id="username-hint">Det navn, andre i dine grupper ser.</p>
+                        <p class="meta" id="username-hint">Det navn, andre i dine grupper ser.</p>
                     </div>
 
                     <div class="field">
@@ -53,7 +53,7 @@ require __DIR__ . '/../views/partials/header.php';
                         <input class="field__input" id="password" name="password" type="password"
                             autocomplete="new-password" minlength="12" required
                             aria-describedby="password-hint">
-                        <p class="field__hint" id="password-hint">Mindst 12 tegn. En sætning er nem at huske.</p>
+                        <p class="meta" id="password-hint">Mindst 12 tegn. En sætning er nem at huske.</p>
                     </div>
 
                     <div class="field">

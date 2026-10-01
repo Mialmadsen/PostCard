@@ -21,7 +21,7 @@ require __DIR__ . '/../views/partials/header.php';
                         <input class="field__input" id="password" name="password" type="password"
                             autocomplete="new-password" minlength="12" required
                             aria-describedby="password-hint">
-                        <p class="field__hint" id="password-hint">Mindst 12 tegn.</p>
+                        <p class="meta" id="password-hint">Mindst 12 tegn.</p>
                     </div>
 
                     <div class="field">

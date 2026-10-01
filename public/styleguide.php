@@ -66,40 +66,40 @@ require __DIR__ . '/../views/partials/header.php';
             <h2 id="type-heading">Typografi</h2>
 
             <div>
-                <p class="type-sample__meta">Display · Jost Light · spaced capitals</p>
+                <p class="meta">Display · Jost Light · spaced capitals</p>
                 <p class="type-sample--display">PostCard</p>
             </div>
             <div>
-                <p class="type-sample__meta">Eyebrow · small capitals label above a heading</p>
+                <p class="meta">Eyebrow · small capitals label above a heading</p>
                 <p class="eyebrow">Hilsen fra PostCard</p>
             </div>
             <div>
-                <p class="type-sample__meta">H1 · Jost Medium · 30 → 44px</p>
+                <p class="meta">H1 · Jost Medium · 30 → 44px</p>
                 <p style="font-size: var(--text-h1)">Sommer i Skagen</p>
             </div>
             <div>
-                <p class="type-sample__meta">H2 · Jost Medium · 24 → 32px</p>
+                <p class="meta">H2 · Jost Medium · 24 → 32px</p>
                 <p style="font-size: var(--text-h2)">Familien Nielsen</p>
             </div>
             <div>
-                <p class="type-sample__meta">H3 · Jost Medium · 20 → 24px</p>
+                <p class="meta">H3 · Jost Medium · 20 → 24px</p>
                 <p style="font-size: var(--text-h3)">Nyeste kommentarer</p>
             </div>
             <div>
-                <p class="type-sample__meta">Body · Jost Regular · 16px</p>
+                <p class="meta">Body · Jost Regular · 16px</p>
                 <p>Del din oplevelse – ikke hele dit liv. <span class="brand">PostCard</span> er et privat sted at dele rejseminder med de
                     mennesker, der betyder noget.</p>
             </div>
             <div>
-                <p class="type-sample__meta">Small · muted · 14px</p>
-                <p><small class="type-sample__muted">3 dage siden · Positano, Italien</small></p>
+                <p class="meta">Small · muted · 14px</p>
+                <p><small class="meta">3 dage siden · Positano, Italien</small></p>
             </div>
             <div>
-                <p class="type-sample__meta">Handwriting · Caveat · accents only</p>
+                <p class="meta">Handwriting · Caveat · accents only</p>
                 <p class="type-sample--hand">Hilsen fra Skagen ♡</p>
             </div>
             <div>
-                <p class="type-sample__meta">Link</p>
+                <p class="meta">Link</p>
                 <p><a href="#main">Se alle oplevelser</a></p>
             </div>
         </section>
@@ -107,7 +107,7 @@ require __DIR__ . '/../views/partials/header.php';
         <!-- Buttons -->
         <section class="card flow" aria-labelledby="buttons-heading">
             <h2 id="buttons-heading">Knapper</h2>
-            <p class="type-sample__meta">One primary button per screen. Links that look like buttons use &lt;a&gt;,
+            <p class="meta">One primary button per screen. Links that look like buttons use &lt;a&gt;,
                 actions use &lt;button&gt;.</p>
             <div class="button-row">
                 <button class="button button--primary" type="button">Opret bruger</button>
@@ -124,7 +124,7 @@ require __DIR__ . '/../views/partials/header.php';
                 <div class="field">
                     <label class="field__label" for="demo-name">Normalt felt</label>
                     <input class="field__input" id="demo-name" type="text" aria-describedby="demo-name-hint">
-                    <p class="field__hint" id="demo-name-hint">En hjælpetekst under feltet.</p>
+                    <p class="meta" id="demo-name-hint">En hjælpetekst under feltet.</p>
                 </div>
                 <div class="field">
                     <label class="field__label" for="demo-email">Felt med fejl</label>

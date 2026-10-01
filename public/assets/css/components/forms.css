@@ -8,6 +8,8 @@
        </div>
    </form>
 
+   Hint under a field: <p class="meta" id="email-hint">…</p>
+
    Error state (set by PHP in Epic 2):
        <input class="field__input" … aria-invalid="true" aria-describedby="email-error">
        <p class="field__error" id="email-error">Skriv en gyldig e-mail.</p>
@@ -28,11 +30,6 @@
 
 .field__label {
   font-weight: var(--weight-medium);
-}
-
-.field__hint {
-  color: var(--color-text-muted);
-  font-size: var(--text-small);
 }
 
 .field__input {

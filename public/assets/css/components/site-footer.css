@@ -26,8 +26,6 @@
 .site-footer__links {
   display: flex;
   gap: var(--space-md);
-  padding: 0;
-  list-style: none;
 }
 
 .site-footer__link {

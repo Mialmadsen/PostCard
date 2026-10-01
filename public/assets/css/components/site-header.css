@@ -70,8 +70,6 @@
   display: flex;
   align-items: center;
   gap: var(--space-xs);
-  padding: 0;
-  list-style: none;
 }
 
 .site-nav__link {
@@ -109,18 +107,6 @@
   background-color: var(--color-surface-alt);
 }
 
-.avatar {
-  display: inline-grid;
-  place-items: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 50%;
-  background-color: var(--color-secondary);
-  color: var(--color-on-secondary);
-  font-size: var(--text-small);
-  font-weight: var(--weight-semibold);
-}
-
 .user-menu__chevron {
   width: 1rem;
   height: 1rem;
@@ -141,7 +127,6 @@
   z-index: 50;
   min-width: 12rem;
   padding: var(--space-xs);
-  list-style: none;
   background-color: var(--color-surface);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-lifted);

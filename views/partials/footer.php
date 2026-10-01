@@ -9,7 +9,7 @@
                 </ul>
             </nav>
 
-            <p class="site-footer__copyright"><small>© 2026 <span class="brand">PostCard</span></small></p>
+            <p><small>© 2026 <span class="brand">PostCard</span></small></p>
         </div>
     </footer>
 </body>

@@ -10,6 +10,8 @@
 $pageTitle = $pageTitle ?? 'Del din oplevelse';
 $isLoggedIn = $isLoggedIn ?? false;
 $pageStyle = $pageStyle ?? null;
+
+require_once __DIR__ . '/../../app/Helpers/asset.php';
 ?>
 <!DOCTYPE html>
 <html lang="da">
@@ -23,21 +25,23 @@ $pageStyle = $pageStyle ?? null;
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Jost:wght@300;400;500;600&display=swap">
 
-    <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/css/components/buttons.css">
-    <link rel="stylesheet" href="assets/css/components/card.css">
-    <link rel="stylesheet" href="assets/css/components/envelope.css">
-    <link rel="stylesheet" href="assets/css/components/forms.css">
-    <link rel="stylesheet" href="assets/css/components/postmark.css">
-    <link rel="stylesheet" href="assets/css/components/site-header.css">
-    <link rel="stylesheet" href="assets/css/components/site-footer.css">
+    <link rel="stylesheet" href="<?= asset('assets/css/main.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/buttons.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/avatar.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/card.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/envelope.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/forms.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/postmark.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/post-card.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/site-header.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/site-footer.css') ?>">
 
     <?php if ($pageStyle): ?>
-        <link rel="stylesheet" href="assets/css/pages/<?= htmlspecialchars($pageStyle) ?>.css">
+        <link rel="stylesheet" href="<?= asset('assets/css/pages/' . $pageStyle . '.css') ?>">
     <?php endif; ?>
 
     <?php if ($isLoggedIn): ?>
-        <script src="assets/js/user-menu.js" defer></script>
+        <script src="<?= asset('assets/js/user-menu.js') ?>" defer></script>
     <?php endif; ?>
 </head>
 
@@ -73,7 +77,7 @@ $pageStyle = $pageStyle ?? null;
                 <span class="logo__text">PostCard</span>
             </a>
 
-            <nav class="site-nav" aria-label="Hovedmenu">
+            <nav aria-label="Hovedmenu">
                 <?php if ($isLoggedIn): ?>
 
                     <!-- NAV: logged in -->
