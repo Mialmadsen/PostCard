@@ -100,7 +100,6 @@
   background: none;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-pill);
-  cursor: pointer;
 }
 
 .user-menu__button:hover {
@@ -142,7 +141,6 @@
   color: var(--color-text);
   text-align: left;
   text-decoration: none;
-  cursor: pointer;
 }
 
 .user-menu__item:hover {

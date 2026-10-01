@@ -9,14 +9,6 @@
   padding-top: 3.25rem;                  /* the title starts below the postmark */
 }
 
-/* Handwriting: short names only, large and semibold so it stays readable */
-.experience-card__title {
-  font-family: var(--font-hand);
-  font-size: var(--text-hand);
-  font-weight: var(--weight-semibold);
-  line-height: var(--leading-tight);
-}
-
 /* Status stamped over the photo's bottom corner */
 .experience-card__postmark {
   top: -2.75rem;

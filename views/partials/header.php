@@ -27,6 +27,7 @@ require_once __DIR__ . '/../../app/Helpers/asset.php';
 
     <link rel="stylesheet" href="<?= asset('assets/css/main.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/buttons.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/breadcrumb.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/avatar.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/card.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/envelope.css') ?>">

@@ -148,6 +148,10 @@ select {
   color: inherit;
 }
 
+button {
+  cursor: pointer;
+}
+
 p,
 h1,
 h2,
@@ -221,22 +225,23 @@ small {
   font-size: var(--text-small);
 }
 
-/* Which group something belongs to — always visible (privacy) */
+/* Small capitals labels:
+   .eyebrow     = label above a heading, e.g. "TRIN 1 · OPRET BRUGER" (terracotta)
+   .group-label = which group something belongs to, always visible for privacy (grey) */
+.eyebrow,
 .group-label {
-  color: var(--color-text-muted);
   font-size: var(--text-small);
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
 }
 
-/* Small label above a heading, e.g. "TRIN 1 · OPRET BRUGER" */
 .eyebrow {
   color: var(--color-link);
-  font-size: var(--text-small);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-caps);
-  text-transform: uppercase;
+}
+
+.group-label {
+  color: var(--color-text-muted);
 }
 
 

@@ -22,8 +22,8 @@ require __DIR__ . '/../views/partials/header.php';
                     <ul class="experience-list">
                         <li class="experience-list__item flow">
                             <p class="group-label">Familien Nielsen</p>
-                            <h3 class="experience-list__name">Sommer i Norge</h3>
-                            <p class="meta">8 af 20 opslag brugt · slutter 15. okt.</p>
+                            <h3 class="experience-list__name"><a href="experience.php?id=1">Sommer i Norge</a></h3>
+                            <p class="meta">6 af 20 opslag brugt · slutter 15. okt.</p>
                             <p><a class="button button--primary" href="create-post.php?experience=1">Nyt opslag</a></p>
                         </li>
                         <li class="experience-list__item flow">
@@ -83,7 +83,7 @@ require __DIR__ . '/../views/partials/header.php';
                         <div class="polaroid__body">
                             <p class="postmark postmark--date polaroid__postmark post-card__postmark"><time datetime="2026-09-12">12<br>sep</time></p>
                             <p class="group-label">Familien Nielsen · Fastgjort</p>
-                            <h3 class="post-card__title">
+                            <h3 class="polaroid__title">
                                 <a class="polaroid__link" href="post.php?id=1">Lysefjorden, Norge</a>
                             </h3>
                             <p class="post-card__caption">Vi gik op til Prækestolen i morges. Udsigten over fjorden var det hele værd!</p>
@@ -111,7 +111,8 @@ require __DIR__ . '/../views/partials/header.php';
                 <section aria-labelledby="trending-heading">
                     <h2 class="section-title" id="trending-heading">Populært i dine grupper</h2>
 
-                    <!-- LOOP: trending posts (most likes in the last 7 days, only my groups) -->
+                    <!-- LOOP: trending posts (most likes in the last 7 days, only my groups)
+                         Heading = posts.location, text = posts.caption, date = posts.created_at -->
                     <div class="post-grid">
                         <article class="polaroid post-card">
                             <a href="post.php?id=2" tabindex="-1" aria-hidden="true">
@@ -121,7 +122,7 @@ require __DIR__ . '/../views/partials/header.php';
                             <div class="polaroid__body">
                                 <p class="postmark postmark--date polaroid__postmark post-card__postmark"><time datetime="2026-09-28">28<br>sep</time></p>
                                 <p class="group-label">Familien Nielsen</p>
-                                <h3 class="post-card__title">
+                                <h3 class="polaroid__title">
                                     <a class="polaroid__link" href="post.php?id=2">Isle of Skye, Skotland</a>
                                 </h3>
                                 <p class="post-card__caption">Den smalleste vej, jeg nogensinde har kørt på – men sikke en udsigt.</p>
@@ -152,10 +153,10 @@ require __DIR__ . '/../views/partials/header.php';
                             <div class="polaroid__body">
                                 <p class="postmark postmark--date polaroid__postmark post-card__postmark"><time datetime="2026-09-25">25<br>sep</time></p>
                                 <p class="group-label">Løbeklubben</p>
-                                <h3 class="post-card__title">
-                                    <a class="polaroid__link" href="post.php?id=3">Trailløb ved vandfaldet</a>
+                                <h3 class="polaroid__title">
+                                    <a class="polaroid__link" href="post.php?id=3">Hardangervidda, Norge</a>
                                 </h3>
-                                <p class="post-card__caption">14 km gennem skoven og et velfortjent hvil ved vandfaldet.</p>
+                                <p class="post-card__caption">Trailløb: 14 km gennem skoven og et velfortjent hvil ved vandfaldet.</p>
                                 <p class="meta">Jonas Berg · <time datetime="2026-09-25T11:00">for 6 dage siden</time></p>
                                 <ul class="post-stats">
                                     <li>
@@ -183,7 +184,7 @@ require __DIR__ . '/../views/partials/header.php';
                             <div class="polaroid__body">
                                 <p class="postmark postmark--date polaroid__postmark post-card__postmark"><time datetime="2026-09-24">24<br>sep</time></p>
                                 <p class="group-label">Klasse 3.B</p>
-                                <h3 class="post-card__title">
+                                <h3 class="polaroid__title">
                                     <a class="polaroid__link" href="post.php?id=4">Kystklipperne, Californien</a>
                                 </h3>
                                 <p class="post-card__caption">Studieturens sidste dag. Vi så sæler nede ved klipperne!</p>
@@ -225,7 +226,7 @@ require __DIR__ . '/../views/partials/header.php';
                         <li class="comment-item">
                             <span class="avatar" aria-hidden="true">JB</span>
                             <div>
-                                <p class="meta"><strong>Jonas Berg</strong> på <a href="post.php?id=3#comments">Trailløb ved vandfaldet</a> · Løbeklubben</p>
+                                <p class="meta"><strong>Jonas Berg</strong> på <a href="post.php?id=3#comments">Hardangervidda, Norge</a> · Løbeklubben</p>
                                 <p>Jeg er med næste gang – også selvom det regner.</p>
                                 <p class="meta"><time datetime="2026-09-30T20:40">i går</time></p>
                             </div>

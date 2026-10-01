@@ -15,7 +15,6 @@
   font-weight: var(--weight-medium);
   line-height: 1.2;
   text-decoration: none;
-  cursor: pointer;
   transition:
     background-color var(--transition),
     border-color var(--transition),

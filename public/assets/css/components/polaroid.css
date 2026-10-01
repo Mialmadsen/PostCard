@@ -43,6 +43,15 @@
   text-decoration: underline;
 }
 
+/* Title: the place or the experience name, handwritten like on a postcard.
+   Short text only, large and semibold so it stays readable. */
+.polaroid__title {
+  font-family: var(--font-hand);
+  font-size: var(--text-hand);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+}
+
 /* A postmark stamped over the photo's bottom corner (position set per card type) */
 .polaroid__postmark {
   position: absolute;
