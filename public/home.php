@@ -11,7 +11,7 @@ require __DIR__ . '/../views/partials/header.php';
         <h1>Hej Mia</h1>
         <p>Her er det nyeste fra dine grupper. Kun medlemmer af en gruppe kan se dens opslag.</p>
 
-        <div class="home__layout">
+        <div class="sidebar-layout">
 
             <!-- Left column: upload + my groups -->
             <div class="flow">
@@ -22,8 +22,8 @@ require __DIR__ . '/../views/partials/header.php';
                     <ul class="experience-list">
                         <li class="experience-list__item flow">
                             <p class="group-label">Familien Nielsen</p>
-                            <h3 class="experience-list__name">Sommer i Norge</h3>
-                            <p class="meta">8 af 20 opslag brugt · slutter 15. okt.</p>
+                            <h3 class="experience-list__name"><a href="experience.php?id=1">Sommer i Norge</a></h3>
+                            <p class="meta">6 af 20 opslag brugt · slutter 15. okt.</p>
                             <p><a class="button button--primary" href="create-post.php?experience=1">Nyt opslag</a></p>
                         </li>
                         <li class="experience-list__item flow">
@@ -39,7 +39,7 @@ require __DIR__ . '/../views/partials/header.php';
                 </section>
 
                 <section class="card" aria-labelledby="groups-heading">
-                    <h2 class="home__section-title" id="groups-heading">Mine grupper</h2>
+                    <h2 class="section-title" id="groups-heading">Mine grupper</h2>
 
                     <!-- LOOP: my groups (v_user_groups) -->
                     <ul class="group-list">
@@ -72,19 +72,19 @@ require __DIR__ . '/../views/partials/header.php';
             <div class="flow">
 
                 <section aria-labelledby="sticky-heading">
-                    <h2 class="home__section-title" id="sticky-heading">Fastgjort</h2>
+                    <h2 class="section-title" id="sticky-heading">Fastgjort</h2>
 
                     <!-- LOOP: sticky posts (posts.is_sticky = 1) — each card becomes views/partials/post-card.php -->
-                    <article class="post-card post-card--sticky">
+                    <article class="polaroid post-card post-card--sticky">
                         <a href="post.php?id=1" tabindex="-1" aria-hidden="true">
-                            <img class="post-card__photo" src="assets/images/sample/photo-4.jpg"
+                            <img class="polaroid__photo" src="assets/images/sample/photo-4.jpg"
                                 alt="" width="800" height="600" loading="lazy">
                         </a>
-                        <div class="post-card__body">
-                            <p class="postmark postmark--date post-card__postmark"><time datetime="2026-09-12">12<br>sep</time></p>
+                        <div class="polaroid__body">
+                            <p class="postmark postmark--date polaroid__postmark post-card__postmark"><time datetime="2026-09-12">12<br>sep</time></p>
                             <p class="group-label">Familien Nielsen · Fastgjort</p>
-                            <h3 class="post-card__title">
-                                <a class="post-card__title-link" href="post.php?id=1">Lysefjorden, Norge</a>
+                            <h3 class="polaroid__title">
+                                <a class="polaroid__link" href="post.php?id=1">Lysefjorden, Norge</a>
                             </h3>
                             <p class="post-card__caption">Vi gik op til Prækestolen i morges. Udsigten over fjorden var det hele værd!</p>
                             <p class="meta">Mia Nielsen · <time datetime="2026-09-12T09:30">for 3 dage siden</time></p>
@@ -109,20 +109,21 @@ require __DIR__ . '/../views/partials/header.php';
                 </section>
 
                 <section aria-labelledby="trending-heading">
-                    <h2 class="home__section-title" id="trending-heading">Populært i dine grupper</h2>
+                    <h2 class="section-title" id="trending-heading">Populært i dine grupper</h2>
 
-                    <!-- LOOP: trending posts (most likes in the last 7 days, only my groups) -->
+                    <!-- LOOP: trending posts (most likes in the last 7 days, only my groups)
+                         Heading = posts.location, text = posts.caption, date = posts.created_at -->
                     <div class="post-grid">
-                        <article class="post-card">
+                        <article class="polaroid post-card">
                             <a href="post.php?id=2" tabindex="-1" aria-hidden="true">
-                                <img class="post-card__photo" src="assets/images/sample/photo-5.jpg"
+                                <img class="polaroid__photo" src="assets/images/sample/photo-5.jpg"
                                     alt="" width="800" height="600" loading="lazy">
                             </a>
-                            <div class="post-card__body">
-                                <p class="postmark postmark--date post-card__postmark"><time datetime="2026-09-28">28<br>sep</time></p>
+                            <div class="polaroid__body">
+                                <p class="postmark postmark--date polaroid__postmark post-card__postmark"><time datetime="2026-09-28">28<br>sep</time></p>
                                 <p class="group-label">Familien Nielsen</p>
-                                <h3 class="post-card__title">
-                                    <a class="post-card__title-link" href="post.php?id=2">Isle of Skye, Skotland</a>
+                                <h3 class="polaroid__title">
+                                    <a class="polaroid__link" href="post.php?id=2">Isle of Skye, Skotland</a>
                                 </h3>
                                 <p class="post-card__caption">Den smalleste vej, jeg nogensinde har kørt på – men sikke en udsigt.</p>
                                 <p class="meta">Anna Nielsen · <time datetime="2026-09-28T16:10">i går</time></p>
@@ -144,18 +145,18 @@ require __DIR__ . '/../views/partials/header.php';
                             </div>
                         </article>
 
-                        <article class="post-card">
+                        <article class="polaroid post-card">
                             <a href="post.php?id=3" tabindex="-1" aria-hidden="true">
-                                <img class="post-card__photo" src="assets/images/sample/photo-3.jpg"
+                                <img class="polaroid__photo" src="assets/images/sample/photo-3.jpg"
                                     alt="" width="800" height="600" loading="lazy">
                             </a>
-                            <div class="post-card__body">
-                                <p class="postmark postmark--date post-card__postmark"><time datetime="2026-09-25">25<br>sep</time></p>
+                            <div class="polaroid__body">
+                                <p class="postmark postmark--date polaroid__postmark post-card__postmark"><time datetime="2026-09-25">25<br>sep</time></p>
                                 <p class="group-label">Løbeklubben</p>
-                                <h3 class="post-card__title">
-                                    <a class="post-card__title-link" href="post.php?id=3">Trailløb ved vandfaldet</a>
+                                <h3 class="polaroid__title">
+                                    <a class="polaroid__link" href="post.php?id=3">Hardangervidda, Norge</a>
                                 </h3>
-                                <p class="post-card__caption">14 km gennem skoven og et velfortjent hvil ved vandfaldet.</p>
+                                <p class="post-card__caption">Trailløb: 14 km gennem skoven og et velfortjent hvil ved vandfaldet.</p>
                                 <p class="meta">Jonas Berg · <time datetime="2026-09-25T11:00">for 6 dage siden</time></p>
                                 <ul class="post-stats">
                                     <li>
@@ -175,16 +176,16 @@ require __DIR__ . '/../views/partials/header.php';
                             </div>
                         </article>
 
-                        <article class="post-card">
+                        <article class="polaroid post-card">
                             <a href="post.php?id=4" tabindex="-1" aria-hidden="true">
-                                <img class="post-card__photo" src="assets/images/sample/photo-6.jpg"
+                                <img class="polaroid__photo" src="assets/images/sample/photo-6.jpg"
                                     alt="" width="800" height="600" loading="lazy">
                             </a>
-                            <div class="post-card__body">
-                                <p class="postmark postmark--date post-card__postmark"><time datetime="2026-09-24">24<br>sep</time></p>
+                            <div class="polaroid__body">
+                                <p class="postmark postmark--date polaroid__postmark post-card__postmark"><time datetime="2026-09-24">24<br>sep</time></p>
                                 <p class="group-label">Klasse 3.B</p>
-                                <h3 class="post-card__title">
-                                    <a class="post-card__title-link" href="post.php?id=4">Kystklipperne, Californien</a>
+                                <h3 class="polaroid__title">
+                                    <a class="polaroid__link" href="post.php?id=4">Kystklipperne, Californien</a>
                                 </h3>
                                 <p class="post-card__caption">Studieturens sidste dag. Vi så sæler nede ved klipperne!</p>
                                 <p class="meta">Sara Holm · <time datetime="2026-09-24T18:45">for 7 dage siden</time></p>
@@ -210,7 +211,7 @@ require __DIR__ . '/../views/partials/header.php';
                 </section>
 
                 <section class="card" aria-labelledby="comments-heading">
-                    <h2 class="home__section-title" id="comments-heading">Nyeste kommentarer</h2>
+                    <h2 class="section-title" id="comments-heading">Nyeste kommentarer</h2>
 
                     <!-- LOOP: latest comments in my groups -->
                     <ul class="comment-list">
@@ -225,7 +226,7 @@ require __DIR__ . '/../views/partials/header.php';
                         <li class="comment-item">
                             <span class="avatar" aria-hidden="true">JB</span>
                             <div>
-                                <p class="meta"><strong>Jonas Berg</strong> på <a href="post.php?id=3#comments">Trailløb ved vandfaldet</a> · Løbeklubben</p>
+                                <p class="meta"><strong>Jonas Berg</strong> på <a href="post.php?id=3#comments">Hardangervidda, Norge</a> · Løbeklubben</p>
                                 <p>Jeg er med næste gang – også selvom det regner.</p>
                                 <p class="meta"><time datetime="2026-09-30T20:40">i går</time></p>
                             </div>

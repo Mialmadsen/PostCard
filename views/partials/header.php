@@ -6,10 +6,12 @@
  *   $pageTitle  – text for the browser tab (required)
  *   $isLoggedIn – true shows the member navigation, false the public one
  *   $pageStyle  – optional: name of a stylesheet in assets/css/pages/ (without .css)
+ *   $pageScripts – optional: list of scripts in assets/js/ (without .js), e.g. ['lightbox']
  */
 $pageTitle = $pageTitle ?? 'Del din oplevelse';
 $isLoggedIn = $isLoggedIn ?? false;
 $pageStyle = $pageStyle ?? null;
+$pageScripts = $pageScripts ?? [];
 
 require_once __DIR__ . '/../../app/Helpers/asset.php';
 ?>
@@ -27,12 +29,17 @@ require_once __DIR__ . '/../../app/Helpers/asset.php';
 
     <link rel="stylesheet" href="<?= asset('assets/css/main.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/buttons.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/breadcrumb.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/avatar.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/card.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/comments.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/envelope.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/forms.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/lightbox.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/postmark.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/polaroid.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/post-card.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/experience-card.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/site-header.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/site-footer.css') ?>">
 
@@ -40,9 +47,17 @@ require_once __DIR__ . '/../../app/Helpers/asset.php';
         <link rel="stylesheet" href="<?= asset('assets/css/pages/' . $pageStyle . '.css') ?>">
     <?php endif; ?>
 
+    <?php if (in_array('lightbox', $pageScripts, true)): ?>
+        <link rel="stylesheet" href="<?= asset('assets/lib/photoswipe/photoswipe.css') ?>">
+    <?php endif; ?>
+
     <?php if ($isLoggedIn): ?>
         <script src="<?= asset('assets/js/user-menu.js') ?>" defer></script>
     <?php endif; ?>
+
+    <?php foreach ($pageScripts as $script): ?>
+        <script src="<?= asset('assets/js/' . $script . '.js') ?>" type="module"></script>
+    <?php endforeach; ?>
 </head>
 
 <body>

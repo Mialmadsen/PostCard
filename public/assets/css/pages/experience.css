@@ -1,0 +1,56 @@
+/* ============================================================
+   EXPERIENCE — one experience with all its posts (experience.php)
+   ============================================================ */
+
+.experience-header {
+  display: grid;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+/* Experience names are handwritten everywhere (see experience-card.css) */
+.experience-header__title {
+  font-family: var(--font-hand);
+  font-size: var(--text-display);
+  font-weight: var(--weight-semibold);
+}
+
+.experience-header__text {
+  max-width: var(--width-text);
+}
+
+/* --- Owner box: progress and "Nyt opslag" --- */
+
+.experience-owner {
+  display: grid;
+  gap: var(--space-sm);
+  max-width: var(--width-text);
+  margin-top: var(--space-lg);
+}
+
+/* Native <progress>: screen readers announce "8 of 20" by themselves */
+.experience-owner__progress {
+  width: 100%;
+  height: 0.75rem;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-surface-alt);
+  overflow: hidden;
+  appearance: none;
+}
+
+.experience-owner__progress::-webkit-progress-bar {
+  background-color: var(--color-surface-alt);
+}
+
+.experience-owner__progress::-webkit-progress-value {
+  background-color: var(--color-secondary);
+}
+
+.experience-owner__progress::-moz-progress-bar {
+  background-color: var(--color-secondary);
+}
+
+.experience-posts {
+  margin-top: var(--space-section);
+}

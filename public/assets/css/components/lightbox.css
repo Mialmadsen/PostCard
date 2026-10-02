@@ -1,0 +1,12 @@
+/* ============================================================
+   LIGHTBOX — PhotoSwipe in PostCard colours
+   The library (assets/lib/photoswipe, MIT licence) gives pinch-to-zoom,
+   swipe, double-tap zoom and keyboard support. Here we only set colours.
+   ":root .pswp" is a little stronger than the library's own ".pswp",
+   so our colours win even though photoswipe.css loads later.
+   ============================================================ */
+
+:root .pswp {
+  --pswp-bg: var(--color-ink);
+  --pswp-placeholder-bg: var(--color-ink);
+}

@@ -1,19 +1,7 @@
 /* ============================================================
    HOME — the logged-in front page (home.php)
-   Phone: one column. Desktop: narrow column (upload, groups)
-   on the left, wide column (posts, comments) on the right.
-   The HTML order is the same as the visual order on every screen.
+   Layout: .sidebar-layout in main.css
    ============================================================ */
-
-.home__layout {
-  display: grid;
-  gap: var(--space-lg);
-  margin-top: var(--space-lg);
-}
-
-.home__section-title {
-  margin-bottom: var(--space-md);
-}
 
 /* --- Mine oplevelser --- */
 
@@ -54,25 +42,3 @@
   font-weight: var(--weight-medium);
 }
 
-/* --- Nyeste kommentarer --- */
-
-.comment-list {
-  display: grid;
-  gap: var(--space-md);
-}
-
-.comment-item {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-sm);
-}
-
-
-/* --- Larger screens --- */
-
-@media (min-width: 56rem) {
-  .home__layout {
-    grid-template-columns: 18rem 1fr;
-    align-items: start;
-  }
-}

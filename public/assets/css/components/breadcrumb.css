@@ -1,0 +1,36 @@
+/* ============================================================
+   BREADCRUMB — shows where you are: Mine grupper › Familien Nielsen › Sommer i Norge
+
+   <nav class="breadcrumb" aria-label="Du er her">
+       <ol class="breadcrumb__list">
+           <li><a href="…">Mine grupper</a></li>
+           <li><a href="…" aria-current="page">Sommer i Norge</a></li>
+       </ol>
+   </nav>
+   ============================================================ */
+
+.breadcrumb__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs) var(--space-xs);
+  padding: 0;
+  font-size: var(--text-small);
+  list-style: none;
+}
+
+/* The separator is decoration, drawn by CSS — screen readers skip it */
+.breadcrumb__item + .breadcrumb__item::before {
+  content: "›";
+  margin-right: var(--space-xs);
+  color: var(--color-text);
+}
+
+.breadcrumb__link {
+  color: var(--color-text);
+}
+
+/* The current page: not underlined, so it does not look like a link to elsewhere */
+.breadcrumb__link[aria-current="page"] {
+  font-weight: var(--weight-semibold);
+  text-decoration: none;
+}

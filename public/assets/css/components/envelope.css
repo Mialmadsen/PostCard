@@ -41,22 +41,23 @@
   clip-path: inset(-100vh -100vw 0 -100vw);   /* nothing may show below the envelope's bottom edge */
 }
 
-/* The envelope parts are decoration: clicks go through them to the letter.
-   Without this, the transparent part of the front would block links and buttons. */
+/* The three envelope layers share size and position: the envelope body at the bottom.
+   They are decoration, so clicks go through them to the letter
+   (without pointer-events: none the transparent part of the front would block links). */
 .envelope__back,
 .envelope__front,
 .envelope__lid {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  aspect-ratio: var(--body-ratio);
   pointer-events: none;
 }
 
 /* 1. Inside of the envelope */
 .envelope__back {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
   z-index: -1;
-  aspect-ratio: var(--body-ratio);
   background-color: var(--color-decor-dark);
   border-radius: var(--radius-card);
 }
@@ -90,12 +91,7 @@
 
 /* 3. Front of the envelope, same size as the back */
 .envelope__front {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
   z-index: 2;
-  aspect-ratio: var(--body-ratio);
   overflow: hidden;
   border-radius: var(--radius-card);
   filter: drop-shadow(var(--shadow-edge));
@@ -122,12 +118,7 @@
 /* 4. Closed flap — folds up at the start of the animation.
    Finished state: turned 90° (edge-on) and invisible. */
 .envelope__lid {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
   z-index: 3;
-  aspect-ratio: var(--body-ratio);
   background-color: var(--color-decor-light);
   clip-path: polygon(0 0, 100% 0, 50% 55%);
   transform-origin: top;          /* the hinge is the top edge */

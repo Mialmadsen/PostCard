@@ -1,0 +1,15 @@
+/* ============================================================
+   COMMENTS — a list of comments with avatar, name, text and time
+   Used on the front page (latest comments) and the post page.
+   ============================================================ */
+
+.comment-list {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.comment-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}

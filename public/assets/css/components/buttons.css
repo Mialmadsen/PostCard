@@ -15,7 +15,6 @@
   font-weight: var(--weight-medium);
   line-height: 1.2;
   text-decoration: none;
-  cursor: pointer;
   transition:
     background-color var(--transition),
     border-color var(--transition),
@@ -42,4 +41,11 @@
 .button--secondary:hover {
   background-color: var(--color-secondary);
   color: var(--color-on-secondary);
+}
+
+/* A row of buttons that wraps onto a new line on small screens */
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
 }
