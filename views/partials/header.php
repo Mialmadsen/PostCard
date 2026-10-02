@@ -28,6 +28,7 @@ require_once __DIR__ . '/../../app/Helpers/asset.php';
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Jost:wght@300;400;500;600&display=swap">
 
     <link rel="stylesheet" href="<?= asset('assets/css/main.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/address.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/buttons.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/breadcrumb.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/avatar.css') ?>">

@@ -41,6 +41,18 @@
   border-radius: var(--radius-sm);
 }
 
+/* Date fields keep the browser's own calendar (the best choice on phones).
+   Chrome and Edge: the calendar icon is redrawn as our line icon in deep blue.
+   The SVG is only a shape (mask); the colour comes from the token.
+   Firefox and Safari show their own icon. */
+.field__input::-webkit-calendar-picker-indicator {
+  width: 1.25rem;
+  height: 1.25rem;
+  background: var(--color-secondary);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.75' stroke-linecap='round'%3E%3Crect x='3.5' y='5' width='17' height='15.5' rx='2'/%3E%3Cpath d='M3.5 10h17M8 3v4M16 3v4'/%3E%3C/svg%3E") center / contain no-repeat;
+  cursor: pointer;
+}
+
 .field__input[aria-invalid="true"] {
   border: 2px solid var(--color-error);
 }
@@ -55,6 +67,21 @@
 .field-row {
   display: grid;
   gap: var(--space-md);
+}
+
+/* Fields that belong together, e.g. "Fra" and "Til" dates under one heading:
+   <fieldset class="fieldset"><legend class="field__label fieldset__legend">Periode</legend> … </fieldset>
+   The browser's frame and padding are removed. */
+.fieldset {
+  display: grid;
+  gap: var(--space-xs);
+  min-inline-size: 0;                     /* lets the fieldset shrink on small screens */
+  padding: 0;
+  border: 0;
+}
+
+.fieldset__legend {
+  padding: 0;                             /* browsers indent a legend a little */
 }
 
 /* Checkbox with its label to the right */
@@ -74,6 +101,7 @@
 /* File picker: "⊕ Tilføj billeder".
    The real <input type="file"> is .visually-hidden; its <label> is the button you see.
    Clicking a label opens the file dialog of its input — no JavaScript needed.
+   The hidden input gets the keyboard focus; main.css draws the focus frame on the label.
 
    <input class="visually-hidden file-picker__input" id="photos" type="file" …>
    <label class="file-picker__button" for="photos"><svg class="file-picker__icon">…</svg> Tilføj billeder</label> */
@@ -114,8 +142,6 @@
 .file-picker__button:hover .file-picker__plus {
   stroke: var(--color-on-secondary);
 }
-
-/* The hidden input gets the keyboard focus; main.css draws the focus frame on its label */
 
 /* --- Buttons and links under the form --- */
 

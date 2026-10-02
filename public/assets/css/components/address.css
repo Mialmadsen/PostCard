@@ -1,0 +1,26 @@
+/* ============================================================
+   ADDRESS — the "Til" box: like the address side of a postcard.
+   Printed label above, handwritten value on a ruled line.
+   Used on create-post.php and create-experience.php.
+
+   <dl class="address">
+       <div>
+           <dt class="group-label">Gruppe</dt>
+           <dd class="address__value">Familien Nielsen</dd>
+       </div>
+   </dl>
+   ============================================================ */
+
+.address {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.address__value {
+  padding-bottom: var(--space-2xs);
+  border-bottom: 1px solid var(--color-border);   /* the ruled address line (decoration) */
+  font-family: var(--font-hand);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+}

@@ -32,18 +32,18 @@ require __DIR__ . '/../views/partials/header.php';
             <!-- Left (first on phones): who receives the post, answered before the form -->
             <aside class="card flow" aria-labelledby="audience-heading">
                 <h2 id="audience-heading">Til</h2>
-                <dl class="post-audience">
+                <dl class="address">
                     <div>
                         <dt class="group-label">Gruppe</dt>
-                        <dd class="post-audience__value">Familien Nielsen</dd>
+                        <dd class="address__value">Familien Nielsen</dd>
                     </div>
                     <div>
                         <dt class="group-label">Oplevelse</dt>
-                        <dd class="post-audience__value">Sommer i Norge</dd>
+                        <dd class="address__value">Sommer i Norge</dd>
                     </div>
                     <div>
                         <dt class="group-label">Opslag tilbage</dt>
-                        <dd class="post-audience__value">14 af 20 · slutter <time datetime="2026-10-15">15. okt. 2026</time></dd>
+                        <dd class="address__value">14 af 20 · slutter <time datetime="2026-10-15">15. okt. 2026</time></dd>
                     </div>
                 </dl>
             </aside>
