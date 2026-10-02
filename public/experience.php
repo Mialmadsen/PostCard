@@ -15,7 +15,7 @@ require __DIR__ . '/../views/partials/header.php';
             </ol>
         </nav>
 
-        <header class="experience-header">
+        <header class="page-header experience-header">
             <p class="group-label">Familien Nielsen</p>
             <h1 class="experience-header__title">Sommer i Norge</h1>
             <p class="meta">Mia Nielsen · <time datetime="2026-09-10">10. sep.</time> – <time datetime="2026-10-15">15. okt. 2026</time> · I gang</p>

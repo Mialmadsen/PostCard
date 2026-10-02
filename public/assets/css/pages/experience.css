@@ -2,11 +2,7 @@
    EXPERIENCE — one experience with all its posts (experience.php)
    ============================================================ */
 
-.experience-header {
-  display: grid;
-  gap: var(--space-sm);
-  margin-top: var(--space-md);
-}
+/* The heading block is .page-header (main.css) */
 
 /* Experience names are handwritten everywhere (see experience-card.css) */
 .experience-header__title {

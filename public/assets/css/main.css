@@ -250,9 +250,11 @@ small {
    ============================================================ */
 
 /* Visible focus for keyboard users only.
-   A stretched link shows the frame around the whole card, not just its text. */
+   A stretched link shows the frame around the whole card, not just its text.
+   A hidden file input shows the frame on its visible label (forms.css, .file-picker). */
 :focus-visible,
-.stretched-link:focus-visible::after {
+.stretched-link:focus-visible::after,
+.file-picker__input:focus-visible + .file-picker__button {
   outline: 3px solid var(--color-focus);
   outline-offset: 3px;
 }
@@ -359,6 +361,14 @@ small {
     grid-template-columns: 18rem 1fr;
     align-items: start;
   }
+}
+
+/* Heading block under the breadcrumb: group label, h1, short text.
+   Used on experience.php and create-post.php */
+.page-header {
+  display: grid;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
 }
 
 /* Space under a section heading */

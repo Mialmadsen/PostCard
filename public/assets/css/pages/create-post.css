@@ -1,0 +1,58 @@
+/* ============================================================
+   CREATE POST — new post in an experience (create-post.php)
+   Phone: the "Til" box first, then the form.
+   Desktop: the same, side by side (.sidebar-layout).
+   ============================================================ */
+
+/* --- "Til": like the address side of a postcard.
+       Printed label above, handwritten value on a ruled line. --- */
+
+.post-audience {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.post-audience__value {
+  padding-bottom: var(--space-2xs);
+  border-bottom: 1px solid var(--color-border);   /* the ruled address line (decoration) */
+  font-family: var(--font-hand);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-tight);
+}
+
+/* --- Photo previews: small polaroids, as many per row as fit --- */
+
+.photo-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: var(--space-md);
+}
+
+/* No photos chosen yet: take no space in the form */
+.photo-preview:empty {
+  display: none;
+}
+
+.photo-preview__item {
+  gap: var(--space-xs);
+}
+
+/* "Beskriv billedet for blinde og svagsynede": looks like a link, opens the description field */
+.photo-preview__toggle {
+  padding-block: var(--space-xs);          /* a bigger area to tap */
+  color: var(--color-link);
+  font-size: var(--text-small);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+  list-style: none;                        /* hide the triangle (Firefox) */
+}
+
+.photo-preview__toggle::-webkit-details-marker {
+  display: none;                           /* hide the triangle (Chrome, Safari) */
+}
+
+.photo-preview__remove {
+  align-self: flex-start;
+}

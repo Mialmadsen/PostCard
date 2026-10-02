@@ -71,6 +71,52 @@
   accent-color: var(--color-primary);
 }
 
+/* File picker: "⊕ Tilføj billeder".
+   The real <input type="file"> is .visually-hidden; its <label> is the button you see.
+   Clicking a label opens the file dialog of its input — no JavaScript needed.
+
+   <input class="visually-hidden file-picker__input" id="photos" type="file" …>
+   <label class="file-picker__button" for="photos"><svg class="file-picker__icon">…</svg> Tilføj billeder</label> */
+
+.file-picker__button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  justify-self: start;
+  min-height: 2.75rem;                    /* 44px touch target */
+  color: var(--color-secondary);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+}
+
+.file-picker__icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+}
+
+.file-picker__circle,
+.file-picker__plus {
+  transition:
+    fill var(--transition),
+    stroke var(--transition);
+}
+
+/* Hover: the circle is "inked" — filled deep blue with a light plus */
+.file-picker__button:hover .file-picker__circle {
+  fill: currentColor;
+}
+
+.file-picker__button:hover .file-picker__plus {
+  stroke: var(--color-on-secondary);
+}
+
+/* The hidden input gets the keyboard focus; main.css draws the focus frame on its label */
+
 /* --- Buttons and links under the form --- */
 
 .form__actions {
