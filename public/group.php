@@ -2,6 +2,7 @@
 $pageTitle = 'Familien Nielsen';
 $isLoggedIn = true;
 $pageStyle = 'group';
+$pageScripts = ['confirm'];
 require __DIR__ . '/../views/partials/header.php';
 ?>
 
@@ -39,6 +40,16 @@ require __DIR__ . '/../views/partials/header.php';
                     </div>
                     <!-- /LOOP -->
                     <p><a href="members.php?group=1">Se alle 13 medlemmer</a></p>
+
+                    <!-- A CSRF token is added in Epic 2. Sets group_members.member_status = 'left'.
+                         IF the user is the only admin: no button, instead
+                         <p class="meta">Du er den eneste admin. Gør et andet medlem til admin, før du forlader gruppen.</p> -->
+                    <form class="js-confirm" action="group.php" method="post"
+                        data-confirm="Vil du forlade Familien Nielsen? Det, du har delt, bliver i gruppens album. Du skal have en ny invitation for at komme tilbage.">
+                        <input type="hidden" name="group_id" value="1">
+                        <input type="hidden" name="action" value="leave">
+                        <button class="button button--secondary" type="submit">Forlad gruppen</button>
+                    </form>
                 </section>
 
                 <!-- IF member_role = 'group_admin' -->

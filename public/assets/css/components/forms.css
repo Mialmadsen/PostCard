@@ -53,6 +53,11 @@
   cursor: pointer;
 }
 
+/* Narrow field for a small number, e.g. the post limit */
+.field__input--short {
+  max-width: 8rem;
+}
+
 .field__input[aria-invalid="true"] {
   border: 2px solid var(--color-error);
 }
@@ -84,7 +89,7 @@
   padding: 0;                             /* browsers indent a legend a little */
 }
 
-/* Checkbox with its label to the right */
+/* Checkbox or radio button with its label to the right */
 .field--checkbox {
   grid-template-columns: auto 1fr;
   align-items: start;
@@ -166,12 +171,9 @@
   text-align: left;
 }
 
+/* Errors are the only messages with their own colour; other messages use the plain .alert */
 .alert--error {
   color: var(--color-error);
-}
-
-.alert--success {
-  color: var(--color-success);
 }
 
 /* --- Larger screens --- */

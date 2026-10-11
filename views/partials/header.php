@@ -34,6 +34,7 @@ require_once __DIR__ . '/../../app/Helpers/asset.php';
     <link rel="stylesheet" href="<?= asset('assets/css/components/avatar.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/card.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/comments.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/divided-list.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/envelope.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/forms.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/lightbox.css') ?>">

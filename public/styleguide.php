@@ -119,7 +119,7 @@ require __DIR__ . '/../views/partials/header.php';
         <section class="card flow" aria-labelledby="forms-heading">
             <h2 id="forms-heading">Formularer</h2>
             <p class="alert alert--error" role="alert">Forkert e-mail eller adgangskode.</p>
-            <p class="alert alert--success" role="status">Linket er sendt.</p>
+            <p class="alert" role="status">Linket er sendt.</p>
             <form class="form" action="#" method="post">
                 <div class="field">
                     <label class="field__label" for="demo-name">Normalt felt</label>

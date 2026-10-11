@@ -1,0 +1,92 @@
+/* ============================================================
+   PROFILE — my own profile page (profile.php)
+   Layout: .sidebar-layout in main.css
+   ============================================================ */
+
+/* --- Om mig --- */
+
+.profile-card {
+  text-align: center;
+}
+
+.profile-card .avatar {
+  margin-inline: auto;
+}
+
+.profile-subheading {
+  margin-block: var(--space-lg) var(--space-sm);
+}
+
+/* --- Numbers: label on top, big number under it --- */
+
+.stat-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: var(--space-sm);
+}
+
+.stat-list__item {
+  display: flex;
+  flex-direction: column-reverse;   /* number above the label, the HTML keeps dt before dd */
+  padding: var(--space-sm);
+  background-color: var(--color-surface-alt);
+  border-radius: var(--radius-sm);
+}
+
+.stat-list__item dt {
+  color: var(--color-text-muted);
+  font-size: var(--text-small);
+}
+
+.stat-list__number {
+  font-size: var(--text-h1);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-tight);
+}
+
+/* --- Opslag pr. måned: 12 columns, bar height = posts / max --- */
+
+.month-chart {
+  --chart-height: 9rem;        /* height of the tallest bar */
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  align-items: end;            /* all months stand on the same baseline */
+  gap: var(--space-2xs);
+  margin-top: var(--space-md);
+}
+
+.month-chart__month {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.month-chart__count,
+.month-chart__label {
+  font-size: var(--text-small);
+}
+
+.month-chart__bar {
+  width: 100%;
+  max-width: 2rem;
+  height: calc(var(--posts) / var(--max) * var(--chart-height));
+  background-color: var(--color-secondary);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.month-chart__label {
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border);
+  width: 100%;
+  text-align: center;
+}
+
+/* --- Mine grupper og oplevelser --- */
+
+/* The list itself is a .divided-list (components/divided-list.css) */
+
+.profile-experiences {
+  display: grid;
+  gap: var(--space-2xs);
+}

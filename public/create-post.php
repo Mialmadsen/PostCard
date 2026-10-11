@@ -74,7 +74,7 @@ require __DIR__ . '/../views/partials/header.php';
                         </label>
                         <!-- The empty span is filled by photo-preview.js ("2 af 5 billeder valgt.");
                              role="status" makes screen readers read it when it changes -->
-                        <p class="meta" id="photos-hint">1–5 billeder i JPG, PNG eller WebP, højst 10 MB hver. Det første billede bliver forsidebillede.
+                        <p class="meta" id="photos-hint">1–5 billeder i JPG, PNG eller WebP, højst 10 MB hver. Du vælger selv forsidebilledet.
                             <span class="js-photo-status" role="status"></span></p>
                     </div>
 
@@ -113,17 +113,21 @@ require __DIR__ . '/../views/partials/header.php';
 <template class="js-photo-template">
     <li class="polaroid photo-preview__item">
         <img class="polaroid__photo" src="" alt="">
-        <p class="group-label js-photo-cover">Forsidebillede</p>
+        <!-- The chosen photo gets sort_order 1 (the cover photo). photo-preview.js sets id, value and checked. -->
+        <div class="field field--checkbox">
+            <input class="field__checkbox js-photo-cover" name="cover" type="radio">
+            <label class="js-photo-cover-label">Forsidebillede</label>
+        </div>
         <!-- Optional alt text (post_images.alt_text). <details> opens and closes without JavaScript.
              If it is left empty, PHP writes a fallback in Epic 2, e.g. "Billede 1 af 3 fra Prækestolen, Norge". -->
         <details class="photo-preview__details">
             <summary class="photo-preview__toggle">Beskriv billedet for blinde og svagsynede (valgfrit)</summary>
             <div class="field">
-                <label class="field__label">Beskrivelse</label>
-                <input class="field__input" name="alt_text[]" type="text" maxlength="255">
+                <label class="field__label js-photo-alt-label">Beskrivelse</label>
+                <input class="field__input js-photo-alt" name="alt_text[]" type="text" maxlength="255">
             </div>
         </details>
-        <button class="button button--secondary photo-preview__remove" type="button">
+        <button class="button button--secondary photo-preview__remove js-photo-remove" type="button">
             Fjern <span class="visually-hidden">billede</span>
         </button>
     </li>

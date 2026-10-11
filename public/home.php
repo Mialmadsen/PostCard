@@ -18,7 +18,9 @@ require __DIR__ . '/../views/partials/header.php';
                 <section class="card flow" aria-labelledby="upload-heading">
                     <h2 id="upload-heading">Mine oplevelser</h2>
 
-                    <!-- LOOP: my experiences (experiences.user_id = me, approved or pending) -->
+                    <!-- LOOP: my experiences (experiences.user_id = me, approved, pending or rejected).
+                         IF experience_status = 'rejected': no link and no button, instead
+                         <p class="meta">Afvist af gruppens admin</p> -->
                     <ul class="experience-list">
                         <li class="experience-list__item flow">
                             <p class="group-label">Familien Nielsen</p>

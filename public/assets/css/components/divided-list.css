@@ -1,0 +1,22 @@
+/* ============================================================
+   DIVIDED LIST — a list with a thin line between the items
+   Used for members, invitations and the groups on the profile.
+
+   <ul class="divided-list">
+       <li>…</li>
+   </ul>
+   ============================================================ */
+
+.divided-list > li {
+  padding-block: var(--space-sm);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.divided-list > li:first-child {
+  padding-top: 0;
+}
+
+.divided-list > li:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}

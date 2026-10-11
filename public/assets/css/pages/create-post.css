@@ -1,5 +1,6 @@
 /* ============================================================
    CREATE POST — new post in an experience (create-post.php)
+   Also used by edit-post.php, which has the same layout.
    Phone: the "Til" box first, then the form.
    Desktop: the same, side by side (.sidebar-layout).
    ============================================================ */

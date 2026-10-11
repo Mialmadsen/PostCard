@@ -14,8 +14,13 @@ require __DIR__ . '/../views/partials/header.php';
 
                 <!-- IF login failed: <p class="alert alert--error" role="alert">Forkert e-mail eller adgangskode.</p> -->
 
+                <!-- IF the page was opened from an invitation (login.php?invite=…) and the link is valid:
+                <p class="alert">Når du er logget ind, bliver du medlem af <strong>Familien Nielsen</strong>.</p>
+                -->
+
                 <!-- A CSRF token is added in Epic 2 -->
                 <form class="form" action="login.php" method="post">
+                    <!-- IF invitation: <input type="hidden" name="invite" value="TOKEN"> so the token survives the form -->
                     <div class="field">
                         <label class="field__label" for="email">E-mail</label>
                         <input class="field__input" id="email" name="email" type="email"

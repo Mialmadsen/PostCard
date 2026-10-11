@@ -17,7 +17,7 @@
 
 /* Status colours: the word carries the meaning, the colour only supports it */
 .experience-card__postmark--active {
-  color: var(--color-success);
+  color: var(--color-secondary);
 }
 
 .experience-card__postmark--ended {

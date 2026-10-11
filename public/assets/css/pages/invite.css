@@ -1,0 +1,15 @@
+/* ============================================================
+   INVITE — make an invitation link (invite.php)
+   ============================================================ */
+
+/* The new link and the "Kopiér link" button. The button wraps under the link on phones. */
+.copy-link {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.copy-link__input {
+  flex: 1 1 16rem;
+  font-size: var(--text-small);
+}

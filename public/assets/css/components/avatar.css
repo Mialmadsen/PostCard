@@ -15,3 +15,15 @@
   font-size: var(--text-small);
   font-weight: var(--weight-semibold);
 }
+
+/* A profile picture instead of initials: <img class="avatar" …> fills the circle without stretching */
+img.avatar {
+  object-fit: cover;
+}
+
+/* Big version on the profile page */
+.avatar--large {
+  width: 6rem;
+  height: 6rem;
+  font-size: var(--text-h2);
+}

@@ -50,7 +50,6 @@
   --color-stripe: var(--color-deep-blue);         /* airmail stripes on header and footer */
   --color-postmark: var(--color-apricot);         /* postmark rings and waves — decoration only */
   --color-error: #9b2f2f;                         /* 6.5:1 on cream */
-  --color-success: #2f6b45;                       /* 5.6:1 on cream */
 
   /* --- Fonts --- */
   --font-body: "Jost", "Helvetica Neue", Arial, sans-serif;
@@ -369,6 +368,14 @@ small {
   display: grid;
   gap: var(--space-sm);
   margin-top: var(--space-md);
+}
+
+/* A column of cards under the .page-header, with room between them.
+   Used on settings.php, requests.php and invite.php */
+.card-stack {
+  display: grid;
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
 }
 
 /* Space under a section heading */

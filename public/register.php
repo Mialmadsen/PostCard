@@ -13,8 +13,13 @@ require __DIR__ . '/../views/partials/header.php';
                 <h1>Opret bruger</h1>
                 <p>Du skal bruge en bruger for at blive medlem af en gruppe.</p>
 
+                <!-- IF the page was opened from an invitation (register.php?invite=…) and the link is valid:
+                <p class="alert">Når du har oprettet din bruger, bliver du medlem af <strong>Familien Nielsen</strong>.</p>
+                -->
+
                 <!-- A CSRF token is added in Epic 2 -->
                 <form class="form" action="register.php" method="post">
+                    <!-- IF invitation: <input type="hidden" name="invite" value="TOKEN"> so the token survives the form -->
                     <div class="field-row">
                         <div class="field">
                             <label class="field__label" for="first-name">Fornavn</label>
@@ -33,7 +38,7 @@ require __DIR__ . '/../views/partials/header.php';
                         <input class="field__input" id="username" name="username" type="text"
                             autocomplete="username" maxlength="50" required
                             aria-describedby="username-hint">
-                        <p class="meta" id="username-hint">Det navn, andre i dine grupper ser.</p>
+                        <p class="meta" id="username-hint">Vises på din profil.</p>
                     </div>
 
                     <div class="field">

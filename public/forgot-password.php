@@ -14,7 +14,7 @@ require __DIR__ . '/../views/partials/header.php';
                 <p>Skriv din e-mail, så sender vi dig et link til at vælge en ny adgangskode.</p>
 
                 <!-- AFTER submit, always the same message (never reveal if the e-mail exists):
-                <p class="alert alert--success" role="status">Hvis e-mailen findes hos os, har vi sendt et link. Linket virker i 1 time.</p> -->
+                <p class="alert" role="status">Hvis e-mailen findes hos os, har vi sendt et link. Linket virker i 1 time.</p> -->
 
                 <!-- A CSRF token is added in Epic 2 -->
                 <form class="form" action="forgot-password.php" method="post">
