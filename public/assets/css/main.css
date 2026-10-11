@@ -355,6 +355,12 @@ small {
   margin-top: var(--space-lg);
 }
 
+/* Grid items normally refuse to be narrower than their content. Without this, a wide
+   table would stretch the column and the whole page would scroll sideways on a phone. */
+.sidebar-layout > * {
+  min-width: 0;
+}
+
 @media (min-width: 56rem) {
   .sidebar-layout {
     grid-template-columns: 18rem 1fr;

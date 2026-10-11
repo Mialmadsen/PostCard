@@ -1,0 +1,36 @@
+/* ============================================================
+   STAT LIST — numbers in small boxes: big number, label under it
+   Used on the profile (profile.php) and the operator overview (admin.php).
+
+   <dl class="stat-list">
+       <div class="stat-list__item">
+           <dt>Opslag</dt>
+           <dd class="stat-list__number">38</dd>
+       </div>
+   </dl>
+   ============================================================ */
+
+.stat-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));   /* two boxes per row on a 360px phone */
+  gap: var(--space-sm);
+}
+
+.stat-list__item {
+  display: flex;
+  flex-direction: column-reverse;   /* number above the label, the HTML keeps dt before dd */
+  padding: var(--space-sm);
+  background-color: var(--color-surface-alt);
+  border-radius: var(--radius-sm);
+}
+
+.stat-list__item dt {
+  color: var(--color-text-muted);
+  font-size: var(--text-small);
+}
+
+.stat-list__number {
+  font-size: var(--text-h1);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-tight);
+}

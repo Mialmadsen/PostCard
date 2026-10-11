@@ -1,7 +1,7 @@
 <?php
 $pageTitle = 'Indstillinger';
 $isLoggedIn = true;
-$pageScripts = ['avatar-preview'];
+$pageScripts = ['avatar-preview', 'confirm'];
 require __DIR__ . '/../views/partials/header.php';
 ?>
 
@@ -149,6 +149,30 @@ require __DIR__ . '/../views/partials/header.php';
 
                     <div class="button-row">
                         <button class="button button--primary" type="submit">Skift adgangskode</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="card" aria-labelledby="delete-heading">
+                <h2 class="section-title" id="delete-heading">Slet bruger</h2>
+
+                <!-- The rules page promises this ("Du kan altid slette din bruger").
+                     A CSRF token is added in Epic 2. Sets users.user_status = 'deleted', deletes the user's posts
+                     and logs out. The password proves it is really you; confirm.js asks once more. -->
+                <form class="form js-confirm" action="settings.php" method="post"
+                    data-confirm="Vil du slette din bruger? Dine oplysninger og dine opslag bliver slettet. Det kan ikke fortrydes.">
+                    <input type="hidden" name="form" value="delete">
+
+                    <p>Dine oplysninger og dine opslag bliver slettet, og du kan ikke logge ind igen.</p>
+
+                    <div class="field">
+                        <label class="field__label" for="delete-password">Din adgangskode</label>
+                        <input class="field__input" id="delete-password" name="password" type="password"
+                            autocomplete="current-password" required>
+                    </div>
+
+                    <div class="button-row">
+                        <button class="button button--secondary" type="submit">Slet min bruger</button>
                     </div>
                 </form>
             </section>

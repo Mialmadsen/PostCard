@@ -1,0 +1,84 @@
+/* ============================================================
+   ADMIN — the operator pages (admin-*.php)
+   Plain styling: only the operator sees these pages.
+   Layout: .sidebar-layout in main.css (menu left, content right)
+   ============================================================ */
+
+/* --- Admin menu (views/partials/admin-nav.php) --- */
+
+.admin-nav {
+  padding: var(--space-sm);
+}
+
+/* Phone: the links wrap in rows. Desktop: one column in the sidebar. */
+.admin-nav__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+}
+
+.admin-nav__link {
+  display: block;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+}
+
+.admin-nav__link:hover,
+.admin-nav__link[aria-current="page"] {
+  background-color: var(--color-surface-alt);
+}
+
+/* The current page is also marked by a line, not only by colour */
+.admin-nav__link[aria-current="page"] {
+  box-shadow: inset 4px 0 0 var(--color-secondary);
+}
+
+@media (min-width: 56rem) {
+  .admin-nav__list {
+    flex-direction: column;
+  }
+}
+
+/* --- Search and filter above a table --- */
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-sm);
+}
+
+.filter-bar .field {
+  flex: 1 1 12rem;
+}
+
+/* --- Tables: users and posts ---
+   The wrapper scrolls sideways on small screens instead of squeezing the columns.
+   tabindex="0" on the wrapper lets keyboard users scroll it. */
+
+.table-wrap {
+  position: relative;        /* keeps the .visually-hidden texts in the buttons inside the scroll box */
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-small);
+}
+
+.data-table th,
+.data-table td {
+  padding: var(--space-xs) var(--space-sm);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap;       /* one line per cell; the wrapper scrolls instead */
+}
+
+.data-table th {
+  font-weight: var(--weight-semibold);
+}

@@ -4,7 +4,7 @@
    ============================================================ */
 
 /* One row: avatar, then name and role.
-   Phone: the admin's buttons go under the name. Wider screens: on the right. */
+   Phone: the admin's buttons go on their own line under the row. Wider screens: on the right. */
 .member {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -17,7 +17,7 @@
 }
 
 .member__actions {
-  grid-column: 2;
+  grid-column: 1 / -1;     /* the full width, so both buttons fit on one line */
 }
 
 @media (min-width: 48rem) {

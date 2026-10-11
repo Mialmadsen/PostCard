@@ -29,6 +29,8 @@
 }
 
 .site-footer__link {
+  display: inline-block;
+  padding-block: var(--space-2xs);        /* a 31px tall target (WCAG 2.5.8 asks for 24px) */
   color: var(--color-text);
 }
 

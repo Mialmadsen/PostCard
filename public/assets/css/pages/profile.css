@@ -17,49 +17,22 @@
   margin-block: var(--space-lg) var(--space-sm);
 }
 
-/* --- Numbers: label on top, big number under it --- */
-
-.stat-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
-  gap: var(--space-sm);
-}
-
-.stat-list__item {
-  display: flex;
-  flex-direction: column-reverse;   /* number above the label, the HTML keeps dt before dd */
-  padding: var(--space-sm);
-  background-color: var(--color-surface-alt);
-  border-radius: var(--radius-sm);
-}
-
-.stat-list__item dt {
-  color: var(--color-text-muted);
-  font-size: var(--text-small);
-}
-
-.stat-list__number {
-  font-size: var(--text-h1);
-  font-weight: var(--weight-medium);
-  line-height: var(--leading-tight);
-}
-
-/* --- Opslag pr. måned: 12 columns, bar height = posts / max --- */
+/* --- Opslag pr. måned ---
+   Phone: one row per month, the bar grows to the right (12 columns would be too narrow to read).
+   From 36rem: 12 columns, the bar grows up. Bar length = posts / max, so the busiest month is the longest. */
 
 .month-chart {
-  --chart-height: 9rem;        /* height of the tallest bar */
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  align-items: end;            /* all months stand on the same baseline */
   gap: var(--space-2xs);
   margin-top: var(--space-md);
 }
 
 .month-chart__month {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 2.5rem 1fr 1.5rem;
+  grid-template-areas: "label bar count";
   align-items: center;
-  min-width: 0;
+  gap: var(--space-xs);
 }
 
 .month-chart__count,
@@ -67,19 +40,50 @@
   font-size: var(--text-small);
 }
 
-.month-chart__bar {
-  width: 100%;
-  max-width: 2rem;
-  height: calc(var(--posts) / var(--max) * var(--chart-height));
-  background-color: var(--color-secondary);
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+.month-chart__count {
+  grid-area: count;
 }
 
 .month-chart__label {
+  grid-area: label;
   color: var(--color-text-muted);
-  border-top: 1px solid var(--color-border);
-  width: 100%;
-  text-align: center;
+}
+
+.month-chart__bar {
+  grid-area: bar;
+  width: calc(var(--posts) / var(--max) * 100%);
+  height: 0.75rem;
+  background-color: var(--color-secondary);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+@media (min-width: 36rem) {
+  .month-chart {
+    --chart-height: 9rem;        /* height of the tallest bar */
+    grid-template-columns: repeat(12, 1fr);
+    align-items: end;            /* all months stand on the same baseline */
+  }
+
+  .month-chart__month {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    min-width: 0;
+  }
+
+  .month-chart__bar {
+    width: 100%;
+    max-width: 2rem;
+    height: calc(var(--posts) / var(--max) * var(--chart-height));
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  }
+
+  .month-chart__label {
+    width: 100%;
+    border-top: 1px solid var(--color-border);
+    text-align: center;
+  }
 }
 
 /* --- Mine grupper og oplevelser --- */

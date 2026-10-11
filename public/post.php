@@ -92,9 +92,13 @@ require __DIR__ . '/../views/partials/header.php';
                         <li class="post-stats__item">Set af 6</li>
                     </ul>
 
-                    <!-- IF the logged-in user owns this post (experiences.user_id = me). The server checks this again. -->
+                    <!-- IF the logged-in user owns this post (experiences.user_id = me) OR is admin in this group.
+                         The owner sees both buttons; a group admin only "Slet opslag" (the rules say admins can
+                         remove posts that break them). The server checks this again. -->
                     <div class="button-row">
+                        <!-- IF owner -->
                         <a class="button button--secondary" href="edit-post.php?id=6">Rediger opslag</a>
+                        <!-- /IF -->
                         <!-- A CSRF token is added in Epic 2 -->
                         <form class="js-confirm" action="delete-post.php" method="post"
                             data-confirm="Vil du slette opslaget? Det kan ikke fortrydes.">

@@ -5,11 +5,13 @@
  * The page sets these variables BEFORE it requires this file:
  *   $pageTitle  – text for the browser tab (required)
  *   $isLoggedIn – true shows the member navigation, false the public one
+ *   $isOperator – optional: true on the operator pages (admin-*.php), shows only "Log ud"
  *   $pageStyle  – optional: name of a stylesheet in assets/css/pages/ (without .css)
  *   $pageScripts – optional: list of scripts in assets/js/ (without .js), e.g. ['lightbox']
  */
 $pageTitle = $pageTitle ?? 'Del din oplevelse';
 $isLoggedIn = $isLoggedIn ?? false;
+$isOperator = $isOperator ?? false;
 $pageStyle = $pageStyle ?? null;
 $pageScripts = $pageScripts ?? [];
 
@@ -42,6 +44,7 @@ require_once __DIR__ . '/../../app/Helpers/asset.php';
     <link rel="stylesheet" href="<?= asset('assets/css/components/polaroid.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/post-card.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/experience-card.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/stat-list.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/site-header.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/site-footer.css') ?>">
 
@@ -95,7 +98,19 @@ require_once __DIR__ . '/../../app/Helpers/asset.php';
             </a>
 
             <nav aria-label="Hovedmenu">
-                <?php if ($isLoggedIn): ?>
+                <?php if ($isOperator): ?>
+
+                    <!-- NAV: operator. The sections are in the admin menu on each page (views/partials/admin-nav.php) -->
+                    <ul class="site-nav__list">
+                        <li>
+                            <!-- A CSRF token is added in Epic 2 -->
+                            <form action="logout.php" method="post">
+                                <button class="button button--secondary" type="submit">Log ud</button>
+                            </form>
+                        </li>
+                    </ul>
+
+                <?php elseif ($isLoggedIn): ?>
 
                     <!-- NAV: logged in -->
                     <ul class="site-nav__list">
