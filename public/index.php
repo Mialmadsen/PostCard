@@ -1,85 +1,54 @@
 <?php
-$pageTitle = 'Velkommen';
-$isLoggedIn = false;
-$pageStyle = 'landing';
-require __DIR__ . '/../views/partials/header.php';
-?>
 
-<main id="main" class="site-main">
-    <div class="container">
+/**
+ * Front controller: every request comes through this file
+ * (public/.htaccess sends all addresses that are not real files here).
+ */
 
-        <!-- Hero -->
-        <div class="envelope">
-            <div class="envelope__back" aria-hidden="true"></div>
-            <div class="envelope__letter flow">
-                <p class="eyebrow">Hilsen fra PostCard</p>
-                <h1>Del din oplevelse – ikke hele dit liv</h1>
-                <p>Et privat sted at dele rejseminder med de mennesker, der betyder noget.</p>
-                <p><a class="button button--primary" href="register.php">Opret bruger</a></p>
-            </div>
-            <div class="envelope__front" aria-hidden="true"></div>
-            <div class="envelope__lid" aria-hidden="true"></div>
-        </div>
+declare(strict_types=1);
 
-        <!-- CONTENT: site description — managed by the operator in /admin/content (Epic 2) -->
-        <section class="landing-section card" aria-labelledby="why-heading">
-            <h2 class="landing-section__title" id="why-heading">Hvorfor <span class="brand">PostCard</span>?</h2>
+use PostCard\Core\Router;
 
-            <!-- LOOP: features -->
-            <ul class="feature-list">
-                <li class="feature flow">
-                    <img class="feature__illustration" src="assets/images/illustrations/private.svg" alt="" width="145" height="156" loading="lazy">
-                    <h3>Privat</h3>
-                    <p>Kun de medlemmer, du inviterer, kan se det, du deler.</p>
-                </li>
-                <li class="feature flow">
-                    <img class="feature__illustration" src="assets/images/illustrations/share.svg" alt="" width="223" height="144" loading="lazy">
-                    <h3>Del med dem, du kender</h3>
-                    <p>Familie, venner og klassekammerater – ikke fremmede.</p>
-                </li>
-                <li class="feature flow">
-                    <img class="feature__illustration" src="assets/images/illustrations/focus.svg" alt="" width="162" height="161" loading="lazy">
-                    <h3>Fokus på oplevelser</h3>
-                    <p>Del et begrænset antal billeder fra hver rejse. Intet endeløst feed.</p>
-                </li>
-                <li class="feature flow">
-                    <img class="feature__illustration" src="assets/images/illustrations/album.svg" alt="" width="174" height="165" loading="lazy">
-                    <h3>Et digitalt album</h3>
-                    <p>Jeres minder bliver gemt, så I kan se tilbage på dem senere.</p>
-                </li>
-            </ul>
-            <!-- /LOOP -->
-        </section>
+require __DIR__ . '/../app/autoload.php';
+require __DIR__ . '/../app/Helpers/escape.php';
+require __DIR__ . '/../app/Helpers/url.php';
 
-        <section class="landing-section card" aria-labelledby="how-heading">
-            <h2 class="landing-section__title" id="how-heading">Sådan virker det</h2>
+// The address the browser asked for, without the "?id=3" part.
+// e.g. "/PostCard/public/group"
+$requestPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-            <ol class="step-list">
-                <li class="step">
-                    <span class="step__number postmark" aria-hidden="true">1</span>
-                    <div class="flow">
-                        <h3>Opret en gruppe</h3>
-                        <p>Fx familien, holdet eller klassen. Du bliver gruppens admin.</p>
-                    </div>
-                </li>
-                <li class="step">
-                    <span class="step__number postmark" aria-hidden="true">2</span>
-                    <div class="flow">
-                        <h3>Inviter dem, du vil dele med</h3>
-                        <p>Medlemmer kommer kun med via dit invitationslink.</p>
-                    </div>
-                </li>
-                <li class="step">
-                    <span class="step__number postmark" aria-hidden="true">3</span>
-                    <div class="flow">
-                        <h3>Del jeres oplevelser</h3>
-                        <p>Saml billeder fra en rejse i en oplevelse, som hele gruppen kan følge.</p>
-                    </div>
-                </li>
-            </ol>
-        </section>
+$requestMethod = $_SERVER['REQUEST_METHOD'];
 
-    </div>
-</main>
+// The folder this file lives in, without a slash at the end.
+// Locally "/PostCard/public", on a host often "" (the top of the site).
+$basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
 
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>
+// Remember the folder for the whole app, so url() can build links: BASE_PATH = '/PostCard/public'
+define('BASE_PATH', $basePath);
+
+// Cut the folder off the front, so only the page is left: "/group".
+// If nothing is left, it is the front page: "/".
+$path = substr($requestPath, strlen($basePath));
+if ($path === '') {
+    $path = '/';
+}
+
+// A list of every address the site knows, and which page it shows
+$router = new Router();
+$router->add('GET', '/', 'landing');
+$router->add('GET', '/login', 'login');
+$router->add('GET', '/group', 'group');
+
+// Find the page for this address, or null if the address is unknown.
+$page = $router->find($requestMethod, $path);
+
+// Unknown address: we tell the browser (404) and the visitor, then stop.
+if ($page === null) {
+    http_response_code(404);
+    echo 'Siden findes ikke';
+    exit;
+}
+
+// Now we show the required page
+$viewFile = __DIR__ . '/../views/pages/' . $page . '.php';
+require $viewFile;

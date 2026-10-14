@@ -1,7 +1,7 @@
 <?php
 $pageTitle = 'Log ind';
 $isLoggedIn = false;
-require __DIR__ . '/../views/partials/header.php';
+require __DIR__ . '/../partials/header.php';
 ?>
 
 <main id="main" class="site-main">
@@ -23,8 +23,7 @@ require __DIR__ . '/../views/partials/header.php';
                     <!-- IF invitation: <input type="hidden" name="invite" value="TOKEN"> so the token survives the form -->
                     <div class="field">
                         <label class="field__label" for="email">E-mail</label>
-                        <input class="field__input" id="email" name="email" type="email"
-                            autocomplete="email" required>
+                        <input class="field__input" id="email" name="email" type="email" autocomplete="email" required>
                     </div>
 
                     <div class="field">
@@ -45,4 +44,4 @@ require __DIR__ . '/../views/partials/header.php';
     </div>
 </main>
 
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>
+<?php require __DIR__ . '/../partials/footer.php'; ?>

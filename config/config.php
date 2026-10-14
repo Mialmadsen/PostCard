@@ -1,4 +1,5 @@
 <?php
+// This file turns text in .env into php so that we can connect to the database
 $lines = file(
     __DIR__ . '/../.env',
     FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
