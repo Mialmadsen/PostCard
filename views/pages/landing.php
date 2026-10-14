@@ -1,10 +1,3 @@
-<?php
-$pageTitle = 'Velkommen';
-$isLoggedIn = false;
-$pageStyle = 'landing';
-require __DIR__ . '/../partials/header.php';
-?>
-
 <main id="main" class="site-main">
     <div class="container">
 
@@ -85,5 +78,3 @@ require __DIR__ . '/../partials/header.php';
 
     </div>
 </main>
-
-<?php require __DIR__ . '/../partials/footer.php'; ?>

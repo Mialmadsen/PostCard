@@ -8,6 +8,7 @@
 declare(strict_types=1);
 
 use PostCard\Core\Router;
+use PostCard\Controllers\PageController;
 
 require __DIR__ . '/../app/autoload.php';
 require __DIR__ . '/../app/Helpers/escape.php';
@@ -33,22 +34,23 @@ if ($path === '') {
     $path = '/';
 }
 
-// A list of every address the site knows, and which page it shows
+// Every address the site knows, and who handles it.
 $router = new Router();
-$router->add('GET', '/', 'landing');
-$router->add('GET', '/login', 'login');
-$router->add('GET', '/group', 'group');
+$router->add('GET', '/', [PageController::class, 'landing']);
 
-// Find the page for this address, or null if the address is unknown.
-$page = $router->find($requestMethod, $path);
+// Find who handles this address, e.g. [PageController::class, 'landing'], or null if unknown.
+$handler = $router->find($requestMethod, $path);
 
 // Unknown address: we tell the browser (404) and the visitor, then stop.
-if ($page === null) {
+if ($handler === null) {
     http_response_code(404);
     echo 'Siden findes ikke';
     exit;
 }
 
-// Now we show the required page
-$viewFile = __DIR__ . '/../views/pages/' . $page . '.php';
-require $viewFile;
+// Read the two words off the note: 'PostCard\Controllers\PageController' and 'landing'.
+[$controllerClass, $methodName] = $handler;
+
+// Call that controller and method: the same as (new PageController())->landing().
+$controller = new $controllerClass();
+$controller->$methodName();
