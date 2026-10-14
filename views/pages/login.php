@@ -1,9 +1,3 @@
-<?php
-$pageTitle = 'Log ind';
-$isLoggedIn = false;
-require __DIR__ . '/../partials/header.php';
-?>
-
 <main id="main" class="site-main">
     <div class="container">
         <div class="envelope envelope--still">
@@ -43,5 +37,3 @@ require __DIR__ . '/../partials/header.php';
         </div>
     </div>
 </main>
-
-<?php require __DIR__ . '/../partials/footer.php'; ?>

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 use PostCard\Core\Router;
 use PostCard\Controllers\PageController;
+use PostCard\Controllers\AuthController;
 
 require __DIR__ . '/../app/autoload.php';
 require __DIR__ . '/../app/Helpers/escape.php';
@@ -37,6 +38,7 @@ if ($path === '') {
 // Every address the site knows, and who handles it.
 $router = new Router();
 $router->add('GET', '/', [PageController::class, 'landing']);
+$router->add('GET', '/login', [AuthController::class, 'showLogin']);
 
 // Find who handles this address, e.g. [PageController::class, 'landing'], or null if unknown.
 $handler = $router->find($requestMethod, $path);

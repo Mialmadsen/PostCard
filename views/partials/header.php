@@ -71,7 +71,7 @@ require_once __DIR__ . '/../../app/Helpers/asset.php';
     <header class="site-header">
         <div class="site-header__inner container">
 
-            <a class="logo" href="index.php" aria-label="PostCard">
+            <a class="logo" href="<?= url('/') ?>" aria-label="PostCard">
                 <svg class="logo__stamp" viewBox="0 0 36 44" aria-hidden="true" focusable="false">
                     <defs>
                         <!-- Perforation: a grid of holes, used only along the four edges -->
@@ -142,7 +142,7 @@ require_once __DIR__ . '/../../app/Helpers/asset.php';
 
                     <!-- NAV: logged out. "Opret bruger" is the main action on the page itself, not here -->
                     <ul class="site-nav__list">
-                        <li><a class="site-nav__link" href="login.php">Log ind</a></li>
+                        <li><a class="site-nav__link" href="<?= url('/login') ?>">Log ind</a></li>
                     </ul>
 
                 <?php endif; ?>
