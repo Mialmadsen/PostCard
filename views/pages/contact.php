@@ -1,13 +1,7 @@
-<?php
-$pageTitle = 'Kontakt';
-$isLoggedIn = false;
-require __DIR__ . '/../views/partials/header.php';
-?>
-
 <main id="main" class="site-main">
     <div class="container container--text">
         <article class="card flow">
-            <img class="card__illustration" src="assets/images/illustrations/travel.svg" alt="" width="191" height="166">
+            <img class="card__illustration" src="<?= asset('assets/images/illustrations/travel.svg') ?>" alt="" width="191" height="166">
             <p class="eyebrow">PostCard</p>
             <h1>Kontakt</h1>
 
@@ -21,5 +15,3 @@ require __DIR__ . '/../views/partials/header.php';
         </article>
     </div>
 </main>
-
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>

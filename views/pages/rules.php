@@ -1,9 +1,3 @@
-<?php
-$pageTitle = 'Regler';
-$isLoggedIn = false;
-require __DIR__ . '/../views/partials/header.php';
-?>
-
 <main id="main" class="site-main">
     <div class="container container--text">
         <article class="card flow">
@@ -27,5 +21,3 @@ require __DIR__ . '/../views/partials/header.php';
         </article>
     </div>
 </main>
-
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>

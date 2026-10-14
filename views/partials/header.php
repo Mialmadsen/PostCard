@@ -16,6 +16,11 @@ $pageStyle = $pageStyle ?? null;
 $pageScripts = $pageScripts ?? [];
 
 require_once __DIR__ . '/../../app/Helpers/asset.php';
+
+// TEMPORARY: old pages in public/ open this header directly, without index.php,
+// so they need e() and url() loaded here. Remove when every page has moved to views/pages/.
+require_once __DIR__ . '/../../app/Helpers/escape.php';
+require_once __DIR__ . '/../../app/Helpers/url.php';
 ?>
 <!DOCTYPE html>
 <html lang="da">

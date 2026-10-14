@@ -17,4 +17,20 @@ class PageController
             'pageStyle' => 'landing',
         ]);
     }
+
+    public function rules(): void
+    {
+        View::render('rules', [
+            'pageTitle' => 'Regler',
+            'isLoggedIn' => false,
+        ]);
+    }
+
+    public function contact(): void
+    {
+        View::render('contact', [
+            'pageTitle' => 'Kontakt',
+            'isLoggedIn' => false,
+        ]);
+    }
 }

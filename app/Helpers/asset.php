@@ -13,5 +13,5 @@ function asset(string $path): string
     $file = __DIR__ . '/../../public/' . $path;
     $version = is_file($file) ? filemtime($file) : 0;
 
-    return htmlspecialchars($path . '?v=' . $version);
+    return url('/' . $path . '?v=' . $version);
 }
