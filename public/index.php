@@ -15,6 +15,9 @@ require __DIR__ . '/../app/autoload.php';
 require_once __DIR__ . '/../app/Helpers/escape.php';
 require_once __DIR__ . '/../app/Helpers/url.php';
 
+// Start the session, so $_SESSION remember who is logged in between pages
+session_start();
+
 // The address the browser asked for, without the "?id=3" part.
 // e.g. "/PostCard/public/group"
 $requestPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -39,6 +42,7 @@ if ($path === '') {
 $router = new Router();
 $router->add('GET', '/', [PageController::class, 'landing']);
 $router->add('GET', '/login', [AuthController::class, 'showLogin']);
+$router->add('POST', '/login', [AuthController::class, 'login']);
 $router->add('GET', '/contact', [PageController::class, 'contact']);
 $router->add('GET', '/rules', [PageController::class, 'rules']);
 
