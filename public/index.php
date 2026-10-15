@@ -10,10 +10,12 @@ declare(strict_types=1);
 use PostCard\Core\Router;
 use PostCard\Controllers\PageController;
 use PostCard\Controllers\AuthController;
+use PostCard\Controllers\ExperienceController;
 
 require __DIR__ . '/../app/autoload.php';
 require_once __DIR__ . '/../app/Helpers/escape.php';
 require_once __DIR__ . '/../app/Helpers/url.php';
+require_once __DIR__ . '/../app/Helpers/asset.php';
 
 // Start the session, so $_SESSION remember who is logged in between pages
 session_start();
@@ -45,6 +47,7 @@ $router->add('GET', '/login', [AuthController::class, 'showLogin']);
 $router->add('POST', '/login', [AuthController::class, 'login']);
 $router->add('GET', '/contact', [PageController::class, 'contact']);
 $router->add('GET', '/rules', [PageController::class, 'rules']);
+$router->add('GET', '/experience', [ExperienceController::class, 'show']);
 
 // Find who handles this address, e.g. [PageController::class, 'landing'], or null if unknown.
 $handler = $router->find($requestMethod, $path);
