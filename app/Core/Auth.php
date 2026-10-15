@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PostCard\Core;
 
+use PostCard\Repositories\GroupMemberRepository;
+
 // The door guard: who is logged in, and may they be here?
 class Auth
 {
@@ -17,6 +19,19 @@ class Auth
     {
         if (self::userId() === null) {
             header('Location: ' . BASE_PATH . '/login');
+            exit;
+        }
+    }
+
+    // Checks if you have access to the group
+    public static function requireMember(int $groupId): void
+    {
+        self::requireLogin();
+        $members = new GroupMemberRepository();
+        $role = $members->findActiveRole(self::userId(), $groupId);
+        if ($role === null) {
+            http_response_code(403);
+            echo 'Du har ikke adgang til denne gruppe.';
             exit;
         }
     }
