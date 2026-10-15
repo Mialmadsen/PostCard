@@ -24,7 +24,7 @@ require __DIR__ . '/../views/partials/header.php';
                     <ul class="experience-list">
                         <li class="experience-list__item flow">
                             <p class="group-label">Familien Nielsen</p>
-                            <h3 class="experience-list__name"><a href="experience.php?id=1">Sommer i Norge</a></h3>
+                            <h3 class="experience-list__name"><a href="experience?id=1">Sommer i Norge</a></h3>
                             <p class="meta">6 af 20 opslag brugt · slutter 15. okt.</p>
                             <p><a class="button button--primary" href="create-post.php?experience=1">Nyt opslag</a></p>
                         </li>
