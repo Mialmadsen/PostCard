@@ -45,6 +45,7 @@ $router = new Router();
 $router->add('GET', '/', [PageController::class, 'landing']);
 $router->add('GET', '/login', [AuthController::class, 'showLogin']);
 $router->add('POST', '/login', [AuthController::class, 'login']);
+$router->add('POST', '/logout', [AuthController::class, 'logout']);
 $router->add('GET', '/contact', [PageController::class, 'contact']);
 $router->add('GET', '/rules', [PageController::class, 'rules']);
 $router->add('GET', '/experience', [ExperienceController::class, 'show']);

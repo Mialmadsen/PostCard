@@ -109,7 +109,7 @@ require_once __DIR__ . '/../../app/Helpers/url.php';
                     <ul class="site-nav__list">
                         <li>
                             <!-- A CSRF token is added in Epic 2 -->
-                            <form action="logout.php" method="post">
+                            <form action="<?= url('/logout') ?>" method="post">
                                 <button class="button button--secondary" type="submit">Log ud</button>
                             </form>
                         </li>
@@ -135,7 +135,7 @@ require_once __DIR__ . '/../../app/Helpers/url.php';
                                 <li><a class="user-menu__item" href="settings.php">Indstillinger</a></li>
                                 <li>
                                     <!-- Log out is a POST form (a CSRF token is added in Epic 2) -->
-                                    <form action="logout.php" method="post">
+                                    <form action="<?= url('/logout') ?>" method="post">
                                         <button class="user-menu__item" type="submit">Log ud</button>
                                     </form>
                                 </li>

@@ -16,6 +16,7 @@ namespace PostCard\Controllers;
 use PostCard\Repositories\ExperienceRepository;
 use PostCard\Repositories\PostRepository;
 use PostCard\Core\View;
+use PostCard\Core\Auth;
 
 // Controlleren samler og behandler data til experience-siden
 class ExperienceController
@@ -34,45 +35,44 @@ class ExperienceController
     }
 
 
-// Viser en bestemt experience gennem routeren
-public function show(): void
-{
-    // Kontrollerer, om brugeren er logget ind
-    // Hvis ikke, bliver brugeren sendt til login-siden
-    if (!isset($_SESSION['user_id'])) {
-        header('Location: ' . BASE_PATH . '/login');
-        exit;
+    // Viser en bestemt experience gennem routeren
+    public function show(): void
+    {
+        // Kontrollerer, om brugeren er logget ind
+        // Hvis ikke, bliver brugeren sendt til login-siden
+        Auth::requireLogin();
+
+
+        // Henter experience-ID fra URL'en, fx ?id=1
+        $experienceId = filter_input(
+            INPUT_GET,
+            'id',
+            FILTER_VALIDATE_INT
+        );
+
+        // Kontrollerer, at ID'et er gyldigt
+        if (!$experienceId || $experienceId < 1) {
+            http_response_code(400);
+            exit('Ugyldigt experience-ID.');
+        }
+
+        // TODO: Kontroller at den indloggede bruger er aktivt medlem af gruppen, før oplevelsen og dens opslag bliver vist.
+        // Henter experience og posts gennem vores eksisterende kode
+        $data = $this->getExperienceData($experienceId);
+
+        // Sender data videre til View-klassen
+        View::render('experience', array_merge($data, [
+            'pageTitle' => $data['experience']['name'],
+            'pageStyle' => 'experience',
+            'isLoggedIn' => true
+        ]));
     }
-
-    // Henter experience-ID fra URL'en, fx ?id=1
-    $experienceId = filter_input(
-        INPUT_GET,
-        'id',
-        FILTER_VALIDATE_INT
-    );
-
-    // Kontrollerer, at ID'et er gyldigt
-    if (!$experienceId || $experienceId < 1) {
-        http_response_code(400);
-        exit('Ugyldigt experience-ID.');
-    }
-
-    // TODO: Kontroller at den indloggede bruger er aktivt medlem af gruppen, før oplevelsen og dens opslag bliver vist.
-    // Henter experience og posts gennem vores eksisterende kode
-    $data = $this->getExperienceData($experienceId);
-
-    // Sender data videre til View-klassen
-    View::render('experience', array_merge($data, [
-        'pageTitle' => $data['experience']['name'],
-        'pageStyle' => 'experience',
-        'isLoggedIn' => true
-    ]));
-}
 
     // Henter alle oplysninger, der skal bruges på experience-siden
     // Modtager oplevelsens ID og returnerer et array med data
-        
-    private function getExperienceData(int $experienceId): array    {
+
+    private function getExperienceData(int $experienceId): array
+    {
         // Henter oplevelsen fra databasen gennem ExperienceRepository
         $experience = $this->experienceRepository->find($experienceId);
 
@@ -122,12 +122,10 @@ public function show(): void
 
                 // Eksterne billeder, fx Cloudinary, bruges direkte
                 $post['image'] = $image;
-
             } elseif (is_string($image) && $image !== '') {
 
                 // Lokale billeder får den korrekte URL gennem asset()
                 $post['image'] = asset($image);
-
             } else {
 
                 // Hvis opslaget ikke har et billede, bruges et standardbillede
@@ -163,12 +161,10 @@ public function show(): void
 
             // Oplevelsen venter på godkendelse
             $statusText = 'Afventer godkendelse';
-
         } elseif ($status === 'rejected') {
 
             // Oplevelsen er blevet afvist
             $statusText = 'Afvist';
-
         } elseif (
             $status === 'closed' ||
             $experience['end_date'] < $today
@@ -176,12 +172,10 @@ public function show(): void
 
             // Oplevelsen er lukket eller slutdatoen er passeret
             $statusText = 'Afsluttet';
-
         } elseif ($experience['start_date'] > $today) {
 
             // Oplevelsen er godkendt, men er endnu ikke begyndt
             $statusText = 'Kommende';
-
         } else {
 
             // Oplevelsen er i gang

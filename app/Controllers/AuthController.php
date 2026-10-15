@@ -55,4 +55,21 @@ class AuthController
         header('Location: ' . BASE_PATH . '/home.php');
         exit;
     }
+
+    // Log out: empty the session, delete its cookie, destroy it, go to the front page
+    public function logout(): void
+    {
+        // empty the locker
+        $_SESSION = [];
+
+        // delete cookie
+        $params = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 3600, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
+
+        // Destroy the session
+        session_destroy();
+
+        header('Location: ' . BASE_PATH . '/');
+        exit;
+    }
 }
