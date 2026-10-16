@@ -1,31 +1,22 @@
 <?php
-// filen står for at hente oplevelser fra databasen. 
-// Det bruger vores eksisterende databaseforbindelse og en SQL-query med JOIN, så vi 
-// kan hente både oplevelsens oplysninger, gruppens navn og brugeren, der har oprettet den.
+// Filen står for at hente oplevelser fra databasen.
+// Vi bruger en SQL-query med JOIN, så vi kan hente både oplevelsens oplysninger,
+// gruppens navn og brugeren, der har oprettet den.
 
-
-// Sørger for, at PHP er mere streng med datatyper så vi undgår fejl
+// Sørger for, at PHP er mere streng med datatyper, så vi undgår fejl
 declare(strict_types=1);
 
 namespace PostCard\Repositories;
 
-// bruger projektets databaseklasse og PDO
-use PostCard\Core\Database;
-use PDO;
-
-// Repository-klassen har ansvaret for at hente oplevelser fra databasen
-class ExperienceRepository
+// Repository-klassen har ansvaret for at hente oplevelser fra databasen.
+// extends Repository betyder, at vi arver de fælles databasefunktioner
+// fra parent-klassen Repository.php.
+class ExperienceRepository extends Repository
 {
-    private PDO $pdo;
-
-    public function __construct()
-    {
-        // Henter den database connection, som allerede er lavet i Database.php
-        $this->pdo = Database::connection();
-    }
-
     // Funktion, der finder én bestemt oplevelse ud fra dens ID
-    public function find(int $experienceId): ?array                 // ?array: funktionen returnerer et array eller null, hvis oplevelsen ikke findes
+    // ?array betyder, at funktionen returnerer et array eller null,
+    // hvis oplevelsen ikke findes.
+    public function find(int $experienceId): ?array
     {
         // SQL-query
         $sql = "
@@ -65,20 +56,11 @@ class ExperienceRepository
             LIMIT 1
         ";
 
-        // Forbereder SQL-queryen, inden den bliver kørt
-        $stmt = $this->pdo->prepare($sql);
-
-        // Kører queryen og indsætter oplevelsens ID i placeholderen
-        $stmt->execute([
+        // fetchOne() kommer fra vores parent-klasse Repository.
+        // Den forbereder SQL-queryen, indsætter experienceId i placeholderen,
+        // udfører queryen og returnerer én række eller null.
+        return $this->fetchOne($sql, [
             'experience_id' => $experienceId
         ]);
-
-        // Henter resultatet fra databasen
-        // fetch() henter én række, som vi gemmer i variablen
-        $experience = $stmt->fetch();
-
-        // Returnerer oplevelsen, hvis den findes
-        // Hvis den ikke findes, returnerer vi null
-        return $experience ?: null;
     }
 }

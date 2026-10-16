@@ -1,18 +1,15 @@
 <?php
-//filen bruger ExperienceRepository og PostRepository til at hente oplevelsen og dens opslag fra databasen. 
-// Controlleren behandler derefter oplysningerne, så de er klar til at blive vist. 
-// Den formaterer blandt andet datoer, vælger midlertidige billeder, beregner opslagstælleren og finder oplevelsens aktuelle status. 
+// Filen bruger ExperienceRepository og PostRepository til at hente oplevelsen og dens opslag fra databasen.
+// Controlleren behandler derefter oplysningerne, så de er klar til at blive vist.
+// Den formaterer blandt andet datoer, vælger midlertidige billeder, beregner opslagstælleren og finder oplevelsens aktuelle status.
 // Til sidst returnerer den alle oplysningerne i et array, som vi bruger i vores view.
-
-// TODO: Kontroller at den indloggede bruger er aktivt medlem
-// af gruppen, før oplevelsen og dens opslag vises.
 
 declare(strict_types=1);
 
 // Fortæller, hvor klassen hører til i projektet
 namespace PostCard\Controllers;
 
-// Gør det muligt at bruge vores to repositories
+// Gør det muligt at bruge vores to repositories og fælles klasser
 use PostCard\Repositories\ExperienceRepository;
 use PostCard\Repositories\PostRepository;
 use PostCard\Core\View;
@@ -34,14 +31,12 @@ class ExperienceController
         $this->postRepository = new PostRepository();
     }
 
-
     // Viser en bestemt experience gennem routeren
     public function show(): void
     {
         // Kontrollerer, om brugeren er logget ind
         // Hvis ikke, bliver brugeren sendt til login-siden
         Auth::requireLogin();
-
 
         // Henter experience-ID fra URL'en, fx ?id=1
         $experienceId = filter_input(
@@ -56,7 +51,6 @@ class ExperienceController
             exit('Ugyldigt experience-ID.');
         }
 
-        // TODO: Kontroller at den indloggede bruger er aktivt medlem af gruppen, før oplevelsen og dens opslag bliver vist.
         // Henter experience og posts gennem vores eksisterende kode
         $data = $this->getExperienceData($experienceId);
 
@@ -70,7 +64,6 @@ class ExperienceController
 
     // Henter alle oplysninger, der skal bruges på experience-siden
     // Modtager oplevelsens ID og returnerer et array med data
-
     private function getExperienceData(int $experienceId): array
     {
         // Henter oplevelsen fra databasen gennem ExperienceRepository
@@ -81,6 +74,11 @@ class ExperienceController
             http_response_code(404);
             exit('Oplevelsen blev ikke fundet.');
         }
+
+        // Kontrollerer, at den indloggede bruger er aktivt medlem
+        // af den gruppe, som oplevelsen tilhører.
+        // Hvis brugeren ikke er medlem, stopper Auth med en 403-fejl.
+        Auth::requireMember((int) $experience['group_id']);
 
         // Henter alle opslag, der hører til oplevelsen
         $posts = $this->postRepository->findByExperience($experienceId);
@@ -206,7 +204,7 @@ class ExperienceController
         }
 
         // Returnerer alle oplysningerne i ét samlet array
-        // public/experience.php kan derefter sende dem videre til viewet
+        // Controllerens show()-metode sender dem videre til viewet
         return [
             'experience' => $experience,
             'posts' => $posts,
