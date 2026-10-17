@@ -8,6 +8,7 @@
 declare(strict_types=1);
 
 use PostCard\Core\Router;
+use PostCard\Core\Session;
 use PostCard\Controllers\PageController;
 use PostCard\Controllers\AuthController;
 use PostCard\Controllers\ExperienceController;
@@ -16,9 +17,6 @@ require __DIR__ . '/../app/autoload.php';
 require_once __DIR__ . '/../app/Helpers/escape.php';
 require_once __DIR__ . '/../app/Helpers/url.php';
 require_once __DIR__ . '/../app/Helpers/asset.php';
-
-// Start the session, so $_SESSION remember who is logged in between pages
-session_start();
 
 // The address the browser asked for, without the "?id=3" part.
 // e.g. "/PostCard/public/group"
@@ -32,6 +30,9 @@ $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
 
 // Remember the folder for the whole app, so url() can build links: BASE_PATH = '/PostCard/public'
 define('BASE_PATH', $basePath);
+
+// Start the session, so $_SESSION remember who is logged in between pages
+Session::start();
 
 // Cut the folder off the front, so only the page is left: "/group".
 // If nothing is left, it is the front page: "/".
