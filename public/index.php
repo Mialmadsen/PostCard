@@ -49,6 +49,8 @@ $router->add('POST', '/logout', [AuthController::class, 'logout']);
 $router->add('GET', '/contact', [PageController::class, 'contact']);
 $router->add('GET', '/rules', [PageController::class, 'rules']);
 $router->add('GET', '/experience', [ExperienceController::class, 'show']);
+$router->add('GET', '/create-experience', [ExperienceController::class, 'create']);
+$router->add('POST', '/create-experience', [ExperienceController::class, 'store']);
 
 // Find who handles this address, e.g. [PageController::class, 'landing'], or null if unknown.
 $handler = $router->find($requestMethod, $path);

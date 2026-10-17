@@ -1,5 +1,5 @@
 <?php
-// Filen står for at hente oplevelser fra databasen.
+// Filen står for at hente og oprette oplevelser i databasen.
 // Vi bruger en SQL-query med JOIN, så vi kan hente både oplevelsens oplysninger,
 // gruppens navn og brugeren, der har oprettet den.
 
@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace PostCard\Repositories;
 
-// Repository-klassen har ansvaret for at hente oplevelser fra databasen.
+// Repository-klassen har ansvaret for at hente og oprette oplevelser i databasen.
 // extends Repository betyder, at vi arver de fælles databasefunktioner
 // fra parent-klassen Repository.php.
 class ExperienceRepository extends Repository
@@ -62,5 +62,90 @@ class ExperienceRepository extends Repository
         return $this->fetchOne($sql, [
             'experience_id' => $experienceId
         ]);
+    }
+
+    // Opretter en ny oplevelse i databasen
+    // Modtager oplysningerne fra ExperienceController
+    // og returnerer ID'et på den nye oplevelse.
+    public function create(
+        int $userId,
+        int $groupId,
+        string $name,
+        string $description,
+        string $startDate,
+        string $endDate
+    ): int {
+        // Henter gruppens indstillinger fra databasen
+        // posting_mode bestemmer, om oplevelsen skal godkendes
+        // default_post_limit bestemmer gruppens standardgrænse for opslag
+        $group = $this->fetchOne(
+            "SELECT posting_mode, default_post_limit
+             FROM user_groups
+             WHERE group_id = :group_id",
+            ['group_id' => $groupId]
+        );
+
+        // Kontrollerer, at gruppen findes, Hvis ikke kommer en fejl
+        if ($group === null) {
+            throw new \InvalidArgumentException('Gruppen findes ikke.');
+        }
+
+        // Bestemmer oplevelsens status ud fra gruppens posting_mode
+        // open betyder, at oplevelsen bliver godkendt med det samme
+        // permission betyder, at den skal godkendes af en gruppeadministrator
+        $status = $group['posting_mode'] === 'open'
+            ? 'approved'
+            : 'pending';
+
+        // Henter gruppens standardgrænse for opslag
+        // Hvis gruppen ikke har en grænse, gemmer vi 20 som standardværdi
+        $postLimit = $group['default_post_limit'] !== null
+        ? (int) $group['default_post_limit']
+        : 20;
+
+        // SQL-query til at indsætte den nye oplevelse i experiences-tabellen
+        // Vi bruger placeholders i stedet for at indsætte værdier direkte
+        $sql = "
+            INSERT INTO experiences (
+                user_id,
+                group_id,
+                name,
+                description,
+                start_date,
+                end_date,
+                experience_status,
+                post_limit
+            )
+            VALUES (
+                :user_id,
+                :group_id,
+                :name,
+                :description,
+                :start_date,
+                :end_date,
+                :experience_status,
+                :post_limit
+            )
+        ";
+
+        // Forbereder SQL-queryen gennem den fælles databaseforbindelse
+        // Prepared statements beskytter mod SQL injection
+        $stmt = $this->pdo->prepare($sql);
+
+        // Indsætter værdierne i placeholders og udfører queryen
+        $stmt->execute([
+            'user_id' => $userId,
+            'group_id' => $groupId,
+            'name' => $name,
+            'description' => $description,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'experience_status' => $status,
+            'post_limit' => $postLimit
+        ]);
+
+        // Returnerer ID'et på den oplevelse, vi lige har oprettet
+        // Det kan vi senere bruge til at sende brugeren til oplevelsens side
+        return (int) $this->pdo->lastInsertId();
     }
 }

@@ -1,41 +1,48 @@
 <?php
-// Filen bruger ExperienceRepository og PostRepository til at hente oplevelsen og dens opslag fra databasen.
-// Controlleren behandler derefter oplysningerne, så de er klar til at blive vist.
-// Den formaterer blandt andet datoer, vælger midlertidige billeder, beregner opslagstælleren og finder oplevelsens aktuelle status.
-// Til sidst returnerer den alle oplysningerne i et array, som vi bruger i vores view.
-
 declare(strict_types=1);
 
-// Fortæller, hvor klassen hører til i projektet
+// Controlleren håndterer requests til oplevelser.
+// Den henter data gennem repositories og bruger ExperienceService til at beregne opslaggrænser og oplevelsens aktuelle status.
+// Til sidst sender den oplysningerne videre til vores views.
+
 namespace PostCard\Controllers;
 
-// Gør det muligt at bruge vores to repositories og fælles klasser
+// Repositories til at hente og gemme data i databasen
 use PostCard\Repositories\ExperienceRepository;
 use PostCard\Repositories\PostRepository;
+use PostCard\Repositories\GroupMemberRepository;
+
+// Fælles klasser til visning og adgangskontrol
 use PostCard\Core\View;
 use PostCard\Core\Auth;
 
-// Controlleren samler og behandler data til experience-siden
+// Service med regler og beregninger for oplevelser
+use PostCard\Services\ExperienceService;
+
 class ExperienceController
 {
-    // Variabler til vores to repositories
-    // private betyder, at de kun kan bruges inde i klassen
+    // Repositories og service-objekter gemmes som private properties, så de kan bruges i controllerens metoder
     private ExperienceRepository $experienceRepository;
     private PostRepository $postRepository;
+    private GroupMemberRepository $groupMemberRepository;
+    private ExperienceService $experienceService;
 
-    // Constructoren kører automatisk, når vi opretter controlleren
+    // Constructoren kører automatisk, når controlleren oprettes
     public function __construct()
     {
-        // Opretter objekter af vores to repository-klasser
+        // Opretter vores repository-objekter
         $this->experienceRepository = new ExperienceRepository();
         $this->postRepository = new PostRepository();
+        $this->groupMemberRepository = new GroupMemberRepository();
+
+        // Opretter vores service-objekt
+        $this->experienceService = new ExperienceService();
     }
 
-    // Viser en bestemt experience gennem routeren
+    // Viser en bestemt oplevelse gennem routeren
     public function show(): void
     {
         // Kontrollerer, om brugeren er logget ind
-        // Hvis ikke, bliver brugeren sendt til login-siden
         Auth::requireLogin();
 
         // Henter experience-ID fra URL'en, fx ?id=1
@@ -51,10 +58,10 @@ class ExperienceController
             exit('Ugyldigt experience-ID.');
         }
 
-        // Henter experience og posts gennem vores eksisterende kode
+        // Henter oplevelsen og alle oplysninger til siden
         $data = $this->getExperienceData($experienceId);
 
-        // Sender data videre til View-klassen
+        // Sender oplysningerne videre til vores experience-view
         View::render('experience', array_merge($data, [
             'pageTitle' => $data['experience']['name'],
             'pageStyle' => 'experience',
@@ -62,29 +69,148 @@ class ExperienceController
         ]));
     }
 
-    // Henter alle oplysninger, der skal bruges på experience-siden
-    // Modtager oplevelsens ID og returnerer et array med data
+    // Viser formularen til at oprette en ny oplevelse
+    public function create(): void
+    {
+        // Kontrollerer, at brugeren er logget ind
+        Auth::requireLogin();
+
+        // Henter den indloggede brugers ID
+        $userId = Auth::userId();
+
+        // Opretter et CSRF-token, hvis der ikke allerede findes et
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+
+        // Henter alle grupper, som brugeren er aktivt medlem af
+        $groups = $this->groupMemberRepository->findActiveGroupsByUser($userId);
+
+        // Viser Create Experience-formularen
+        // View-klassen sørger selv for header og footer
+        View::render('create-experience', [
+            'pageTitle' => 'Opret oplevelse',
+            'pageStyle' => 'create-experience',
+            'isLoggedIn' => true,
+            'groups' => $groups
+        ]);
+    }
+
+    // Modtager formularen og opretter en ny oplevelse
+    public function store(): void
+    {
+        // Kontrollerer, at brugeren er logget ind
+        Auth::requireLogin();
+
+        // Henter den indloggede brugers ID
+        $userId = Auth::userId();
+
+        // Henter CSRF-token fra formularen
+        $token = $_POST['csrf_token'] ?? '';
+
+        // Kontrollerer, at tokenet er gyldigt
+        if (
+            !is_string($token) ||
+            !isset($_SESSION['csrf_token']) ||
+            !hash_equals($_SESSION['csrf_token'], $token)
+        ) {
+            http_response_code(403);
+            exit('Ugyldig formular. Prøv at indlæse siden igen.');
+        }
+
+        // Henter oplysningerne fra formularen
+        $groupId = filter_input(
+            INPUT_POST,
+            'group_id',
+            FILTER_VALIDATE_INT
+        );
+
+        $name = trim((string) ($_POST['name'] ?? ''));
+        $description = trim((string) ($_POST['description'] ?? ''));
+        $startDate = (string) ($_POST['start_date'] ?? '');
+        $endDate = (string) ($_POST['end_date'] ?? '');
+
+        // Kontrollerer, at der er valgt en gyldig gruppe
+        if (!$groupId || $groupId < 1) {
+            http_response_code(400);
+            exit('Du skal vælge en gyldig gruppe.');
+        }
+
+        // Kontrollerer, at brugeren er aktivt medlem af gruppen
+        Auth::requireMember($groupId);
+
+        // Kontrollerer oplevelsens navn og beskrivelse
+        if (
+            $name === '' ||
+            mb_strlen($name) > 100 ||
+            mb_strlen($description) > 1000
+        ) {
+            http_response_code(400);
+            exit('Kontroller oplevelsens navn og beskrivelse.');
+        }
+
+        // Opretter dato-objekter til validering
+        $start = \DateTimeImmutable::createFromFormat(
+            '!Y-m-d',
+            $startDate
+        );
+
+        $end = \DateTimeImmutable::createFromFormat(
+            '!Y-m-d',
+            $endDate
+        );
+
+        // Kontrollerer, at datoerne er gyldige kalenderdatoer
+        // og at slutdatoen ikke ligger før startdatoen
+        if (
+            $start === false ||
+            $end === false ||
+            $start->format('Y-m-d') !== $startDate ||
+            $end->format('Y-m-d') !== $endDate ||
+            $end < $start
+        ) {
+            http_response_code(400);
+            exit('Vælg en gyldig periode. Slutdatoen må ikke være før startdatoen.');
+        }
+
+        // Gemmer oplevelsen gennem ExperienceRepository
+        // Repository bestemmer, om status skal være approved eller pending
+        $experienceId = $this->experienceRepository->create(
+            $userId,
+            $groupId,
+            $name,
+            $description,
+            $startDate,
+            $endDate
+        );
+
+        // Fjerner det brugte CSRF-token
+        unset($_SESSION['csrf_token']);
+
+        // Sender brugeren videre til den nye oplevelse
+        header('Location: ' . url('/experience') . '?id=' . $experienceId);
+        exit;
+    }
+
+    // Henter og samler oplysninger til experience-siden
     private function getExperienceData(int $experienceId): array
     {
-        // Henter oplevelsen fra databasen gennem ExperienceRepository
+        // Henter oplevelsen fra databasen
         $experience = $this->experienceRepository->find($experienceId);
 
-        // Hvis oplevelsen ikke findes, viser vi en 404-fejl
+        // Viser en 404-fejl, hvis oplevelsen ikke findes
         if ($experience === null) {
             http_response_code(404);
             exit('Oplevelsen blev ikke fundet.');
         }
 
-        // Kontrollerer, at den indloggede bruger er aktivt medlem
-        // af den gruppe, som oplevelsen tilhører.
-        // Hvis brugeren ikke er medlem, stopper Auth med en 403-fejl.
+        // Kontrollerer, at brugeren er aktivt medlem af gruppen
         Auth::requireMember((int) $experience['group_id']);
 
         // Henter alle opslag, der hører til oplevelsen
         $posts = $this->postRepository->findByExperience($experienceId);
 
-        // Array med danske forkortelser for månederne
-        // Bruges til datoerne på opslagene
+        // Danske månedsforkortelser til datoerne på opslagene
         $months = [
             1 => 'jan',
             2 => 'feb',
@@ -100,120 +226,68 @@ class ExperienceController
             12 => 'dec'
         ];
 
-        // Gennemgår hvert opslag og gør oplysningerne klar til HTML
-        // & betyder, at vi ændrer direkte i opslagets array
+        // Gennemgår hvert opslag og gør oplysningerne klar til viewet
         foreach ($posts as &$post) {
 
-            // Omdanner datoen fra databasen til et tidsstempel
+            // Omdanner opslagets dato til et tidsstempel
             $timestamp = strtotime($post['date']);
 
-            // Gemmer dag, måned og dato i et format, vi kan vise
+            // Formaterer datoen til visning
             $post['day'] = date('d', $timestamp);
             $post['month'] = $months[(int) date('n', $timestamp)];
             $post['relative_date'] = date('d.m.Y', $timestamp);
 
-            // Henter billedstien fra opslaget, hvis der findes en
+            // Henter opslagets billedsti
             $image = $post['image'] ?? '';
 
-            // Kontrollerer, om billedet er en ekstern URL eller en lokal billedsti
-            if (is_string($image) && filter_var($image, FILTER_VALIDATE_URL)) {
-
+            // Kontrollerer, om billedet er en ekstern URL
+            if (
+                is_string($image) &&
+                filter_var($image, FILTER_VALIDATE_URL)
+            ) {
                 // Eksterne billeder, fx Cloudinary, bruges direkte
                 $post['image'] = $image;
+
             } elseif (is_string($image) && $image !== '') {
 
                 // Lokale billeder får den korrekte URL gennem asset()
                 $post['image'] = asset($image);
+
             } else {
 
-                // Hvis opslaget ikke har et billede, bruges et standardbillede
-                $post['image'] = asset('assets/images/sample/photo-1.jpg');
+                // Hvis opslaget mangler et billede, bruges standardbilledet
+                $post['image'] = asset(
+                    'assets/images/sample/photo-1.jpg'
+                );
             }
         }
 
         // Afslutter referencen fra foreach-løkken
         unset($post);
 
-        // Tæller hvor mange opslag oplevelsen har
+        // Tæller antallet af opslag i oplevelsen
         $postsUsed = count($posts);
 
-        // Henter oplevelsens opslaggrænse fra databasen
-        // Hvis der ikke er angivet en grænse, bruger vi null
-        $postLimit = $experience['post_limit'] !== null
-            ? (int) $experience['post_limit']
-            : null;
-
-        // Beregner hvor mange opslag der er tilbage
-        // max(0, ...) sikrer, at resultatet ikke bliver negativt
-        $postsRemaining = $postLimit !== null
-            ? max(0, $postLimit - $postsUsed)
-            : null;
-
-        // Henter dags dato og oplevelsens status fra databasen
-        $today = date('Y-m-d');
-        $status = $experience['experience_status'];
-
-        // Oversætter oplevelsens status til dansk
-        // Vi tager også højde for oplevelsens start- og slutdato
-        if ($status === 'pending') {
-
-            // Oplevelsen venter på godkendelse
-            $statusText = 'Afventer godkendelse';
-        } elseif ($status === 'rejected') {
-
-            // Oplevelsen er blevet afvist
-            $statusText = 'Afvist';
-        } elseif (
-            $status === 'closed' ||
-            $experience['end_date'] < $today
-        ) {
-
-            // Oplevelsen er lukket eller slutdatoen er passeret
-            $statusText = 'Afsluttet';
-        } elseif ($experience['start_date'] > $today) {
-
-            // Oplevelsen er godkendt, men er endnu ikke begyndt
-            $statusText = 'Kommende';
-        } else {
-
-            // Oplevelsen er i gang
-            $statusText = 'I gang';
-        }
-
-        // Kontrollerer om oplevelsen er godkendt og aktiv i dag
-        // Dette kontrollerer IKKE, om brugeren har adgang til den
-        $isActive = (
-            $status === 'approved' &&
-            $experience['start_date'] <= $today &&
-            $experience['end_date'] >= $today
+        // ExperienceService beregner opslaggrænse og resterende opslag
+        $postCounts = $this->experienceService->getPostCounts(
+            $experience,
+            $postsUsed
         );
 
-        // Variabel til antal dage tilbage
-        // null betyder, at vi endnu ikke har beregnet et antal
-        $daysRemaining = null;
+        // ExperienceService beregner status og resterende dage
+        $experienceStatus = $this->experienceService->getStatus(
+            $experience
+        );
 
-        // Beregner kun dage tilbage, hvis oplevelsen er aktiv
-        if ($isActive) {
-
-            // Opretter dato-objekter for i dag og slutdatoen
-            $todayDate = new \DateTimeImmutable($today);
-            $endDate = new \DateTimeImmutable($experience['end_date']);
-
-            // Finder forskellen mellem de to datoer i dage
-            $daysRemaining = (int) $todayDate->diff($endDate)->days;
-        }
-
-        // Returnerer alle oplysningerne i ét samlet array
-        // Controllerens show()-metode sender dem videre til viewet
-        return [
-            'experience' => $experience,
-            'posts' => $posts,
-            'postsUsed' => $postsUsed,
-            'postLimit' => $postLimit,
-            'postsRemaining' => $postsRemaining,
-            'statusText' => $statusText,
-            'isActive' => $isActive,
-            'daysRemaining' => $daysRemaining
-        ];
+        // Samler alle oplysningerne i ét array
+        // Nøglerne er de samme som før, så viewet ikke skal ændres
+        return array_merge(
+            [
+                'experience' => $experience,
+                'posts' => $posts
+            ],
+            $postCounts,
+            $experienceStatus
+        );
     }
 }

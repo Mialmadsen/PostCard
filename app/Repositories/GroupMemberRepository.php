@@ -18,4 +18,32 @@ class GroupMemberRepository extends Repository
             ['user_id' => $userId, 'group_id' => $groupId]
         );
     }
+
+    // Henter alle grupper, som en bestemt bruger er aktivt medlem af
+    // JOIN bruges til at hente gruppens oplysninger fra user_groups
+    public function findActiveGroupsByUser(int $userId): array
+    {
+        $sql = "
+            SELECT
+                g.group_id,
+                g.name,
+                g.posting_mode,
+                gm.member_role
+            FROM group_members AS gm
+
+            INNER JOIN user_groups AS g
+                ON gm.group_id = g.group_id
+
+            WHERE gm.user_id = :user_id
+                AND gm.member_status = 'active'
+
+            ORDER BY g.name ASC
+        ";
+
+        // fetchAll() kommer fra vores fælles Repository-klasse
+        // og returnerer alle grupper som et array
+        return $this->fetchAll($sql, [
+            'user_id' => $userId
+        ]);
+    }
 }
