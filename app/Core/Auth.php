@@ -24,6 +24,19 @@ class Auth
         }
     }
 
+    // Log this user in: a new session id, then remember who it is.
+    public static function login(int $userId): void
+    {
+        Session::regenerate();
+        $_SESSION['user_id'] = $userId;
+    }
+
+    // Log out whoever is logged in: the session is destroyed completely.
+    public static function logout(): void
+    {
+        Session::destroy();
+    }
+
     // Checks if you have access to the group
     public static function requireMember(int $groupId): void
     {

@@ -14,8 +14,8 @@
                 <p class="alert">Når du er logget ind, bliver du medlem af <strong>Familien Nielsen</strong>.</p>
                 -->
 
-                <!-- A CSRF token is added in Epic 2 -->
                 <form class="form" action="<?= url('/login') ?>" method="post">
+                    <?= \PostCard\Core\Csrf::field() ?>
                     <!-- IF invitation: <input type="hidden" name="invite" value="TOKEN"> so the token survives the form -->
                     <div class="field">
                         <label class="field__label" for="email">E-mail</label>

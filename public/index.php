@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 use PostCard\Core\Router;
 use PostCard\Core\Session;
+use PostCard\Core\Csrf;
 use PostCard\Controllers\PageController;
 use PostCard\Controllers\AuthController;
 use PostCard\Controllers\ExperienceController;
@@ -33,6 +34,11 @@ define('BASE_PATH', $basePath);
 
 // Start the session, so $_SESSION remember who is logged in between pages
 Session::start();
+
+// Every POST must carry the session's CSRF token, or it stops here with 403.
+if ($requestMethod === 'POST') {
+    Csrf::verify();
+}
 
 // Cut the folder off the front, so only the page is left: "/group".
 // If nothing is left, it is the front page: "/".

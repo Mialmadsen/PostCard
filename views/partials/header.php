@@ -18,9 +18,17 @@ $pageScripts = $pageScripts ?? [];
 require_once __DIR__ . '/../../app/Helpers/asset.php';
 
 // TEMPORARY: old pages in public/ open this header directly, without index.php,
-// so they need e() and url() loaded here. Remove when every page has moved to views/pages/.
+// so they need the autoloader, e(), url(), BASE_PATH and the session set up here.
+// Remove when every page has moved to views/pages/.
+require_once __DIR__ . '/../../app/autoload.php';
 require_once __DIR__ . '/../../app/Helpers/escape.php';
 require_once __DIR__ . '/../../app/Helpers/url.php';
+if (!defined('BASE_PATH')) {
+    define('BASE_PATH', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\'));
+}
+if (session_status() === PHP_SESSION_NONE) {
+    \PostCard\Core\Session::start();
+}
 ?>
 <!DOCTYPE html>
 <html lang="da">
@@ -108,8 +116,8 @@ require_once __DIR__ . '/../../app/Helpers/url.php';
                     <!-- NAV: operator. The sections are in the admin menu on each page (views/partials/admin-nav.php) -->
                     <ul class="site-nav__list">
                         <li>
-                            <!-- A CSRF token is added in Epic 2 -->
                             <form action="<?= url('/logout') ?>" method="post">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <button class="button button--secondary" type="submit">Log ud</button>
                             </form>
                         </li>
@@ -134,8 +142,9 @@ require_once __DIR__ . '/../../app/Helpers/url.php';
                                 <li><a class="user-menu__item" href="profile.php">Min profil</a></li>
                                 <li><a class="user-menu__item" href="settings.php">Indstillinger</a></li>
                                 <li>
-                                    <!-- Log out is a POST form (a CSRF token is added in Epic 2) -->
+                                    <!-- Log out is a POST form, protected by the CSRF token -->
                                     <form action="<?= url('/logout') ?>" method="post">
+                                        <?= \PostCard\Core\Csrf::field() ?>
                                         <button class="user-menu__item" type="submit">Log ud</button>
                                     </form>
                                 </li>

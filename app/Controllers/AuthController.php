@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PostCard\Controllers;
 
-use PostCard\Core\Session;
+use PostCard\Core\Auth;
 use PostCard\Core\View;
 use PostCard\Repositories\UserRepository;
 
@@ -50,8 +50,7 @@ class AuthController
             return;
         }
 
-        Session::regenerate();
-        $_SESSION['user_id'] = $user['user_id'];
+        Auth::login($user['user_id']);
         // temporary, should be '/home', when moved to views
         header('Location: ' . BASE_PATH . '/home.php');
         exit;
@@ -60,7 +59,7 @@ class AuthController
     // Log out: destroy the session, then go to the front page
     public function logout(): void
     {
-        Session::destroy();
+        Auth::logout();
 
         header('Location: ' . BASE_PATH . '/');
         exit;
