@@ -78,11 +78,6 @@ class ExperienceController
         // Henter den indloggede brugers ID
         $userId = Auth::userId();
 
-        // Opretter et CSRF-token, hvis der ikke allerede findes et
-        if (empty($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        }
-
         // Henter alle grupper, som brugeren er aktivt medlem af
         $groups = $this->groupMemberRepository->findActiveGroupsByUser($userId);
 
@@ -104,19 +99,6 @@ class ExperienceController
 
         // Henter den indloggede brugers ID
         $userId = Auth::userId();
-
-        // Henter CSRF-token fra formularen
-        $token = $_POST['csrf_token'] ?? '';
-
-        // Kontrollerer, at tokenet er gyldigt
-        if (
-            !is_string($token) ||
-            !isset($_SESSION['csrf_token']) ||
-            !hash_equals($_SESSION['csrf_token'], $token)
-        ) {
-            http_response_code(403);
-            exit('Ugyldig formular. Prøv at indlæse siden igen.');
-        }
 
         // Henter oplysningerne fra formularen
         $groupId = filter_input(
@@ -184,11 +166,8 @@ class ExperienceController
             $endDate
         );
 
-        // Fjerner det brugte CSRF-token
-        unset($_SESSION['csrf_token']);
-
         // Sender brugeren videre til den nye oplevelse
-        header('Location: ' . url('/experience') . '?id=' . $experienceId);
+        header('Location: ' . BASE_PATH . '/experience?id=' . $experienceId);
         exit;
     }
 

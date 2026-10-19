@@ -63,12 +63,11 @@ $selectedGroup = $groups[0] ?? null;
 
                 <!-- Formularen sender senere data til vores store()-metode -->
                 <form method="POST" action="<?= url('/create-experience') ?>">
-                    <!-- Sikkerhedstoken, som kontrolleres, når formularen sendes -->
-                    <input
-                        type="hidden"
-                        name="csrf_token"
-                        value="<?= e($_SESSION['csrf_token']) ?>"
-                    >
+                    <!-- Formularen sender data til vores store()-metode -->
+                    <form method="POST" action="<?= url('/create-experience') ?>">
+
+                    <!-- Tilføjer CSRF-token gennem den fælles hjælpeklasse -->
+                    <?= \PostCard\Core\Csrf::field() ?>
 
                     <!-- Vælg mellem brugerens aktive grupper -->
                     <div class="field">
