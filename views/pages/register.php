@@ -1,9 +1,3 @@
-<?php
-$pageTitle = 'Opret bruger';
-$isLoggedIn = false;
-require __DIR__ . '/../views/partials/header.php';
-?>
-
 <main id="main" class="site-main">
     <div class="container">
         <div class="envelope envelope--still">
@@ -17,8 +11,9 @@ require __DIR__ . '/../views/partials/header.php';
                 <p class="alert">Når du har oprettet din bruger, bliver du medlem af <strong>Familien Nielsen</strong>.</p>
                 -->
 
-                <!-- A CSRF token is added in Epic 2 -->
-                <form class="form" action="register.php" method="post">
+
+                <form class="form" action="<?= url('/register') ?>" method="post">
+                    <?= \PostCard\Core\Csrf::field() ?>
                     <!-- IF invitation: <input type="hidden" name="invite" value="TOKEN"> so the token survives the form -->
                     <div class="field-row">
                         <div class="field">
@@ -35,29 +30,27 @@ require __DIR__ . '/../views/partials/header.php';
 
                     <div class="field">
                         <label class="field__label" for="username">Brugernavn</label>
-                        <input class="field__input" id="username" name="username" type="text"
-                            autocomplete="username" maxlength="50" required
-                            aria-describedby="username-hint">
+                        <input class="field__input" id="username" name="username" type="text" autocomplete="username"
+                            maxlength="50" required aria-describedby="username-hint">
                         <p class="meta" id="username-hint">Vises på din profil.</p>
                     </div>
 
                     <div class="field">
                         <label class="field__label" for="email">E-mail</label>
-                        <input class="field__input" id="email" name="email" type="email"
-                            autocomplete="email" maxlength="255" required>
+                        <input class="field__input" id="email" name="email" type="email" autocomplete="email"
+                            maxlength="255" required>
                     </div>
 
                     <div class="field">
                         <label class="field__label" for="birthdate">Fødselsdato</label>
-                        <input class="field__input" id="birthdate" name="birthdate" type="date"
-                            autocomplete="bday" required>
+                        <input class="field__input" id="birthdate" name="birthdate" type="date" autocomplete="bday"
+                            required>
                     </div>
 
                     <div class="field">
                         <label class="field__label" for="password">Adgangskode</label>
                         <input class="field__input" id="password" name="password" type="password"
-                            autocomplete="new-password" minlength="12" required
-                            aria-describedby="password-hint">
+                            autocomplete="new-password" minlength="12" required aria-describedby="password-hint">
                         <p class="meta" id="password-hint">Mindst 12 tegn. En sætning er nem at huske.</p>
                     </div>
 
@@ -68,13 +61,15 @@ require __DIR__ . '/../views/partials/header.php';
                     </div>
 
                     <div class="field field--checkbox">
-                        <input class="field__checkbox" id="accept-rules" name="accept_rules" type="checkbox" value="1" required>
-                        <label for="accept-rules">Jeg har læst og accepterer <a href="rules.php">reglerne</a>.</label>
+                        <input class="field__checkbox" id="accept-rules" name="accept_rules" type="checkbox" value="1"
+                            required>
+                        <label for="accept-rules">Jeg har læst og accepterer <a
+                                href="<?= url('/rules') ?>">reglerne</a>.</label>
                     </div>
 
                     <div class="form__actions">
                         <button class="button button--primary" type="submit">Opret bruger</button>
-                        <p>Har du allerede en bruger? <a href="login.php">Log ind</a></p>
+                        <p>Har du allerede en bruger? <a href="<?= url('/login') ?>">Log ind</a></p>
                     </div>
                 </form>
             </div>
@@ -82,5 +77,3 @@ require __DIR__ . '/../views/partials/header.php';
         </div>
     </div>
 </main>
-
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>

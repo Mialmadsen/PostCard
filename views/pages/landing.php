@@ -8,7 +8,7 @@
                 <p class="eyebrow">Hilsen fra PostCard</p>
                 <h1>Del din oplevelse – ikke hele dit liv</h1>
                 <p>Et privat sted at dele rejseminder med de mennesker, der betyder noget.</p>
-                <p><a class="button button--primary" href="register.php">Opret bruger</a></p>
+                <p><a class="button button--primary" href="<?= url('/register') ?>">Opret bruger</a></p>
             </div>
             <div class="envelope__front" aria-hidden="true"></div>
             <div class="envelope__lid" aria-hidden="true"></div>

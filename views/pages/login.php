@@ -32,7 +32,7 @@
                     <div class="form__actions">
                         <button class="button button--primary" type="submit">Log ind</button>
                         <a href="forgot-password.php">Glemt adgangskode?</a>
-                        <p>Ingen bruger endnu? <a href="register.php">Opret bruger</a></p>
+                        <p>Ingen bruger endnu? <a href="<?= url('/register') ?>">Opret bruger</a></p>
                     </div>
                 </form>
             </div>

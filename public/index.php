@@ -18,6 +18,7 @@ require __DIR__ . '/../app/autoload.php';
 require_once __DIR__ . '/../app/Helpers/escape.php';
 require_once __DIR__ . '/../app/Helpers/url.php';
 require_once __DIR__ . '/../app/Helpers/asset.php';
+require_once __DIR__ . '/../app/Helpers/input.php';
 
 // The address the browser asked for, without the "?id=3" part.
 // e.g. "/PostCard/public/group"
@@ -51,7 +52,9 @@ if ($path === '') {
 $router = new Router();
 $router->add('GET', '/', [PageController::class, 'landing']);
 $router->add('GET', '/login', [AuthController::class, 'showLogin']);
+$router->add('GET', '/register', [AuthController::class, 'showRegister']);
 $router->add('POST', '/login', [AuthController::class, 'login']);
+$router->add('POST', '/register', [AuthController::class, 'register']);
 $router->add('POST', '/logout', [AuthController::class, 'logout']);
 $router->add('GET', '/contact', [PageController::class, 'contact']);
 $router->add('GET', '/rules', [PageController::class, 'rules']);

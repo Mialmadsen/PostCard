@@ -25,4 +25,26 @@ class UserRepository extends Repository
 
         return $value === 1;
     }
+
+    // True if any user (also blocked or deleted) already has this email.
+    public function emailExists(string $email): bool
+    {
+        $value = $this->fetchValue(
+            'SELECT 1 FROM users WHERE email = :email LIMIT 1',
+            ['email' => $email]
+        );
+
+        return $value !== null;
+    }
+
+    // True if any user (also blocked or deleted) already has this username.
+    public function usernameExists(string $username): bool
+    {
+        $value = $this->fetchValue(
+            'SELECT 1 FROM users WHERE username = :username LIMIT 1',
+            ['username' => $username]
+        );
+
+        return $value !== null;
+    }
 }
