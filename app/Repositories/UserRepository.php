@@ -47,4 +47,27 @@ class UserRepository extends Repository
 
         return $value !== null;
     }
+
+    // We create a new user in db and return users id
+    public function create(
+        string $firstName,
+        string $lastName,
+        string $username,
+        string $email,
+        string $birthdate,
+        string $passwordHash
+    ): int {
+        return $this->insert(
+            'INSERT INTO users (first_name, last_name, username, email, birthdate, password_hash)
+             VALUES (:first_name, :last_name, :username, :email, :birthdate, :password_hash)',
+            [
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'username' => $username,
+                'email' => $email,
+                'birthdate' => $birthdate,
+                'password_hash' => $passwordHash
+            ]
+        );
+    }
 }

@@ -71,6 +71,8 @@ class AuthController
         View::render('register', [
             'pageTitle' => 'Opret bruger',
             'isLoggedIn' => false,
+            'errors'=>[],
+            'old'=>[]
         ]);
     }
 
@@ -149,5 +151,39 @@ class AuthController
         if (!$acceptsRules) {
             $errors['accept_rules'] = 'Du skal acceptere reglerne.';
         }
+
+        // We check if there are any errors and either stop and send the person back to form, or continue and create a new user
+        if ($errors !== []) {
+            http_response_code(422);
+            View::render('register', [
+                'pageTitle' => 'Opret bruger',
+                'isLoggedIn' => false,
+                'errors' => $errors,
+                'old' => [
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'username' => $username,
+                    'email' => $email,
+                    'birthdate' => $birthdate,
+                ],
+            ]);
+            return;
+        }
+
+        // The happy end of registration
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+        $newUserId = $users->create(
+            $firstName,
+            $lastName,
+            $username,
+            $email,
+            $birthdate,
+            $passwordHash
+        );
+
+        Auth::login($newUserId);
+        // temporary, should be '/home', when moved to views
+        header('Location: ' . BASE_PATH . '/home.php');
+        exit;
     }
 }
