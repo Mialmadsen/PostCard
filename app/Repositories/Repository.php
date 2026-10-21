@@ -53,4 +53,19 @@ abstract class Repository
         // The connection, not the statement, remembers the last new id. It comes as text, so make it an int.
         return (int) $this->pdo->lastInsertId();
     }
+
+    //Works for number of queries and it receives function as parameter
+    protected function transaction(callable $work): mixed
+    {
+        $this->pdo->beginTransaction();
+
+        try {
+            $result = $work();
+            $this->pdo->commit();
+            return $result;
+        } catch (\Throwable $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
+    }
 }

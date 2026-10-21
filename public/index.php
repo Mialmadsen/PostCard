@@ -13,6 +13,7 @@ use PostCard\Core\Csrf;
 use PostCard\Controllers\PageController;
 use PostCard\Controllers\AuthController;
 use PostCard\Controllers\ExperienceController;
+use PostCard\Controllers\GroupController;
 
 require __DIR__ . '/../app/autoload.php';
 require_once __DIR__ . '/../app/Helpers/escape.php';
@@ -58,6 +59,8 @@ $router->add('POST', '/register', [AuthController::class, 'register']);
 $router->add('POST', '/logout', [AuthController::class, 'logout']);
 $router->add('GET', '/contact', [PageController::class, 'contact']);
 $router->add('GET', '/rules', [PageController::class, 'rules']);
+$router->add('GET', '/create-group', [GroupController::class, 'create']);
+$router->add('POST', '/create-group', [GroupController::class, 'store']);
 $router->add('GET', '/experience', [ExperienceController::class, 'show']);
 $router->add('GET', '/create-experience', [ExperienceController::class, 'create']);
 $router->add('POST', '/create-experience', [ExperienceController::class, 'store']);

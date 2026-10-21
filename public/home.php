@@ -66,7 +66,7 @@ require __DIR__ . '/../views/partials/header.php';
                     </ul>
                     <!-- /LOOP -->
 
-                    <p><a href="create-group.php">+ Opret en ny gruppe</a></p>
+                    <p><a href="<?= url('/create-group') ?>">+ Opret en ny gruppe</a></p>
                 </section>
             </div>
 
