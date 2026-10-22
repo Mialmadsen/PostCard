@@ -74,4 +74,35 @@ class GroupMemberRepository extends Repository
             'user_id' => $userId
         ]);
     }
+
+    // Tæller aktive medlemmer i en bestemt gruppe
+    public function countActiveMembers(int $groupId): int
+    {
+        return (int) $this->fetchValue(
+            "SELECT COUNT(*)
+            FROM group_members
+            WHERE group_id = :group_id
+            AND member_status = 'active'",
+            ['group_id' => $groupId]
+        );
+    }
+
+    // Henter de første 4 aktive medlemmer i en bestemt gruppe
+    public function findFirstMembersByGroup(int $groupId): array
+    {
+        return $this->fetchAll(
+            "SELECT
+                u.user_id,
+                u.first_name,
+                u.last_name
+            FROM group_members AS gm
+            INNER JOIN users AS u
+                ON gm.user_id = u.user_id
+            WHERE gm.group_id = :group_id
+                AND gm.member_status = 'active'
+            ORDER BY gm.joined_at ASC, u.user_id ASC
+            LIMIT 4",
+            ['group_id' => $groupId]
+        );
+    }
 }

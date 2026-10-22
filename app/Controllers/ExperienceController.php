@@ -81,13 +81,24 @@ class ExperienceController
         // Henter alle grupper, som brugeren er aktivt medlem af
         $groups = $this->groupMemberRepository->findActiveGroupsByUser($userId);
 
-        // Viser Create Experience-formularen
-        // View-klassen sørger selv for header og footer
+        // Henter eventuelt et gruppe-ID fra URL'en
+        $selectedGroupId = filter_input(INPUT_GET, 'group_id', FILTER_VALIDATE_INT);
+
+        // Kontrollerer, at den valgte gruppe findes blandt brugerens grupper
+        $allowedGroupIds = array_map('intval', array_column($groups, 'group_id'));
+
+        if ($selectedGroupId && !in_array($selectedGroupId, $allowedGroupIds, true)) {
+            http_response_code(403);
+            exit('Du har ikke adgang til denne gruppe.');
+        }
+
+        // Sender grupperne og det valgte gruppe-ID videre til formularen
         View::render('create-experience', [
             'pageTitle' => 'Opret oplevelse',
             'pageStyle' => 'create-experience',
             'isLoggedIn' => true,
-            'groups' => $groups
+            'groups' => $groups,
+            'selectedGroupId' => $selectedGroupId
         ]);
     }
 

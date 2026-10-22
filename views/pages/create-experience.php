@@ -1,6 +1,18 @@
 <?php
-// Henter den første gruppe som standard, hvis brugeren har grupper
-$selectedGroup = $groups[0] ?? null;
+// Finder den gruppe, der er valgt gennem URL'en
+$selectedGroup = null;
+
+foreach ($groups as $group) {
+    if ((int) $group['group_id'] === (int) $selectedGroupId) {
+        $selectedGroup = $group;
+        break;
+    }
+}
+
+// Vælger den første gruppe, hvis URL'en ikke angiver en gruppe
+if ($selectedGroup === null && $selectedGroupId === null) {
+    $selectedGroup = $groups[0] ?? null;
+}
 ?>
 
 <main id="main" class="site-main">

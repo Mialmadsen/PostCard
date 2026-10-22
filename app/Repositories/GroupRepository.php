@@ -39,4 +39,15 @@ class GroupRepository extends Repository
             return $groupId;
         });
     }
+
+    // Henter en bestemt gruppe ud fra dens ID
+    public function findById(int $groupId): ?array
+    {
+        return $this->fetchOne(
+            'SELECT group_id, name, description, posting_mode, default_post_limit
+             FROM user_groups
+             WHERE group_id = :group_id',
+            ['group_id' => $groupId]
+        );
+    }
 }

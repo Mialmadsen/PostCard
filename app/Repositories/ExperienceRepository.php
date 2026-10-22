@@ -230,4 +230,52 @@ class ExperienceRepository extends Repository
             return $stmt->rowCount() === 1;
         }
 
+        // Henter alle godkendte og afsluttede oplevelser i en bestemt gruppe
+        public function findVisibleByGroup(int $groupId): array
+        {
+            $sql = "
+                SELECT
+                    e.experience_id,
+                    e.name,
+                    e.start_date,
+                    e.end_date,
+                    e.experience_status,
+                    e.created_at,
+                    u.first_name,
+                    u.last_name,
+                    COUNT(p.post_id) AS post_count
+                FROM experiences AS e
+
+                -- Henter navnet på brugeren, der har oprettet oplevelsen
+                INNER JOIN users AS u
+                    ON e.user_id = u.user_id
+
+                -- LEFT JOIN medtager også oplevelser uden opslag
+                LEFT JOIN posts AS p
+                    ON e.experience_id = p.experience_id
+
+                -- Viser kun oplevelser fra den valgte gruppe
+                WHERE e.group_id = :group_id
+                    AND e.experience_status IN ('approved', 'closed')
+
+                -- Samler opslagene, så hver oplevelse kun vises én gang
+                GROUP BY
+                    e.experience_id,
+                    e.name,
+                    e.start_date,
+                    e.end_date,
+                    e.experience_status,
+                    e.created_at,
+                    u.first_name,
+                    u.last_name
+
+                -- Viser de nyeste oplevelser først
+                ORDER BY e.created_at DESC, e.experience_id DESC
+            ";
+
+            return $this->fetchAll($sql, [
+                'group_id' => $groupId
+            ]);
+        }
+
 }
