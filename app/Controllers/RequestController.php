@@ -8,6 +8,7 @@ use PostCard\Core\Auth;
 use PostCard\Core\View;
 use PostCard\Repositories\ExperienceRepository;
 use PostCard\Repositories\GroupMemberRepository;
+use PostCard\Core\Session;
 
 class RequestController
 {
@@ -85,7 +86,8 @@ class RequestController
             'groups' => $groups,
             'groupId' => $groupId,
             'groupName' => $groupName,
-            'requests' => $requests
+            'requests' => $requests,
+            'success' => Session::takeFlash('success')
         ]);
     }
 
@@ -104,7 +106,7 @@ class RequestController
         );
 
         // Henter administratorens beslutning
-        $decision = $_POST['decision'] ?? '';
+        $decision = input('decision');
 
         // Kontrollerer, at oplevelsens ID og beslutningen er gyldige
         if (!$experienceId || !in_array($decision, ['approve', 'reject'], true)) {
@@ -131,8 +133,8 @@ class RequestController
         if ($decision === 'approve') {
 
             // Henter datoer og opslagsgrænse fra formularen
-            $startDate = trim((string) ($_POST['start_date'] ?? ''));
-            $endDate = trim((string) ($_POST['end_date'] ?? ''));
+            $startDate = input('start_date');
+            $endDate = input('end_date');
 
             $postLimit = filter_input(
                 INPUT_POST,
@@ -185,14 +187,17 @@ class RequestController
             exit('Anmodningen er allerede blevet behandlet.');
         }
 
-        // Gemmer en bekræftelsesbesked i sessionen
+        // Gemmer en bekræftelsesbesked som en flash message
         // Beskeden afhænger af, om oplevelsen blev godkendt eller afvist
-        $_SESSION['request_success'] = $decision === 'approve'
-        ? 'Oplevelsen er blevet godkendt.'
-        : 'Oplevelsen er blevet afvist.';
+        Session::flash(
+            'success',
+            $decision === 'approve'
+                ? 'Oplevelsen er blevet godkendt.'
+                : 'Oplevelsen er blevet afvist.'
+);
 
         // Sender administratoren tilbage til gruppens anmodninger
-        header('Location: ' . url('/requests?group_id=' . $groupId));
+        header('Location: ' . BASE_PATH . '/requests?group_id=' . $groupId);
         exit;
     }
 
