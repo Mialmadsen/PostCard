@@ -107,10 +107,11 @@ class ExperienceController
             FILTER_VALIDATE_INT
         );
 
-        $name = trim((string) ($_POST['name'] ?? ''));
-        $description = trim((string) ($_POST['description'] ?? ''));
-        $startDate = (string) ($_POST['start_date'] ?? '');
-        $endDate = (string) ($_POST['end_date'] ?? '');
+        // Henter formularens oplysninger gennem den fælles input helper
+        $name = input('name');
+        $description = input('description');
+        $startDate = input('start_date');
+        $endDate = input('end_date');
 
         // Kontrollerer, at der er valgt en gyldig gruppe
         if (!$groupId || $groupId < 1) {

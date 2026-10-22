@@ -85,7 +85,14 @@
 
         <section class="card experience-owner" aria-labelledby="owner-heading">
 
-            <h2 id="owner-heading">Din oplevelse</h2>
+        <?php
+        // Kontrollerer om den indloggede bruger har oprettet oplevelsen
+        $isOwner = (int) $experience['user_id'] === \PostCard\Core\Auth::userId();
+        ?>
+
+        <h2 id="owner-heading">
+            <?= $isOwner ? 'Din oplevelse' : 'Om oplevelsen' ?>
+        </h2>
 
             <?php
             // Kontrollerer om oplevelsen har en opslaggrænse
@@ -118,36 +125,45 @@
                     <?= $postsUsed ?> af <?= $postLimit ?>
                 </progress>
 
-            <?php else: ?>
+                <?php else: ?>
 
-                <p class="meta">
-                    <?= $postsUsed ?> opslag
+                    <p class="meta">
+                        <?= $postsUsed ?> opslag · Ingen opslagsgrænse
 
-                    <?php if ($daysRemaining !== null): ?>
-                        · slutter om <?= $daysRemaining ?> dage
-                    <?php endif; ?>
-                </p>
+                        <?php if ($daysRemaining !== null): ?>
+                            · slutter om <?= $daysRemaining ?> dage
+                        <?php endif; ?>
+                    </p>
 
-            <?php endif; ?>
+                <?php endif; ?>
 
             <?php
-            // $isActive kommer fra controlleren og fortæller,
-            // om oplevelsen er godkendt og inden for start- og slutdatoen
+            // Kontrollerer om brugeren må oprette et nyt opslag
+            // Oplevelsen skal være aktiv, og der skal være ledige opslag
+            // Open-grupper har ingen opslaggrænse
+            $canCreatePost = $isActive && (
+                $postLimit === null || $postsRemaining > 0
+            );
             ?>
-            <?php if ($isActive): ?>
 
+            <?php if ($canCreatePost): ?>
                 <p>
                     <span class="button button--primary">
                         Nyt opslag
                     </span>
                 </p>
-
             <?php else: ?>
-
                 <p class="meta">
-                    Det er ikke muligt at oprette opslag i øjeblikket.
+                    <?php if ($experience['experience_status'] === 'pending'): ?>
+                        Oplevelsen afventer godkendelse fra en gruppeadministrator.
+                    <?php elseif ($experience['experience_status'] === 'rejected'): ?>
+                        Oplevelsen er blevet afvist og kan derfor ikke modtage opslag.
+                    <?php elseif (!$isActive): ?>
+                        Det er ikke muligt at oprette opslag uden for oplevelsens periode.
+                    <?php else: ?>
+                        Opslagsgrænsen for denne oplevelse er nået.
+                    <?php endif; ?>
                 </p>
-
             <?php endif; ?>
 
         </section>

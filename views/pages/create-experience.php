@@ -63,8 +63,6 @@ $selectedGroup = $groups[0] ?? null;
 
                 <!-- Formularen sender senere data til vores store()-metode -->
                 <form method="POST" action="<?= url('/create-experience') ?>">
-                    <!-- Formularen sender data til vores store()-metode -->
-                    <form method="POST" action="<?= url('/create-experience') ?>">
 
                     <!-- Tilføjer CSRF-token gennem den fælles hjælpeklasse -->
                     <?= \PostCard\Core\Csrf::field() ?>

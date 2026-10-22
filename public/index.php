@@ -13,6 +13,7 @@ use PostCard\Core\Csrf;
 use PostCard\Controllers\PageController;
 use PostCard\Controllers\AuthController;
 use PostCard\Controllers\ExperienceController;
+use PostCard\Controllers\RequestController;
 use PostCard\Controllers\GroupController;
 
 require __DIR__ . '/../app/autoload.php';
@@ -64,6 +65,8 @@ $router->add('POST', '/create-group', [GroupController::class, 'store']);
 $router->add('GET', '/experience', [ExperienceController::class, 'show']);
 $router->add('GET', '/create-experience', [ExperienceController::class, 'create']);
 $router->add('POST', '/create-experience', [ExperienceController::class, 'store']);
+$router->add('GET', '/requests', [RequestController::class, 'index']);
+$router->add('POST', '/requests', [RequestController::class, 'update']);
 
 // Find who handles this address, e.g. [PageController::class, 'landing'], or null if unknown.
 $handler = $router->find($requestMethod, $path);

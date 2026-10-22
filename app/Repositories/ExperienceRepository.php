@@ -148,4 +148,86 @@ class ExperienceRepository extends Repository
         // Det kan vi senere bruge til at sende brugeren til oplevelsens side
         return (int) $this->pdo->lastInsertId();
     }
+
+        // Henter alle oplevelser, der afventer godkendelse i en bestemt gruppe
+        public function findPendingByGroup(int $groupId): array
+        {
+            // Henter oplevelserne og navnet på brugeren, der har oprettet dem
+            $sql = "
+                SELECT
+                    e.experience_id,
+                    e.name,
+                    e.description,
+                    e.start_date,
+                    e.end_date,
+                    e.post_limit,
+                    e.created_at,
+                    u.first_name,
+                    u.last_name
+                FROM experiences AS e
+
+                -- Forbinder oplevelsen med brugeren, der har oprettet den
+                INNER JOIN users AS u
+                    ON e.user_id = u.user_id
+
+                -- Viser kun afventende oplevelser fra den valgte gruppe
+                WHERE e.group_id = :group_id
+                AND e.experience_status = 'pending'
+
+                -- De ældste anmodninger vises først
+                ORDER BY e.created_at ASC, e.experience_id ASC
+            ";
+
+            // Bruger den fælles fetchAll()-metode fra Repository
+            return $this->fetchAll($sql, [
+                'group_id' => $groupId
+            ]);
+        }
+
+
+        // Opdaterer en afventende oplevelse, når en gruppeadministrator godkender eller afviser den
+        public function updateRequest(
+            int $experienceId,
+            int $groupId,
+            string $status,
+            ?string $startDate = null,
+            ?string $endDate = null,
+            ?int $postLimit = null
+        ): bool {
+
+            // Kun godkendelse og afvisning er tilladt
+            if (!in_array($status, ['approved', 'rejected'], true)) {
+                throw new \InvalidArgumentException('Ugyldig status.');
+            }
+
+            // Opdaterer kun oplevelsen, hvis den stadig afventer godkendelse
+            // og tilhører den gruppe, administratoren arbejder med
+            $sql = "
+                UPDATE experiences
+                SET
+                    experience_status = :status,
+                    start_date = COALESCE(:start_date, start_date),
+                    end_date = COALESCE(:end_date, end_date),
+                    post_limit = COALESCE(:post_limit, post_limit)
+                WHERE experience_id = :experience_id
+                AND group_id = :group_id
+                AND experience_status = 'pending'
+            ";
+
+            // Prepared statement beskytter mod SQL injection
+            $stmt = $this->pdo->prepare($sql);
+
+            $stmt->execute([
+                'status' => $status,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'post_limit' => $postLimit,
+                'experience_id' => $experienceId,
+                'group_id' => $groupId
+            ]);
+
+            // Returnerer true, hvis en oplevelse blev opdateret
+            return $stmt->rowCount() === 1;
+        }
+
 }

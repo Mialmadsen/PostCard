@@ -46,4 +46,32 @@ class GroupMemberRepository extends Repository
             'user_id' => $userId
         ]);
     }
+
+    // Henter de grupper, hvor brugeren er aktiv gruppeadministrator
+    public function findAdminGroupsByUser(int $userId): array
+    {
+        $sql = "
+            SELECT
+                g.group_id,
+                g.name,
+                g.posting_mode
+            FROM group_members AS gm
+
+            -- JOIN bruges til at hente gruppens oplysninger
+            INNER JOIN user_groups AS g
+                ON gm.group_id = g.group_id
+
+            -- Finder kun de grupper, hvor brugeren er administrator
+            WHERE gm.user_id = :user_id
+                AND gm.member_status = 'active'
+                AND gm.member_role = 'group_admin'
+
+            ORDER BY g.name ASC
+        ";
+
+        // Henter grupperne gennem den fælles Repository-klasse
+        return $this->fetchAll($sql, [
+            'user_id' => $userId
+        ]);
+    }
 }
