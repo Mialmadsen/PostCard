@@ -44,4 +44,18 @@ class Session
         // Destroy the session
         session_destroy();
     }
+
+    // creates a flash - message that informs user about success of his actions
+    public static function flash(string $key, string $message): void
+    {
+        $_SESSION['flash'][$key] = $message;
+    }
+
+    // takes and reads the message
+    public static function takeFlash(string $key): ?string
+    {
+        $message = $_SESSION['flash'][$key] ?? null;
+        unset($_SESSION['flash'][$key]);
+        return $message;
+    }
 }
