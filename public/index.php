@@ -22,6 +22,7 @@ require_once __DIR__ . '/../app/Helpers/escape.php';
 require_once __DIR__ . '/../app/Helpers/url.php';
 require_once __DIR__ . '/../app/Helpers/asset.php';
 require_once __DIR__ . '/../app/Helpers/input.php';
+require_once __DIR__ . '/../app/Helpers/redirect.php';
 
 // The address the browser asked for, without the "?id=3" part.
 // e.g. "/PostCard/public/group"

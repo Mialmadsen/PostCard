@@ -83,7 +83,6 @@ class GroupController
         );
 
         // temporary, should be '/home', when moved to views
-        header('Location: ' . BASE_PATH . '/home.php');
-        exit;
+        redirect('/home.php');
     }
 }

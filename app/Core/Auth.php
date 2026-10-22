@@ -19,8 +19,7 @@ class Auth
     public static function requireLogin(): void
     {
         if (self::userId() === null) {
-            header('Location: ' . BASE_PATH . '/login');
-            exit;
+            redirect('/login');
         }
     }
 

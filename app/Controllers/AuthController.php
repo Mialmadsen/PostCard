@@ -52,17 +52,14 @@ class AuthController
 
         Auth::login($user['user_id']);
         // temporary, should be '/home', when moved to views
-        header('Location: ' . BASE_PATH . '/home.php');
-        exit;
+        redirect('/home.php');
     }
 
     // Log out: destroy the session, then go to the front page
     public function logout(): void
     {
         Auth::logout();
-
-        header('Location: ' . BASE_PATH . '/');
-        exit;
+        redirect('/');
     }
 
     // Show the empty registration form.
@@ -183,7 +180,6 @@ class AuthController
 
         Auth::login($newUserId);
         // temporary, should be '/home', when moved to views
-        header('Location: ' . BASE_PATH . '/home.php');
-        exit;
+        redirect('/home.php');
     }
 }
