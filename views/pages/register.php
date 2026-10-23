@@ -12,7 +12,7 @@
                     nedenfor.</p>
                 <?php endif; ?>
 
-                <!-- IF the page was opened from an invitation (register.php?invite=…) and the link is valid:
+                <!-- IF the page was opened from an invitation (/register?invite=…) and the link is valid:
                 <p class="alert">Når du har oprettet din bruger, bliver du medlem af <strong>Familien Nielsen</strong>.</p>
                 -->
 

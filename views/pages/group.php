@@ -58,7 +58,7 @@
                     // TODO: Tilføj link til medlemsoversigten, når /members-routen er lavet.
                     // Linket skal bruge gruppens dynamiske ID og medlemstal.
                     ?>
-                    <p><a href="members.php?group=1">Se alle 13 medlemmer</a></p>
+                    <p><a href="<?= url('/members?group_id=' . (int) $group['group_id']) ?>">Se alle <?= (int) $memberCount ?> medlemmer</a></p>
 
                     <!-- A CSRF token is added in Epic 2. Sets group_members.member_status = 'left'.
                          IF the user is the only admin: no button, instead

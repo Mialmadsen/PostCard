@@ -64,6 +64,7 @@ $router->add('GET', '/contact', [PageController::class, 'contact']);
 $router->add('GET', '/rules', [PageController::class, 'rules']);
 $router->add('GET', '/create-group', [GroupController::class, 'create']);
 $router->add('POST', '/create-group', [GroupController::class, 'store']);
+$router->add('GET', '/invite', [GroupController::class, 'invite']);
 $router->add('GET', '/group', [GroupPageController::class, 'show']);
 $router->add('GET', '/experience', [ExperienceController::class, 'show']);
 $router->add('GET', '/create-experience', [ExperienceController::class, 'create']);

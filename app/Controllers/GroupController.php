@@ -82,7 +82,38 @@ class GroupController
             $defaultPostLimit,
         );
 
-        // temporary, should be '/home', when moved to views
-        redirect('/home.php');
+        redirect('/group?id=' . $groupId);
+    }
+
+    public function invite(): void
+    {
+        //the group id from the address
+        $groupId = filter_input(INPUT_GET, 'group_id', FILTER_VALIDATE_INT);
+
+        //if id is not valid we stop and give 404
+
+        if (!is_int($groupId) || $groupId < 1) {
+            http_response_code(404);
+            echo 'Gruppen findes ikke.';
+            exit;
+        }
+
+        //only the group admin can invite so we check that it is the right admin
+        Auth::requireGroupAdmin($groupId);
+
+        //now we get the group communicating with DB
+        $groups = new GroupRepository();
+        $group = $groups->findById($groupId);
+
+        //Now we show the page where we create invitation
+        View::render(
+            'invite',
+            [
+                'pageTitle' => 'Inviter',
+                'isLoggedIn' => true,
+                'group' => $group,
+
+            ]
+        );
     }
 }

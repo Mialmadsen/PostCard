@@ -1,25 +1,25 @@
 <?php
 /**
- * Menu for the operator pages (admin-*.php).
+ * Menu for the operator pages (/admin/...).
  *
- * The page sets $adminPage BEFORE it requires this file, to mark where the operator is:
+ * The controller sends 'adminPage' to View::render, to mark where the operator is:
  *   'overview' | 'users' | 'posts' | 'content' | 'settings'
  */
 $adminPage = $adminPage ?? '';
 
 $adminLinks = [
-    'overview' => ['admin.php', 'Oversigt'],
-    'users'    => ['admin-users.php', 'Brugere'],
-    'posts'    => ['admin-posts.php', 'Opslag'],
-    'content'  => ['admin-content.php', 'Indhold'],
-    'settings' => ['admin-settings.php', 'Indstillinger'],
+    'overview' => ['/admin', 'Oversigt'],
+    'users'    => ['/admin/users', 'Brugere'],
+    'posts'    => ['/admin/posts', 'Opslag'],
+    'content'  => ['/admin/content', 'Indhold'],
+    'settings' => ['/admin/settings', 'Indstillinger'],
 ];
 ?>
 <nav class="card admin-nav" aria-label="Administration">
     <ul class="admin-nav__list">
-        <?php foreach ($adminLinks as $key => [$href, $label]): ?>
+        <?php foreach ($adminLinks as $key => [$path, $label]): ?>
             <li>
-                <a class="admin-nav__link" href="<?= $href ?>"<?= $key === $adminPage ? ' aria-current="page"' : '' ?>><?= $label ?></a>
+                <a class="admin-nav__link" href="<?= url($path) ?>"<?= $key === $adminPage ? ' aria-current="page"' : '' ?>><?= $label ?></a>
             </li>
         <?php endforeach; ?>
     </ul>

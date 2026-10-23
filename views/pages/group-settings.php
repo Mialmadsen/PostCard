@@ -1,16 +1,15 @@
 <?php
-$pageTitle = 'Indstillinger · Familien Nielsen';
-$isLoggedIn = true;
-require __DIR__ . '/../views/partials/header.php';
+// The controller shows this page with:
+// View::render('group-settings', ['pageTitle' => 'Indstillinger · Familien Nielsen', 'isLoggedIn' => true]);
 ?>
 
 <main id="main" class="site-main">
     <div class="container container--text">
         <nav class="breadcrumb" aria-label="Du er her">
             <ol class="breadcrumb__list">
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="home.php">Mine grupper</a></li>
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="group.php?id=1">Familien Nielsen</a></li>
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="group-settings.php?group=1" aria-current="page">Indstillinger</a></li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/home') ?>">Mine grupper</a></li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/group?id=1') ?>">Familien Nielsen</a></li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/group-settings?group_id=1') ?>" aria-current="page">Indstillinger</a></li>
             </ol>
         </nav>
 
@@ -25,9 +24,10 @@ require __DIR__ . '/../views/partials/header.php';
             <section class="card" aria-labelledby="form-heading">
                 <h2 class="section-title" id="form-heading">Om gruppen</h2>
 
-                <!-- A CSRF token is added in Epic 2.
+                <!--
                      The same fields as create-group.php, filled in from user_groups. -->
-                <form class="form" action="group-settings.php" method="post">
+                <form class="form" action="<?= url('/group-settings') ?>" method="post">
+                    <?= \PostCard\Core\Csrf::field() ?>
                     <input type="hidden" name="group_id" value="1">
 
                     <div class="field">
@@ -74,12 +74,10 @@ require __DIR__ . '/../views/partials/header.php';
 
                     <div class="button-row">
                         <button class="button button--primary" type="submit">Gem indstillinger</button>
-                        <a class="button button--secondary" href="group.php?id=1">Annuller</a>
+                        <a class="button button--secondary" href="<?= url('/group?id=1') ?>">Annuller</a>
                     </div>
                 </form>
             </section>
         </div>
     </div>
 </main>
-
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>

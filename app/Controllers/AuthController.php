@@ -51,8 +51,7 @@ class AuthController
         }
 
         Auth::login($user['user_id']);
-        // temporary, should be '/home', when moved to views
-        redirect('/home.php');
+        redirect('/home');
     }
 
     // Log out: destroy the session, then go to the front page
@@ -179,7 +178,6 @@ class AuthController
         );
 
         Auth::login($newUserId);
-        // temporary, should be '/home', when moved to views
-        redirect('/home.php');
+        redirect('/home');
     }
 }

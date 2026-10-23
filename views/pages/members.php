@@ -1,18 +1,15 @@
 <?php
-$pageTitle = 'Medlemmer · Familien Nielsen';
-$isLoggedIn = true;
-$pageStyle = 'members';
-$pageScripts = ['confirm'];
-require __DIR__ . '/../views/partials/header.php';
+// The controller shows this page with:
+// View::render('members', ['pageTitle' => 'Medlemmer · Familien Nielsen', 'isLoggedIn' => true, 'pageStyle' => 'members', 'pageScripts' => ['confirm']]);
 ?>
 
 <main id="main" class="site-main">
     <div class="container container--text">
         <nav class="breadcrumb" aria-label="Du er her">
             <ol class="breadcrumb__list">
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="home.php">Mine grupper</a></li>
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="group.php?id=1">Familien Nielsen</a></li>
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="members.php?group=1" aria-current="page">Medlemmer</a></li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/home') ?>">Mine grupper</a></li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/group?id=1') ?>">Familien Nielsen</a></li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/members?group_id=1') ?>" aria-current="page">Medlemmer</a></li>
             </ol>
         </nav>
 
@@ -21,7 +18,7 @@ require __DIR__ . '/../views/partials/header.php';
             <h1>Medlemmer</h1>
             <p>13 medlemmer. Kun de kan se gruppens oplevelser og opslag.</p>
             <!-- IF member_role = 'group_admin' -->
-            <p><a class="button button--secondary" href="invite.php?group=1">Inviter nye medlemmer</a></p>
+            <p><a class="button button--secondary" href="<?= url('/invite?group_id=1') ?>">Inviter nye medlemmer</a></p>
             <!-- /IF -->
         </header>
 
@@ -31,7 +28,6 @@ require __DIR__ . '/../views/partials/header.php';
 
                 <!-- LOOP: group_members with member_status = 'active', admins first, then by first name.
                      Only admins see the buttons, and never on an admin's row. The server checks this again.
-                     A CSRF token is added in Epic 2.
                      "Gør til admin": group_members.member_role = 'group_admin'.
                      "Fjern": group_members.member_status = 'removed'. -->
                 <ul class="divided-list">
@@ -56,15 +52,17 @@ require __DIR__ . '/../views/partials/header.php';
                             <p class="meta">Medlem siden <time datetime="2026-09-02">2. sep. 2026</time></p>
                         </div>
                         <div class="button-row member__actions">
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du gøre Anna Nielsen til admin? Admins kan godkende oplevelser, invitere og fjerne medlemmer.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="3">
                                 <input type="hidden" name="action" value="make-admin">
                                 <button class="button button--secondary" type="submit">Gør <span class="visually-hidden">Anna Nielsen</span> til admin</button>
                             </form>
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du fjerne Anna Nielsen fra Familien Nielsen? Det, der er delt, bliver i gruppens album.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="3">
                                 <input type="hidden" name="action" value="remove">
@@ -79,15 +77,17 @@ require __DIR__ . '/../views/partials/header.php';
                             <p class="meta">Medlem siden <time datetime="2026-09-05">5. sep. 2026</time></p>
                         </div>
                         <div class="button-row member__actions">
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du gøre Bo Larsen til admin? Admins kan godkende oplevelser, invitere og fjerne medlemmer.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="10">
                                 <input type="hidden" name="action" value="make-admin">
                                 <button class="button button--secondary" type="submit">Gør <span class="visually-hidden">Bo Larsen</span> til admin</button>
                             </form>
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du fjerne Bo Larsen fra Familien Nielsen? Det, der er delt, bliver i gruppens album.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="10">
                                 <input type="hidden" name="action" value="remove">
@@ -102,15 +102,17 @@ require __DIR__ . '/../views/partials/header.php';
                             <p class="meta">Medlem siden <time datetime="2026-09-03">3. sep. 2026</time></p>
                         </div>
                         <div class="button-row member__actions">
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du gøre Emma Nielsen til admin? Admins kan godkende oplevelser, invitere og fjerne medlemmer.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="7">
                                 <input type="hidden" name="action" value="make-admin">
                                 <button class="button button--secondary" type="submit">Gør <span class="visually-hidden">Emma Nielsen</span> til admin</button>
                             </form>
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du fjerne Emma Nielsen fra Familien Nielsen? Det, der er delt, bliver i gruppens album.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="7">
                                 <input type="hidden" name="action" value="remove">
@@ -125,15 +127,17 @@ require __DIR__ . '/../views/partials/header.php';
                             <p class="meta">Medlem siden <time datetime="2026-09-06">6. sep. 2026</time></p>
                         </div>
                         <div class="button-row member__actions">
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du gøre Freja Nielsen til admin? Admins kan godkende oplevelser, invitere og fjerne medlemmer.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="11">
                                 <input type="hidden" name="action" value="make-admin">
                                 <button class="button button--secondary" type="submit">Gør <span class="visually-hidden">Freja Nielsen</span> til admin</button>
                             </form>
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du fjerne Freja Nielsen fra Familien Nielsen? Det, der er delt, bliver i gruppens album.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="11">
                                 <input type="hidden" name="action" value="remove">
@@ -148,15 +152,17 @@ require __DIR__ . '/../views/partials/header.php';
                             <p class="meta">Medlem siden <time datetime="2026-09-05">5. sep. 2026</time></p>
                         </div>
                         <div class="button-row member__actions">
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du gøre Ida Larsen til admin? Admins kan godkende oplevelser, invitere og fjerne medlemmer.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="9">
                                 <input type="hidden" name="action" value="make-admin">
                                 <button class="button button--secondary" type="submit">Gør <span class="visually-hidden">Ida Larsen</span> til admin</button>
                             </form>
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du fjerne Ida Larsen fra Familien Nielsen? Det, der er delt, bliver i gruppens album.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="9">
                                 <input type="hidden" name="action" value="remove">
@@ -171,15 +177,17 @@ require __DIR__ . '/../views/partials/header.php';
                             <p class="meta">Medlem siden <time datetime="2026-09-02">2. sep. 2026</time></p>
                         </div>
                         <div class="button-row member__actions">
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du gøre Jens Nielsen til admin? Admins kan godkende oplevelser, invitere og fjerne medlemmer.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="5">
                                 <input type="hidden" name="action" value="make-admin">
                                 <button class="button button--secondary" type="submit">Gør <span class="visually-hidden">Jens Nielsen</span> til admin</button>
                             </form>
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du fjerne Jens Nielsen fra Familien Nielsen? Det, der er delt, bliver i gruppens album.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="5">
                                 <input type="hidden" name="action" value="remove">
@@ -194,15 +202,17 @@ require __DIR__ . '/../views/partials/header.php';
                             <p class="meta">Medlem siden <time datetime="2026-09-02">2. sep. 2026</time></p>
                         </div>
                         <div class="button-row member__actions">
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du gøre Karen Nielsen til admin? Admins kan godkende oplevelser, invitere og fjerne medlemmer.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="6">
                                 <input type="hidden" name="action" value="make-admin">
                                 <button class="button button--secondary" type="submit">Gør <span class="visually-hidden">Karen Nielsen</span> til admin</button>
                             </form>
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du fjerne Karen Nielsen fra Familien Nielsen? Det, der er delt, bliver i gruppens album.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="6">
                                 <input type="hidden" name="action" value="remove">
@@ -217,15 +227,17 @@ require __DIR__ . '/../views/partials/header.php';
                             <p class="meta">Medlem siden <time datetime="2026-09-02">2. sep. 2026</time></p>
                         </div>
                         <div class="button-row member__actions">
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du gøre Lise Nielsen til admin? Admins kan godkende oplevelser, invitere og fjerne medlemmer.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="4">
                                 <input type="hidden" name="action" value="make-admin">
                                 <button class="button button--secondary" type="submit">Gør <span class="visually-hidden">Lise Nielsen</span> til admin</button>
                             </form>
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du fjerne Lise Nielsen fra Familien Nielsen? Det, der er delt, bliver i gruppens album.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="4">
                                 <input type="hidden" name="action" value="remove">
@@ -240,15 +252,17 @@ require __DIR__ . '/../views/partials/header.php';
                             <p class="meta">Medlem siden <time datetime="2026-09-12">12. sep. 2026</time></p>
                         </div>
                         <div class="button-row member__actions">
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du gøre Morten Holm til admin? Admins kan godkende oplevelser, invitere og fjerne medlemmer.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="12">
                                 <input type="hidden" name="action" value="make-admin">
                                 <button class="button button--secondary" type="submit">Gør <span class="visually-hidden">Morten Holm</span> til admin</button>
                             </form>
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du fjerne Morten Holm fra Familien Nielsen? Det, der er delt, bliver i gruppens album.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="12">
                                 <input type="hidden" name="action" value="remove">
@@ -263,15 +277,17 @@ require __DIR__ . '/../views/partials/header.php';
                             <p class="meta">Medlem siden <time datetime="2026-09-03">3. sep. 2026</time></p>
                         </div>
                         <div class="button-row member__actions">
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du gøre Oliver Nielsen til admin? Admins kan godkende oplevelser, invitere og fjerne medlemmer.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="8">
                                 <input type="hidden" name="action" value="make-admin">
                                 <button class="button button--secondary" type="submit">Gør <span class="visually-hidden">Oliver Nielsen</span> til admin</button>
                             </form>
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du fjerne Oliver Nielsen fra Familien Nielsen? Det, der er delt, bliver i gruppens album.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="8">
                                 <input type="hidden" name="action" value="remove">
@@ -286,15 +302,17 @@ require __DIR__ . '/../views/partials/header.php';
                             <p class="meta">Medlem siden <time datetime="2026-09-04">4. sep. 2026</time></p>
                         </div>
                         <div class="button-row member__actions">
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du gøre Søren Madsen til admin? Admins kan godkende oplevelser, invitere og fjerne medlemmer.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="13">
                                 <input type="hidden" name="action" value="make-admin">
                                 <button class="button button--secondary" type="submit">Gør <span class="visually-hidden">Søren Madsen</span> til admin</button>
                             </form>
-                            <form class="js-confirm" action="members.php" method="post"
+                            <form class="js-confirm" action="<?= url('/members') ?>" method="post"
                                 data-confirm="Vil du fjerne Søren Madsen fra Familien Nielsen? Det, der er delt, bliver i gruppens album.">
+                                <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="group_id" value="1">
                                 <input type="hidden" name="user_id" value="13">
                                 <input type="hidden" name="action" value="remove">
@@ -308,5 +326,3 @@ require __DIR__ . '/../views/partials/header.php';
         </div>
     </div>
 </main>
-
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>

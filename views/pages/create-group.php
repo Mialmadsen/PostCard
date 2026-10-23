@@ -2,7 +2,7 @@
     <div class="container container--text">
         <nav class="breadcrumb" aria-label="Du er her">
             <ol class="breadcrumb__list">
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="home.php">Mine grupper</a></li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/home') ?>">Mine grupper</a></li>
                 <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/create-group') ?>"
                         aria-current="page">Ny
                         gruppe</a></li>
@@ -101,7 +101,7 @@
 
                     <div class="button-row">
                         <button class="button button--primary" type="submit">Opret gruppe</button>
-                        <a class="button button--secondary" href="home.php">Annuller</a>
+                        <a class="button button--secondary" href="<?= url('/home') ?>">Annuller</a>
                     </div>
                 </form>
             </section>

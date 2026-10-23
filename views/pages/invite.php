@@ -1,36 +1,31 @@
-<?php
-$pageTitle = 'Inviter · Familien Nielsen';
-$isLoggedIn = true;
-$pageStyle = 'invite';
-$pageScripts = ['copy-link', 'confirm'];
-require __DIR__ . '/../views/partials/header.php';
-?>
-
 <main id="main" class="site-main">
     <div class="container container--text">
         <nav class="breadcrumb" aria-label="Du er her">
             <ol class="breadcrumb__list">
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="home.php">Mine grupper</a></li>
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="group.php?id=1">Familien Nielsen</a></li>
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="invite.php?group=1" aria-current="page">Inviter</a></li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/home') ?>">Mine grupper</a></li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/group?id=' . $group['group_id']) ?>"><?= e($group['name']) ?></a></li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/invite?group_id=' . $group['group_id']) ?>"
+                        aria-current="page">Inviter</a></li>
             </ol>
         </nav>
 
         <header class="page-header">
-            <p class="group-label">Familien Nielsen · kun for admins</p>
+            <p class="group-label"><?= e($group['name']) ?> · kun for admins</p>
             <h1>Inviter nye medlemmer</h1>
-            <p>Lav et link og send det til én person, fx på sms eller mail. Linket virker én gang og udløber efter 7 dage.</p>
+            <p>Lav et link og send det til én person, fx på sms eller mail. Linket virker én gang og udløber efter 7
+                dage.</p>
         </header>
 
         <div class="card-stack">
             <section class="card flow" aria-labelledby="new-heading">
                 <h2 id="new-heading">Nyt invitationslink</h2>
 
-                <!-- A CSRF token is added in Epic 2.
+                <!--
                      The server makes a random token, saves only its hash (invitations.token_hash)
                      and shows the full link once, right after this form is sent. -->
-                <form action="invite.php" method="post">
-                    <input type="hidden" name="group_id" value="1">
+                <form action="<?= url('/invite') ?>" method="post">
+                    <?= \PostCard\Core\Csrf::field() ?>
+                    <input type="hidden" name="group_id" value="<?= e($group['group_id']) ?>">
                     <button class="button button--primary" type="submit">Lav et link</button>
                 </form>
 
@@ -42,7 +37,7 @@ require __DIR__ . '/../views/partials/header.php';
                     <div class="copy-link">
                         <label class="visually-hidden" for="invite-link">Invitationslink</label>
                         <input class="field__input copy-link__input js-copy-input" id="invite-link" type="text" readonly
-                            value="http://localhost/PostCard/public/join.php?token=8f3c1e2a9b7d4f60a1c5e9d2b3f4a6c8">
+                            value="http://localhost/PostCard/public/join?token=8f3c1e2a9b7d4f60a1c5e9d2b3f4a6c8">
                         <button class="button button--secondary js-copy-button" type="button">Kopiér link</button>
                     </div>
                     <!-- Filled by copy-link.js: "Linket er kopieret." -->
@@ -63,7 +58,7 @@ require __DIR__ . '/../views/partials/header.php';
                         <p class="meta">Venter · udløber <time datetime="2026-10-18">18. okt.</time></p>
                         <!-- A CSRF token is added in Epic 2. Sets expires_at to now, so the link stops working
                              (it is then shown as "Udløbet"). For a link sent to the wrong person. -->
-                        <form class="js-confirm" action="invite.php" method="post"
+                        <form class="js-confirm" action="<?= url('/invite') ?>" method="post"
                             data-confirm="Vil du annullere linket? Det kan ikke bruges bagefter.">
                             <input type="hidden" name="invitation_id" value="7">
                             <input type="hidden" name="action" value="cancel">
@@ -84,5 +79,3 @@ require __DIR__ . '/../views/partials/header.php';
         </div>
     </div>
 </main>
-
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>

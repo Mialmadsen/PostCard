@@ -127,7 +127,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
                     <!-- NAV: logged in -->
                     <ul class="site-nav__list">
-                        <li><a class="site-nav__link" href="home.php">Mine grupper</a></li>
+                        <li><a class="site-nav__link" href="<?= url('/home') ?>">Mine grupper</a></li>
                         <li class="user-menu">
                             <button class="user-menu__button js-user-menu-button" type="button"
                                 aria-expanded="false" aria-controls="user-menu-list">
@@ -139,8 +139,8 @@ if (session_status() === PHP_SESSION_NONE) {
                                 </svg>
                             </button>
                             <ul class="user-menu__list" id="user-menu-list">
-                                <li><a class="user-menu__item" href="profile.php">Min profil</a></li>
-                                <li><a class="user-menu__item" href="settings.php">Indstillinger</a></li>
+                                <li><a class="user-menu__item" href="<?= url('/profile') ?>">Min profil</a></li>
+                                <li><a class="user-menu__item" href="<?= url('/settings') ?>">Indstillinger</a></li>
                                 <li>
                                     <!-- Log out is a POST form, protected by the CSRF token -->
                                     <form action="<?= url('/logout') ?>" method="post">

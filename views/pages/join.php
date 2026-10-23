@@ -1,10 +1,9 @@
 <?php
-$pageTitle = 'Invitation';
-$isLoggedIn = false;
-require __DIR__ . '/../views/partials/header.php';
+// The controller shows this page with:
+// View::render('join', ['pageTitle' => 'Invitation', 'isLoggedIn' => false]);
 ?>
 
-<!-- The page an invitation link opens: join.php?token=…
+<!-- The page an invitation link opens: /join?token=…
      The server hashes the token and looks it up in invitations.token_hash.
      Four states:
      1. Not logged in (shown here): create a user or log in first; the token is passed on.
@@ -22,12 +21,12 @@ require __DIR__ . '/../views/partials/header.php';
                 <p class="eyebrow">Invitation</p>
                 <h1>Linket virker ikke</h1>
                 <p>Det er måske brugt eller udløbet. Bed den, der inviterede dig, om et nyt link.</p>
-                <p><a href="index.php">Til forsiden</a></p>
+                <p><a href="<?= url('/') ?>">Til forsiden</a></p>
                 ELSE: -->
 
                 <!-- IF the logged-in user is already a member: show only
                 <p>Du er allerede medlem af Familien Nielsen.</p>
-                <p><a class="button button--primary" href="group.php?id=1">Gå til gruppen</a></p> -->
+                <p><a class="button button--primary" href="<?= url('/group?id=1') ?>">Gå til gruppen</a></p> -->
 
                 <p class="eyebrow">Invitation</p>
                 <h1>Du er inviteret til Familien Nielsen</h1>
@@ -40,13 +39,13 @@ require __DIR__ . '/../views/partials/header.php';
                 <p class="alert">Det, du deler i gruppen, kan kun gruppens medlemmer se. Andre grupper ser det aldrig.</p>
 
                 <div class="form__actions">
-                    <a class="button button--primary" href="register.php?invite=TOKEN">Opret bruger og bliv medlem</a>
-                    <p>Har du allerede en bruger? <a href="login.php?invite=TOKEN">Log ind</a></p>
+                    <a class="button button--primary" href="<?= url('/register?invite=TOKEN') ?>">Opret bruger og bliv medlem</a>
+                    <p>Har du allerede en bruger? <a href="<?= url('/login?invite=TOKEN') ?>">Log ind</a></p>
                 </div>
 
                 <!-- IF logged in: instead of the two links above
-                A CSRF token is added in Epic 2
-                <form class="form__actions" action="join.php" method="post">
+                <form class="form__actions" action="<?= url('/join') ?>" method="post">
+                    <?= \PostCard\Core\Csrf::field() ?>
                     <input type="hidden" name="token" value="TOKEN">
                     <button class="button button--primary" type="submit">Bliv medlem af Familien Nielsen</button>
                 </form>
@@ -57,5 +56,3 @@ require __DIR__ . '/../views/partials/header.php';
         </div>
     </div>
 </main>
-
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>

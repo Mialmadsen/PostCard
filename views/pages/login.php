@@ -10,7 +10,7 @@
                     <p class="alert alert--error" role="alert"><?= e($error) ?></p>
                 <?php endif; ?>
 
-                <!-- IF the page was opened from an invitation (login.php?invite=…) and the link is valid:
+                <!-- IF the page was opened from an invitation (/login?invite=…) and the link is valid:
                 <p class="alert">Når du er logget ind, bliver du medlem af <strong>Familien Nielsen</strong>.</p>
                 -->
 
@@ -31,7 +31,7 @@
 
                     <div class="form__actions">
                         <button class="button button--primary" type="submit">Log ind</button>
-                        <a href="forgot-password.php">Glemt adgangskode?</a>
+                        <a href="<?= url('/forgot-password') ?>">Glemt adgangskode?</a>
                         <p>Ingen bruger endnu? <a href="<?= url('/register') ?>">Opret bruger</a></p>
                     </div>
                 </form>

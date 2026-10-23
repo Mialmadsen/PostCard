@@ -1,13 +1,10 @@
 <?php
-$pageTitle = 'Administration · Oversigt';
-$isOperator = true;
-$pageStyle = 'admin';
-$adminPage = 'overview';
-require __DIR__ . '/../views/partials/header.php';
+// The controller shows this page with:
+// View::render('admin', ['pageTitle' => 'Administration · Oversigt', 'isOperator' => true, 'pageStyle' => 'admin', 'adminPage' => 'overview']);
 ?>
 
-<!-- Every admin-*.php page (except admin-login.php) is only for a logged-in operator.
-     Anyone else is sent to admin-login.php. The server checks this on every request. -->
+<!-- Every /admin page (except /admin/login) is only for a logged-in operator.
+     Anyone else is sent to /admin/login. The server checks this on every request. -->
 
 <main id="main" class="site-main">
     <div class="container">
@@ -15,7 +12,7 @@ require __DIR__ . '/../views/partials/header.php';
         <h1>Oversigt</h1>
 
         <div class="sidebar-layout">
-            <?php require __DIR__ . '/../views/partials/admin-nav.php'; ?>
+            <?php require __DIR__ . '/../partials/admin-nav.php'; ?>
 
             <div class="flow">
                 <section class="card" aria-labelledby="numbers-heading">
@@ -46,33 +43,31 @@ require __DIR__ . '/../views/partials/header.php';
                     <!-- LOOP: the 5 newest users (users.created_at) -->
                     <ul class="divided-list">
                         <li>
-                            <p><a href="admin-user.php?id=214">Morten Holm</a></p>
+                            <p><a href="<?= url('/admin/user?id=214') ?>">Morten Holm</a></p>
                             <p class="meta">Oprettet <time datetime="2026-10-11">11. okt. 2026</time> · Aktiv</p>
                         </li>
                         <li>
-                            <p><a href="admin-user.php?id=213">Ida Larsen</a></p>
+                            <p><a href="<?= url('/admin/user?id=213') ?>">Ida Larsen</a></p>
                             <p class="meta">Oprettet <time datetime="2026-10-10">10. okt. 2026</time> · Aktiv</p>
                         </li>
                         <li>
-                            <p><a href="admin-user.php?id=212">Bo Larsen</a></p>
+                            <p><a href="<?= url('/admin/user?id=212') ?>">Bo Larsen</a></p>
                             <p class="meta">Oprettet <time datetime="2026-10-09">9. okt. 2026</time> · Aktiv</p>
                         </li>
                         <li>
-                            <p><a href="admin-user.php?id=211">Freja Nielsen</a></p>
+                            <p><a href="<?= url('/admin/user?id=211') ?>">Freja Nielsen</a></p>
                             <p class="meta">Oprettet <time datetime="2026-10-08">8. okt. 2026</time> · Aktiv</p>
                         </li>
                         <li>
-                            <p><a href="admin-user.php?id=210">Søren Madsen</a></p>
+                            <p><a href="<?= url('/admin/user?id=210') ?>">Søren Madsen</a></p>
                             <p class="meta">Oprettet <time datetime="2026-10-06">6. okt. 2026</time> · Aktiv</p>
                         </li>
                     </ul>
                     <!-- /LOOP -->
 
-                    <p><a href="admin-users.php">Se alle brugere</a></p>
+                    <p><a href="<?= url('/admin/users') ?>">Se alle brugere</a></p>
                 </section>
             </div>
         </div>
     </div>
 </main>
-
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>

@@ -1,7 +1,6 @@
 <?php
-$pageTitle = 'Administration · Log ind';
-$isLoggedIn = false;
-require __DIR__ . '/../views/partials/header.php';
+// The controller shows this page with:
+// View::render('admin-login', ['pageTitle' => 'Administration · Log ind', 'isLoggedIn' => false]);
 ?>
 
 <!-- Login for operators (users.is_operator = 1). The same users table as normal login,
@@ -12,13 +11,13 @@ require __DIR__ . '/../views/partials/header.php';
         <section class="card flow" aria-labelledby="login-heading">
             <p class="eyebrow">Administration</p>
             <h1 id="login-heading">Log ind som operatør</h1>
-            <p>Kun for dem, der driver <span class="brand">PostCard</span>. Er du almindelig bruger, så <a href="login.php">log ind her</a>.</p>
+            <p>Kun for dem, der driver <span class="brand">PostCard</span>. Er du almindelig bruger, så <a href="<?= url('/login') ?>">log ind her</a>.</p>
 
             <!-- IF login failed (wrong details OR not an operator — the same message, so it does not reveal which):
             <p class="alert alert--error" role="alert">Forkert e-mail eller adgangskode.</p> -->
 
-            <!-- A CSRF token is added in Epic 2 -->
-            <form class="form" action="admin-login.php" method="post">
+            <form class="form" action="<?= url('/admin/login') ?>" method="post">
+                <?= \PostCard\Core\Csrf::field() ?>
                 <div class="field">
                     <label class="field__label" for="email">E-mail</label>
                     <input class="field__input" id="email" name="email" type="email"
@@ -38,5 +37,3 @@ require __DIR__ . '/../views/partials/header.php';
         </section>
     </div>
 </main>
-
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>

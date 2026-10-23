@@ -1,16 +1,14 @@
 <?php
-$pageTitle = 'Indstillinger';
-$isLoggedIn = true;
-$pageScripts = ['avatar-preview', 'confirm'];
-require __DIR__ . '/../views/partials/header.php';
+// The controller shows this page with:
+// View::render('settings', ['pageTitle' => 'Indstillinger', 'isLoggedIn' => true, 'pageScripts' => ['avatar-preview', 'confirm']]);
 ?>
 
 <main id="main" class="site-main">
     <div class="container container--text">
         <nav class="breadcrumb" aria-label="Du er her">
             <ol class="breadcrumb__list">
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="profile.php">Min profil</a></li>
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="settings.php" aria-current="page">Indstillinger</a></li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/profile') ?>">Min profil</a></li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/settings') ?>" aria-current="page">Indstillinger</a></li>
             </ol>
         </nav>
 
@@ -31,8 +29,9 @@ require __DIR__ . '/../views/partials/header.php';
             <section class="card" aria-labelledby="picture-heading">
                 <h2 class="section-title" id="picture-heading">Profilbillede</h2>
 
-                <!-- A CSRF token is added in Epic 2. enctype is needed to send a file. -->
-                <form class="form" action="settings.php" method="post" enctype="multipart/form-data">
+                <!-- enctype is needed to send a file. -->
+                <form class="form" action="<?= url('/settings') ?>" method="post" enctype="multipart/form-data">
+                    <?= \PostCard\Core\Csrf::field() ?>
                     <input type="hidden" name="form" value="picture">
 
                     <!-- IF users.profile_image: <img class="avatar avatar--large js-avatar-preview" src="…" alt=""> ELSE initials.
@@ -66,7 +65,8 @@ require __DIR__ . '/../views/partials/header.php';
                 </form>
 
                 <!-- "Fjern billede": users.profile_image = NULL, the initials are shown again -->
-                <form id="remove-picture" action="settings.php" method="post">
+                <form id="remove-picture" action="<?= url('/settings') ?>" method="post">
+                    <?= \PostCard\Core\Csrf::field() ?>
                     <input type="hidden" name="form" value="remove-picture">
                 </form>
             </section>
@@ -74,8 +74,9 @@ require __DIR__ . '/../views/partials/header.php';
             <section class="card" aria-labelledby="details-heading">
                 <h2 class="section-title" id="details-heading">Mine oplysninger</h2>
 
-                <!-- A CSRF token is added in Epic 2. The values come from the users table. -->
-                <form class="form" action="settings.php" method="post">
+                <!-- The values come from the users table. -->
+                <form class="form" action="<?= url('/settings') ?>" method="post">
+                    <?= \PostCard\Core\Csrf::field() ?>
                     <input type="hidden" name="form" value="details">
 
                     <div class="field-row">
@@ -123,8 +124,9 @@ require __DIR__ . '/../views/partials/header.php';
             <section class="card" aria-labelledby="password-heading">
                 <h2 class="section-title" id="password-heading">Skift adgangskode</h2>
 
-                <!-- A CSRF token is added in Epic 2. The current password proves it is really you. -->
-                <form class="form" action="settings.php" method="post">
+                <!-- The current password proves it is really you. -->
+                <form class="form" action="<?= url('/settings') ?>" method="post">
+                    <?= \PostCard\Core\Csrf::field() ?>
                     <input type="hidden" name="form" value="password">
 
                     <div class="field">
@@ -157,10 +159,11 @@ require __DIR__ . '/../views/partials/header.php';
                 <h2 class="section-title" id="delete-heading">Slet bruger</h2>
 
                 <!-- The rules page promises this ("Du kan altid slette din bruger").
-                     A CSRF token is added in Epic 2. Sets users.user_status = 'deleted', deletes the user's posts
+                     Sets users.user_status = 'deleted', deletes the user's posts
                      and logs out. The password proves it is really you; confirm.js asks once more. -->
-                <form class="form js-confirm" action="settings.php" method="post"
+                <form class="form js-confirm" action="<?= url('/settings') ?>" method="post"
                     data-confirm="Vil du slette din bruger? Dine oplysninger og dine opslag bliver slettet. Det kan ikke fortrydes.">
+                    <?= \PostCard\Core\Csrf::field() ?>
                     <input type="hidden" name="form" value="delete">
 
                     <p>Dine oplysninger og dine opslag bliver slettet, og du kan ikke logge ind igen.</p>
@@ -180,5 +183,3 @@ require __DIR__ . '/../views/partials/header.php';
         </div>
     </div>
 </main>
-
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>

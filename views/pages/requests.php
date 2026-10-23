@@ -7,7 +7,7 @@
     <div class="container container--text">
         <nav class="breadcrumb" aria-label="Du er her">
             <ol class="breadcrumb__list">
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="home.php">Mine grupper</a></li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/home') ?>">Mine grupper</a></li>
 
                 <!-- Viser gruppens navn uden link, indtil gruppesiden er lavet -->
                 <li class="breadcrumb__item">

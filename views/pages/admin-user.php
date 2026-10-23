@@ -1,18 +1,15 @@
 <?php
-$pageTitle = 'Administration · Mia Nielsen';
-$isOperator = true;
-$pageStyle = 'admin';
-$adminPage = 'users';
-require __DIR__ . '/../views/partials/header.php';
+// The controller shows this page with:
+// View::render('admin-user', ['pageTitle' => 'Administration · Mia Nielsen', 'isOperator' => true, 'pageStyle' => 'admin', 'adminPage' => 'users']);
 ?>
 
 <main id="main" class="site-main">
     <div class="container">
         <nav class="breadcrumb" aria-label="Du er her">
             <ol class="breadcrumb__list">
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="admin.php">Administration</a></li>
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="admin-users.php">Brugere</a></li>
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="admin-user.php?id=1" aria-current="page">Mia Nielsen</a></li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/admin') ?>">Administration</a></li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/admin/users') ?>">Brugere</a></li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/admin/user?id=1') ?>" aria-current="page">Mia Nielsen</a></li>
             </ol>
         </nav>
 
@@ -25,14 +22,15 @@ require __DIR__ . '/../views/partials/header.php';
         <!-- IF saved: <p class="alert" role="status">Ændringerne er gemt.</p> -->
 
         <div class="sidebar-layout">
-            <?php require __DIR__ . '/../views/partials/admin-nav.php'; ?>
+            <?php require __DIR__ . '/../partials/admin-nav.php'; ?>
 
             <div class="flow">
                 <section class="card" aria-labelledby="profile-heading">
                     <h2 class="section-title" id="profile-heading">Profil</h2>
 
-                    <!-- A CSRF token is added in Epic 2. The same fields the user has on settings.php -->
-                    <form class="form" action="admin-user.php" method="post">
+                    <!-- The same fields the user has on settings.php -->
+                    <form class="form" action="<?= url('/admin/user') ?>" method="post">
+                        <?= \PostCard\Core\Csrf::field() ?>
                         <input type="hidden" name="user_id" value="1">
                         <input type="hidden" name="form" value="profile">
 
@@ -77,7 +75,8 @@ require __DIR__ . '/../views/partials/header.php';
                     <h2 class="section-title" id="status-heading">Status</h2>
 
                     <!-- users.user_status. Not shown on the operator's own page, so nobody can lock themselves out. -->
-                    <form class="form" action="admin-user.php" method="post">
+                    <form class="form" action="<?= url('/admin/user') ?>" method="post">
+                        <?= \PostCard\Core\Csrf::field() ?>
                         <input type="hidden" name="user_id" value="1">
                         <input type="hidden" name="form" value="status">
 
@@ -119,8 +118,9 @@ require __DIR__ . '/../views/partials/header.php';
                     <h2 id="password-heading">Adgangskode</h2>
                     <p>Operatører kan ikke se eller vælge en brugers adgangskode. Send i stedet et link, så brugeren selv kan vælge en ny.</p>
 
-                    <!-- A CSRF token is added in Epic 2. Makes a reset_password token (user_tokens) and e-mails the link. -->
-                    <form action="admin-user.php" method="post">
+                    <!-- Makes a reset_password token (user_tokens) and e-mails the link. -->
+                    <form action="<?= url('/admin/user') ?>" method="post">
+                        <?= \PostCard\Core\Csrf::field() ?>
                         <input type="hidden" name="user_id" value="1">
                         <input type="hidden" name="form" value="reset-password">
                         <button class="button button--secondary" type="submit">Send link til ny adgangskode</button>
@@ -147,11 +147,9 @@ require __DIR__ . '/../views/partials/header.php';
                     </ul>
                     <!-- /LOOP -->
 
-                    <p><a href="admin-posts.php?user=1">Se brugerens opslag</a></p>
+                    <p><a href="<?= url('/admin/posts?user_id=1') ?>">Se brugerens opslag</a></p>
                 </section>
             </div>
         </div>
     </div>
 </main>
-
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>

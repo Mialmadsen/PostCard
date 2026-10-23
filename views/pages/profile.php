@@ -1,8 +1,6 @@
 <?php
-$pageTitle = 'Min profil';
-$isLoggedIn = true;
-$pageStyle = 'profile';
-require __DIR__ . '/../views/partials/header.php';
+// The controller shows this page with:
+// View::render('profile', ['pageTitle' => 'Min profil', 'isLoggedIn' => true, 'pageStyle' => 'profile']);
 ?>
 
 <main id="main" class="site-main">
@@ -19,7 +17,7 @@ require __DIR__ . '/../views/partials/header.php';
                 <!-- IF users.profile_image: <img class="avatar avatar--large" src="…" alt=""> ELSE initials -->
                 <span class="avatar avatar--large" aria-hidden="true">MN</span>
                 <p class="meta">@mianielsen</p>
-                <p><a class="button button--secondary" href="settings.php">Rediger profil</a></p>
+                <p><a class="button button--secondary" href="<?= url('/settings') ?>">Rediger profil</a></p>
             </section>
 
             <!-- Right column: the infographic -->
@@ -152,27 +150,27 @@ require __DIR__ . '/../views/partials/header.php';
                     <!-- LOOP: my groups (group_members), each with my experiences in it (experiences.user_id = me) -->
                     <ul class="divided-list">
                         <li class="flow">
-                            <h3><a href="group.php?id=1">Familien Nielsen</a></h3>
+                            <h3><a href="<?= url('/group?id=1') ?>">Familien Nielsen</a></h3>
                             <p class="meta">Admin · 3 oplevelser · 31 opslag</p>
                             <ul class="profile-experiences">
-                                <li><a href="experience.php?id=1">Sommer i Norge</a> <span class="meta">· I gang · 6 opslag</span></li>
-                                <li><a href="experience.php?id=5">Jul hos mormor</a> <span class="meta">· Afsluttet · 5 opslag</span></li>
-                                <li><a href="experience.php?id=4">Nationalparker i USA</a> <span class="meta">· Afsluttet · 20 opslag</span></li>
+                                <li><a href="<?= url('/experience?id=1') ?>">Sommer i Norge</a> <span class="meta">· I gang · 6 opslag</span></li>
+                                <li><a href="<?= url('/experience?id=5') ?>">Jul hos mormor</a> <span class="meta">· Afsluttet · 5 opslag</span></li>
+                                <li><a href="<?= url('/experience?id=4') ?>">Nationalparker i USA</a> <span class="meta">· Afsluttet · 20 opslag</span></li>
                             </ul>
                         </li>
                         <li class="flow">
-                            <h3><a href="group.php?id=2">Klasse 3.B</a></h3>
+                            <h3><a href="<?= url('/group?id=2') ?>">Klasse 3.B</a></h3>
                             <p class="meta">Medlem · 2 oplevelser · 4 opslag</p>
                             <ul class="profile-experiences">
                                 <li>Studietur til Berlin <span class="meta">· Venter på godkendelse</span></li>
-                                <li><a href="experience.php?id=6">Lejrskole på Bornholm</a> <span class="meta">· Afsluttet · 4 opslag</span></li>
+                                <li><a href="<?= url('/experience?id=6') ?>">Lejrskole på Bornholm</a> <span class="meta">· Afsluttet · 4 opslag</span></li>
                             </ul>
                         </li>
                         <li class="flow">
-                            <h3><a href="group.php?id=3">Løbeklubben</a></h3>
+                            <h3><a href="<?= url('/group?id=3') ?>">Løbeklubben</a></h3>
                             <p class="meta">Medlem · 1 oplevelse · 3 opslag</p>
                             <ul class="profile-experiences">
-                                <li><a href="experience.php?id=7">Halvmaraton i Aarhus</a> <span class="meta">· Afsluttet · 3 opslag</span></li>
+                                <li><a href="<?= url('/experience?id=7') ?>">Halvmaraton i Aarhus</a> <span class="meta">· Afsluttet · 3 opslag</span></li>
                             </ul>
                         </li>
                     </ul>
@@ -183,5 +181,3 @@ require __DIR__ . '/../views/partials/header.php';
         </div>
     </div>
 </main>
-
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>

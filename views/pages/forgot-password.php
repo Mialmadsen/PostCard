@@ -1,7 +1,6 @@
 <?php
-$pageTitle = 'Glemt adgangskode';
-$isLoggedIn = false;
-require __DIR__ . '/../views/partials/header.php';
+// The controller shows this page with:
+// View::render('forgot-password', ['pageTitle' => 'Glemt adgangskode', 'isLoggedIn' => false]);
 ?>
 
 <main id="main" class="site-main">
@@ -16,8 +15,8 @@ require __DIR__ . '/../views/partials/header.php';
                 <!-- AFTER submit, always the same message (never reveal if the e-mail exists):
                 <p class="alert" role="status">Hvis e-mailen findes hos os, har vi sendt et link. Linket virker i 1 time.</p> -->
 
-                <!-- A CSRF token is added in Epic 2 -->
-                <form class="form" action="forgot-password.php" method="post">
+                <form class="form" action="<?= url('/forgot-password') ?>" method="post">
+                    <?= \PostCard\Core\Csrf::field() ?>
                     <div class="field">
                         <label class="field__label" for="email">E-mail</label>
                         <input class="field__input" id="email" name="email" type="email"
@@ -26,7 +25,7 @@ require __DIR__ . '/../views/partials/header.php';
 
                     <div class="form__actions">
                         <button class="button button--primary" type="submit">Send link</button>
-                        <a href="login.php">Tilbage til log ind</a>
+                        <a href="<?= url('/login') ?>">Tilbage til log ind</a>
                     </div>
                 </form>
             </div>
@@ -34,5 +33,3 @@ require __DIR__ . '/../views/partials/header.php';
         </div>
     </div>
 </main>
-
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>
