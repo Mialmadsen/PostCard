@@ -2,10 +2,12 @@
     <div class="container container--text">
         <nav class="breadcrumb" aria-label="Du er her">
             <ol class="breadcrumb__list">
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/home') ?>">Mine grupper</a></li>
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/group?id=' . $group['group_id']) ?>"><?= e($group['name']) ?></a></li>
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/invite?group_id=' . $group['group_id']) ?>"
-                        aria-current="page">Inviter</a></li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/home') ?>">Mine grupper</a>
+                </li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link"
+                        href="<?= url('/group?id=' . $group['group_id']) ?>"><?= e($group['name']) ?></a></li>
+                <li class="breadcrumb__item"><a class="breadcrumb__link"
+                        href="<?= url('/invite?group_id=' . $group['group_id']) ?>" aria-current="page">Inviter</a></li>
             </ol>
         </nav>
 
@@ -29,21 +31,19 @@
                     <button class="button button--primary" type="submit">Lav et link</button>
                 </form>
 
-                <!-- IF a link was just made: shown once. Reloading the page cannot show it again,
-                     because the database only has the hash, not the link.
-                     PHP builds the link with the base-URL helper; the address below is only an example. -->
-                <div class="alert flow">
-                    <p><strong>Dit link er klar.</strong> Kopiér det nu – du kan ikke se det igen.</p>
-                    <div class="copy-link">
-                        <label class="visually-hidden" for="invite-link">Invitationslink</label>
-                        <input class="field__input copy-link__input js-copy-input" id="invite-link" type="text" readonly
-                            value="http://localhost/PostCard/public/join?token=8f3c1e2a9b7d4f60a1c5e9d2b3f4a6c8">
-                        <button class="button button--secondary js-copy-button" type="button">Kopiér link</button>
+                <?php if ($inviteLink !== null): ?>
+                    <div class="alert flow">
+                        <p><strong>Dit link er klar.</strong> Kopiér det nu – du kan ikke se det igen.</p>
+                        <div class="copy-link">
+                            <label class="visually-hidden" for="invite-link">Invitationslink</label>
+                            <input class="field__input copy-link__input js-copy-input" id="invite-link" type="text" readonly
+                                value="<?= e($inviteLink) ?>">
+                            <button class="button button--secondary js-copy-button" type="button">Kopiér link</button>
+                        </div>
+                        <!-- Filled by copy-link.js: "Linket er kopieret." -->
+                        <p class="meta js-copy-status" role="status"></p>
                     </div>
-                    <!-- Filled by copy-link.js: "Linket er kopieret." -->
-                    <p class="meta js-copy-status" role="status"></p>
-                </div>
-                <!-- /IF -->
+                <?php endif; ?>
             </section>
 
             <section class="card" aria-labelledby="sent-heading">
@@ -56,10 +56,11 @@
                     <li class="flow">
                         <p>Lavet <time datetime="2026-10-11">11. okt. 2026</time></p>
                         <p class="meta">Venter · udløber <time datetime="2026-10-18">18. okt.</time></p>
-                        <!-- A CSRF token is added in Epic 2. Sets expires_at to now, so the link stops working
+                        <!-- Sets expires_at to now, so the link stops working
                              (it is then shown as "Udløbet"). For a link sent to the wrong person. -->
                         <form class="js-confirm" action="<?= url('/invite') ?>" method="post"
                             data-confirm="Vil du annullere linket? Det kan ikke bruges bagefter.">
+                            <?= \PostCard\Core\Csrf::field() ?>
                             <input type="hidden" name="invitation_id" value="7">
                             <input type="hidden" name="action" value="cancel">
                             <button class="button button--secondary" type="submit">Annuller link</button>

@@ -7,6 +7,9 @@ namespace PostCard\Controllers;
 use PostCard\Core\Auth;
 use PostCard\Core\View;
 use PostCard\Repositories\GroupRepository;
+use PostCard\Repositories\InvitationRepository;
+use PostCard\Core\Config;
+use PostCard\Core\Session;
 
 // Create a group page , the log in is checked, the form is rendered, read and validated, stores errors.
 class GroupController
@@ -53,6 +56,7 @@ class GroupController
         if ($defaultPostLimit === false) {
             $errors['default_post_limit'] = 'Skriv et helt tal mellem 1 og 50';
         }
+
         // We check if there are any errors and either stop and send the person back to form, or continue and create a new group
         if ($errors !== []) {
             http_response_code(422);
@@ -65,7 +69,6 @@ class GroupController
                     'description' => $description,
                     'posting_mode' => $postingMode,
                     'default_post_limit' => $postLimitText,
-                    
                 ],
             ]);
             return;
@@ -104,16 +107,49 @@ class GroupController
         //now we get the group communicating with DB
         $groups = new GroupRepository();
         $group = $groups->findById($groupId);
+        $inviteLink = Session::takeFlash('invite_link');
 
         //Now we show the page where we create invitation
         View::render(
             'invite',
             [
-                'pageTitle' => 'Inviter',
+                'pageTitle' => 'Inviter · ' . $group['name'],
                 'isLoggedIn' => true,
                 'group' => $group,
+                'inviteLink' => $inviteLink,
+                'pageStyle' => 'invite',
+                'pageScripts' => ['copy-link', 'confirm'],
 
             ]
         );
+    }
+
+    public function createInvitation(): void
+    {
+        // we read group id from the form and check it id it is whole number
+        $groupId = filter_var(input('group_id'), FILTER_VALIDATE_INT, [
+            'options' => ['min_range' => 1],
+        ]);
+
+        if ($groupId === false) {
+            http_response_code(404);
+            echo 'Gruppen findes ikke.';
+            exit;
+        }
+
+        Auth::requireGroupAdmin($groupId);
+
+        //Make the token
+        $token = bin2hex(random_bytes(32));
+        $tokenHash = hash('sha256', $token);
+
+        $invitations = new InvitationRepository();
+        $invitations->create($groupId, Auth::userId(), $tokenHash);
+
+        // build the full link
+        $link = Config::get('APP_URL') . '/join?token=' . $token;
+        Session::flash('invite_link', $link);
+
+        redirect('/invite?group_id=' . $groupId);
     }
 }
