@@ -196,9 +196,8 @@ class RequestController
                 : 'Oplevelsen er blevet afvist.'
 );
 
-        // Sender administratoren tilbage til gruppens anmodninger
-        header('Location: ' . BASE_PATH . '/requests?group_id=' . $groupId);
-        exit;
+        // Sender administratoren tilbage til gruppens anmodninger gennem helper-funktionen redirect()
+        redirect('/requests?group_id=' . $groupId);
     }
 
 }

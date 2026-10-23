@@ -17,21 +17,14 @@ if ($selectedGroup === null && $selectedGroupId === null) {
 
 <main id="main" class="site-main">
     <div class="container">
-
         <nav class="breadcrumb" aria-label="Du er her">
             <ol class="breadcrumb__list">
                 <li class="breadcrumb__item">
-                    <a class="breadcrumb__link" href="<?= url('/home') ?>">
-                        Mine grupper
-                    </a>
+                    <a class="breadcrumb__link" href="<?= url('/home') ?>">Mine grupper</a>
                 </li>
-
                 <li class="breadcrumb__item">
-                    <span id="breadcrumb-group">
-                        <?= e($selectedGroup['name'] ?? 'Vælg gruppe') ?>
-                    </span>
+                    <span id="breadcrumb-group"><?= e($selectedGroup['name'] ?? 'Vælg gruppe') ?></span>
                 </li>
-
                 <li class="breadcrumb__item">
                     <span aria-current="page">Ny oplevelse</span>
                 </li>
@@ -39,29 +32,20 @@ if ($selectedGroup === null && $selectedGroupId === null) {
         </nav>
 
         <header class="page-header">
-            <p class="group-label" id="header-group">
-                <?= e($selectedGroup['name'] ?? 'Vælg gruppe') ?>
-            </p>
-
+            <p class="group-label" id="header-group"><?= e($selectedGroup['name'] ?? 'Vælg gruppe') ?></p>
             <h1>Ny oplevelse</h1>
-
             <p id="posting-description"></p>
         </header>
 
         <div class="sidebar-layout">
-
             <!-- Viser hvilken gruppe oplevelsen oprettes i -->
             <aside class="card flow" aria-labelledby="address-heading">
                 <h2 id="address-heading">Til</h2>
-
                 <dl class="address">
                     <div>
                         <dt class="group-label">Gruppe</dt>
-                        <dd class="address__value" id="address-group">
-                            <?= e($selectedGroup['name'] ?? 'Vælg gruppe') ?>
-                        </dd>
+                        <dd class="address__value" id="address-group"><?= e($selectedGroup['name'] ?? 'Vælg gruppe') ?></dd>
                     </div>
-
                     <!-- Vises kun hvis gruppen kræver godkendelse -->
                     <div id="approval-info">
                         <dt class="group-label">Godkendes af</dt>
@@ -72,25 +56,22 @@ if ($selectedGroup === null && $selectedGroupId === null) {
 
             <section class="card" aria-labelledby="form-heading">
                 <h2 class="section-title" id="form-heading">Din oplevelse</h2>
-
                 <!-- Formularen sender senere data til vores store()-metode -->
                 <form method="POST" action="<?= url('/create-experience') ?>">
-
                     <!-- Tilføjer CSRF-token gennem den fælles hjælpeklasse -->
                     <?= \PostCard\Core\Csrf::field() ?>
 
                     <!-- Vælg mellem brugerens aktive grupper -->
                     <div class="field">
                         <label class="field__label" for="group">Gruppe</label>
-
                         <select class="field__input" id="group" name="group_id" required>
                             <option value="">Vælg en gruppe</option>
-
                             <?php foreach ($groups as $group): ?>
                                 <option
                                     value="<?= (int) $group['group_id'] ?>"
                                     data-name="<?= e($group['name']) ?>"
                                     data-posting-mode="<?= e($group['posting_mode']) ?>"
+                                    data-member-role="<?= e($group['member_role'] ?? 'member') ?>"
                                     <?= $selectedGroup !== null && (int) $selectedGroup['group_id'] === (int) $group['group_id'] ? 'selected' : '' ?>
                                 >
                                     <?= e($group['name']) ?>
@@ -100,10 +81,7 @@ if ($selectedGroup === null && $selectedGroupId === null) {
                     </div>
 
                     <div class="field">
-                        <label class="field__label" for="name">
-                            Navn på oplevelsen
-                        </label>
-
+                        <label class="field__label" for="name">Navn på oplevelsen</label>
                         <input
                             class="field__input"
                             id="name"
@@ -113,17 +91,11 @@ if ($selectedGroup === null && $selectedGroupId === null) {
                             required
                             aria-describedby="name-hint"
                         >
-
-                        <p class="meta" id="name-hint">
-                            Fx Sommer i Norge eller Studietur til Berlin
-                        </p>
+                        <p class="meta" id="name-hint">Fx Sommer i Norge eller Studietur til Berlin</p>
                     </div>
 
                     <div class="field">
-                        <label class="field__label" for="description">
-                            Hvad handler den om?
-                        </label>
-
+                        <label class="field__label" for="description">Hvad handler den om?</label>
                         <textarea
                             class="field__input"
                             id="description"
@@ -132,7 +104,6 @@ if ($selectedGroup === null && $selectedGroupId === null) {
                             maxlength="1000"
                             aria-describedby="description-hint"
                         ></textarea>
-
                         <p class="meta" id="description-hint">
                             Gruppen ser teksten øverst på oplevelsens side.
                             Du kan springe den over.
@@ -141,14 +112,10 @@ if ($selectedGroup === null && $selectedGroupId === null) {
 
                     <!-- Serveren skal senere kontrollere datoerne -->
                     <fieldset class="fieldset" aria-describedby="period-hint">
-                        <legend class="field__label fieldset__legend">
-                            Periode
-                        </legend>
-
+                        <legend class="field__label fieldset__legend">Periode</legend>
                         <div class="field-row">
                             <div class="field">
                                 <label for="start-date">Fra</label>
-
                                 <input
                                     class="field__input"
                                     id="start-date"
@@ -157,10 +124,8 @@ if ($selectedGroup === null && $selectedGroupId === null) {
                                     required
                                 >
                             </div>
-
                             <div class="field">
                                 <label for="end-date">Til</label>
-
                                 <input
                                     class="field__input"
                                     id="end-date"
@@ -170,10 +135,7 @@ if ($selectedGroup === null && $selectedGroupId === null) {
                                 >
                             </div>
                         </div>
-
-                        <p class="meta" id="period-hint">
-                            Du kan dele opslag fra den første til den sidste dag.
-                        </p>
+                        <p class="meta" id="period-hint">Du kan dele opslag fra den første til den sidste dag.</p>
                     </fieldset>
 
                     <!-- Teksten ændres afhængigt af gruppens posting_mode -->
@@ -188,15 +150,10 @@ if ($selectedGroup === null && $selectedGroupId === null) {
                         >
                             Send anmodning
                         </button>
-
-                        <a class="button button--secondary" href="<?= url('/home') ?>">
-                            Annuller
-                        </a>
+                        <a class="button button--secondary" href="<?= url('/home') ?>">Annuller</a>
                     </div>
-
                 </form>
             </section>
-
         </div>
     </div>
 </main>
@@ -214,22 +171,21 @@ const submitButton = document.getElementById('submit-button');
 
 // Opdaterer informationen, når brugeren vælger en gruppe
 function updateGroupInformation() {
-
     // Finder den valgte gruppe i dropdown-menuen
     const selectedOption = groupSelect.selectedOptions[0];
 
-    // Henter gruppens navn og posting_mode
+    // Henter gruppens navn, posting_mode og brugerens rolle
     const groupName = selectedOption.dataset.name || 'Vælg gruppe';
     const postingMode = selectedOption.dataset.postingMode || '';
+    const memberRole = selectedOption.dataset.memberRole || '';
 
     // Opdaterer gruppenavnet forskellige steder på siden
     breadcrumbGroup.textContent = groupName;
     headerGroup.textContent = groupName;
     addressGroup.textContent = groupName;
 
-    // Kontrollerer om gruppen kræver godkendelse
-    if (postingMode === 'permission') {
-
+    // Kontrollerer om gruppen kræver godkendelse for brugeren
+    if (postingMode === 'permission' && memberRole !== 'group_admin') {
         postingDescription.textContent =
             'I denne gruppe skal en gruppeadministrator godkende din oplevelse, før du kan dele opslag.';
 
@@ -240,8 +196,7 @@ function updateGroupInformation() {
 
         submitButton.textContent = 'Send anmodning';
 
-    } else if (postingMode === 'open') {
-
+    } else if (postingMode === 'open' || memberRole === 'group_admin') {
         postingDescription.textContent =
             'Start en oplevelse, og del dine opslag med gruppen, mens den står på.';
 
@@ -254,7 +209,6 @@ function updateGroupInformation() {
         submitButton.textContent = 'Opret oplevelse';
 
     } else {
-
         // Hvis der ikke er valgt en gruppe
         postingDescription.textContent =
             'Vælg en gruppe for at fortsætte.';
@@ -264,8 +218,8 @@ function updateGroupInformation() {
         submitButton.textContent = 'Opret oplevelse';
     }
 
-        // Knappen aktiveres, når brugeren har valgt en gyldig gruppe
-        submitButton.disabled = !groupSelect.value;
+    // Knappen aktiveres, når brugeren har valgt en gyldig gruppe
+    submitButton.disabled = !groupSelect.value;
 }
 
 // Kører funktionen, når brugeren vælger en anden gruppe
