@@ -44,20 +44,20 @@ PostCard/
 │   ├── assets/          CSS (main, components, pages), JS, images
 │   └── uploads/         User media (not committed)
 ├── app/
+│   ├── Core/            Building blocks: Router, Database, Config, Session, Csrf, Auth, View
 │   ├── Controllers/     Handle requests and choose what happens next
 │   ├── Models/          Data objects (User, Group, Post …)
 │   ├── Repositories/    All database queries (prepared statements)
 │   ├── Services/        Business rules (e.g. may this user post now?)
-│   └── Helpers/         Small shared functions (escaping, CSRF, URLs)
-├── views/               Presentation only: layouts, partials, pages
-├── config/              Application configuration (reads from .env)
+│   └── Helpers/         Small shared functions (escaping, URLs, input, redirect)
+├── views/               Presentation only: partials and pages
 ├── database/            schema.sql, seed.sql and database documentation
 ├── docs/                Project documentation and report evidence
 ├── tests/               Tests
-└── .env.example         Template for local environment settings
+└── .env.example         Template for local environment settings (read by app/Core/Config.php)
 ```
 
-Presentation (`views/`) is kept separate from application logic (`app/`). Only `public/` is exposed to the browser, so configuration, source code and SQL files cannot be requested directly.
+Presentation (`views/`) is kept separate from application logic (`app/`). Only `public/` is exposed to the browser, so `.env`, source code and SQL files cannot be requested directly.
 
 ## Getting started (local)
 
