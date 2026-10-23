@@ -178,9 +178,8 @@ class ExperienceController
             $endDate
         );
 
-        // Sender brugeren videre til den nye oplevelse
-        header('Location: ' . BASE_PATH . '/experience?id=' . $experienceId);
-        exit;
+        // Sender brugeren videre til den nye oplevelse gennem helper-funktionen redirect()
+        redirect('/experience?id=' . $experienceId);
     }
 
     // Henter og samler oplysninger til experience-siden

@@ -15,6 +15,17 @@ class UserRepository extends Repository
         );
     }
 
+    // Henter en brugers fornavn ud fra deres ID
+    public function findFirstNameById(int $userId): ?string
+    {
+        $firstName = $this->fetchValue(
+            'SELECT first_name FROM users WHERE user_id = :user_id',
+            ['user_id' => $userId]
+        );
+
+        return $firstName !== null ? (string) $firstName : null;
+    }
+
     // True only for an active platform operator (is_operator = 1).
     public function isOperator(int $userId): bool
     {

@@ -16,6 +16,7 @@ use PostCard\Controllers\ExperienceController;
 use PostCard\Controllers\RequestController;
 use PostCard\Controllers\GroupController;
 use PostCard\Controllers\GroupPageController;
+use PostCard\Controllers\HomeController;
 
 require __DIR__ . '/../app/autoload.php';
 require_once __DIR__ . '/../app/Helpers/escape.php';
@@ -55,6 +56,7 @@ if ($path === '') {
 // Every address the site knows, and who handles it.
 $router = new Router();
 $router->add('GET', '/', [PageController::class, 'landing']);
+$router->add('GET', '/home', [HomeController::class, 'index']);
 $router->add('GET', '/login', [AuthController::class, 'showLogin']);
 $router->add('GET', '/register', [AuthController::class, 'showRegister']);
 $router->add('POST', '/login', [AuthController::class, 'login']);

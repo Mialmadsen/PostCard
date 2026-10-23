@@ -1,6 +1,6 @@
 <?php
 // Filen står for at hente og oprette oplevelser i databasen.
-// Vi bruger en SQL-query med JOIN, så vi kan hente både oplevelsens oplysninger,
+// Vi bruger SQL-queries med JOIN, så vi kan hente både oplevelsens oplysninger,
 // gruppens navn og brugeren, der har oprettet den.
 
 // Sørger for, at PHP er mere streng med datatyper, så vi undgår fejl
@@ -85,23 +85,35 @@ class ExperienceRepository extends Repository
             ['group_id' => $groupId]
         );
 
-        // Kontrollerer, at gruppen findes, Hvis ikke kommer en fejl
+        // Kontrollerer, at gruppen findes
         if ($group === null) {
             throw new \InvalidArgumentException('Gruppen findes ikke.');
         }
 
-        // Bestemmer oplevelsens status ud fra gruppens posting_mode
-        // open betyder, at oplevelsen bliver godkendt med det samme
-        // permission betyder, at den skal godkendes af en gruppeadministrator
-        $status = $group['posting_mode'] === 'open'
+        
+        // Henter brugerens rolle i gruppen
+        $member = $this->fetchOne(
+            "SELECT member_role FROM group_members
+             WHERE user_id = :user_id
+                AND group_id = :group_id
+                AND member_status = 'active'",
+            [
+                'user_id' => $userId,
+                'group_id' => $groupId
+            ]
+        );
+
+        // Åbne grupper og gruppeadministratorer kræver ikke godkendelse
+        $status = ($group['posting_mode'] === 'open' || ($member['member_role'] ?? null) === 'group_admin')
             ? 'approved'
             : 'pending';
+
 
         // Henter gruppens standardgrænse for opslag
         // Hvis gruppen ikke har en grænse, gemmer vi 20 som standardværdi
         $postLimit = $group['default_post_limit'] !== null
-        ? (int) $group['default_post_limit']
-        : 20;
+            ? (int) $group['default_post_limit']
+            : 20;
 
         // SQL-query til at indsætte den nye oplevelse i experiences-tabellen
         // Vi bruger placeholders i stedet for at indsætte værdier direkte
@@ -145,137 +157,146 @@ class ExperienceRepository extends Repository
         ]);
 
         // Returnerer ID'et på den oplevelse, vi lige har oprettet
-        // Det kan vi senere bruge til at sende brugeren til oplevelsens side
         return (int) $this->pdo->lastInsertId();
     }
 
-        // Henter alle oplevelser, der afventer godkendelse i en bestemt gruppe
-        public function findPendingByGroup(int $groupId): array
-        {
-            // Henter oplevelserne og navnet på brugeren, der har oprettet dem
-            $sql = "
-                SELECT
-                    e.experience_id,
-                    e.name,
-                    e.description,
-                    e.start_date,
-                    e.end_date,
-                    e.post_limit,
-                    e.created_at,
-                    u.first_name,
-                    u.last_name
-                FROM experiences AS e
+    // Henter alle oplevelser, som en bestemt bruger har oprettet
+    public function findByUser(int $userId): array
+    {
+        // Henter oplevelserne sammen med gruppens navn
+        $sql = "
+            SELECT
+                e.experience_id,
+                e.name,
+                e.start_date,
+                e.end_date,
+                e.experience_status,
+                e.post_limit,
+                e.group_id,
+                g.name AS group_name,
+                g.posting_mode,
+                (SELECT COUNT(*)
+                 FROM posts AS p
+                 WHERE p.experience_id = e.experience_id) AS post_count
+            FROM experiences AS e
+            INNER JOIN user_groups AS g
+                ON e.group_id = g.group_id
+            INNER JOIN group_members AS gm
+                ON gm.group_id = e.group_id
+                AND gm.user_id = :user_id
+                AND gm.member_status = 'active'
+            WHERE e.user_id = :owner_id
+            ORDER BY e.start_date DESC
+        ";
 
-                -- Forbinder oplevelsen med brugeren, der har oprettet den
-                INNER JOIN users AS u
-                    ON e.user_id = u.user_id
+        // Returnerer alle oplevelser, der matcher brugerens ID
+        return $this->fetchAll($sql, [
+            'user_id' => $userId,
+            'owner_id' => $userId
+        ]);
+    }
 
-                -- Viser kun afventende oplevelser fra den valgte gruppe
-                WHERE e.group_id = :group_id
+    // Henter godkendte og afsluttede oplevelser i en bestemt gruppe
+    public function findVisibleByGroup(int $groupId): array
+    {
+        $sql = "
+            SELECT
+                e.experience_id,
+                e.name,
+                e.description,
+                e.start_date,
+                e.end_date,
+                e.experience_status,
+                e.post_limit,
+                u.first_name,
+                u.last_name,
+                (SELECT COUNT(*)
+                 FROM posts AS p
+                 WHERE p.experience_id = e.experience_id) AS post_count
+            FROM experiences AS e
+            INNER JOIN users AS u
+                ON e.user_id = u.user_id
+            WHERE e.group_id = :group_id
+                AND e.experience_status IN ('approved', 'closed')
+            ORDER BY e.start_date DESC
+        ";
+
+        return $this->fetchAll($sql, [
+            'group_id' => $groupId
+        ]);
+    }
+
+    // Henter alle oplevelser, der afventer godkendelse i en bestemt gruppe
+    public function findPendingByGroup(int $groupId): array
+    {
+        $sql = "
+            SELECT
+                e.experience_id,
+                e.name,
+                e.description,
+                e.start_date,
+                e.end_date,
+                e.post_limit,
+                e.created_at,
+                u.first_name,
+                u.last_name
+            FROM experiences AS e
+            INNER JOIN users AS u
+                ON e.user_id = u.user_id
+            WHERE e.group_id = :group_id
                 AND e.experience_status = 'pending'
+            ORDER BY e.created_at ASC, e.experience_id ASC
+        ";
 
-                -- De ældste anmodninger vises først
-                ORDER BY e.created_at ASC, e.experience_id ASC
-            ";
+        // Returnerer de anmodninger, der endnu ikke er behandlet
+        return $this->fetchAll($sql, [
+            'group_id' => $groupId
+        ]);
+    }
 
-            // Bruger den fælles fetchAll()-metode fra Repository
-            return $this->fetchAll($sql, [
-                'group_id' => $groupId
-            ]);
+    // Godkender eller afviser en afventende oplevelse
+    // Administratoren kan samtidig ændre datoer og opslagsgrænse
+    public function updateRequest(
+        int $experienceId,
+        int $groupId,
+        string $status,
+        ?string $startDate = null,
+        ?string $endDate = null,
+        ?int $postLimit = null
+    ): bool {
+        // Kontrollerer, at status er gyldig
+        if (!in_array($status, ['approved', 'rejected'], true)) {
+            throw new \InvalidArgumentException('Ugyldig status.');
         }
 
-
-        // Opdaterer en afventende oplevelse, når en gruppeadministrator godkender eller afviser den
-        public function updateRequest(
-            int $experienceId,
-            int $groupId,
-            string $status,
-            ?string $startDate = null,
-            ?string $endDate = null,
-            ?int $postLimit = null
-        ): bool {
-
-            // Kun godkendelse og afvisning er tilladt
-            if (!in_array($status, ['approved', 'rejected'], true)) {
-                throw new \InvalidArgumentException('Ugyldig status.');
-            }
-
-            // Opdaterer kun oplevelsen, hvis den stadig afventer godkendelse
-            // og tilhører den gruppe, administratoren arbejder med
-            $sql = "
-                UPDATE experiences
-                SET
-                    experience_status = :status,
-                    start_date = COALESCE(:start_date, start_date),
-                    end_date = COALESCE(:end_date, end_date),
-                    post_limit = COALESCE(:post_limit, post_limit)
-                WHERE experience_id = :experience_id
+        // Opdaterer kun en oplevelse, der stadig afventer godkendelse
+        // COALESCE beholder den eksisterende værdi, hvis vi sender null
+        $sql = "
+            UPDATE experiences
+            SET
+                experience_status = :status,
+                start_date = COALESCE(:start_date, start_date),
+                end_date = COALESCE(:end_date, end_date),
+                post_limit = COALESCE(:post_limit, post_limit)
+            WHERE experience_id = :experience_id
                 AND group_id = :group_id
                 AND experience_status = 'pending'
-            ";
+        ";
 
-            // Prepared statement beskytter mod SQL injection
-            $stmt = $this->pdo->prepare($sql);
+        // Forbereder SQL-queryen
+        $stmt = $this->pdo->prepare($sql);
 
-            $stmt->execute([
-                'status' => $status,
-                'start_date' => $startDate,
-                'end_date' => $endDate,
-                'post_limit' => $postLimit,
-                'experience_id' => $experienceId,
-                'group_id' => $groupId
-            ]);
+        // Indsætter værdierne og udfører opdateringen
+        $stmt->execute([
+            'status' => $status,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'post_limit' => $postLimit,
+            'experience_id' => $experienceId,
+            'group_id' => $groupId
+        ]);
 
-            // Returnerer true, hvis en oplevelse blev opdateret
-            return $stmt->rowCount() === 1;
-        }
-
-        // Henter alle godkendte og afsluttede oplevelser i en bestemt gruppe
-        public function findVisibleByGroup(int $groupId): array
-        {
-            $sql = "
-                SELECT
-                    e.experience_id,
-                    e.name,
-                    e.start_date,
-                    e.end_date,
-                    e.experience_status,
-                    e.created_at,
-                    u.first_name,
-                    u.last_name,
-                    COUNT(p.post_id) AS post_count
-                FROM experiences AS e
-
-                -- Henter navnet på brugeren, der har oprettet oplevelsen
-                INNER JOIN users AS u
-                    ON e.user_id = u.user_id
-
-                -- LEFT JOIN medtager også oplevelser uden opslag
-                LEFT JOIN posts AS p
-                    ON e.experience_id = p.experience_id
-
-                -- Viser kun oplevelser fra den valgte gruppe
-                WHERE e.group_id = :group_id
-                    AND e.experience_status IN ('approved', 'closed')
-
-                -- Samler opslagene, så hver oplevelse kun vises én gang
-                GROUP BY
-                    e.experience_id,
-                    e.name,
-                    e.start_date,
-                    e.end_date,
-                    e.experience_status,
-                    e.created_at,
-                    u.first_name,
-                    u.last_name
-
-                -- Viser de nyeste oplevelser først
-                ORDER BY e.created_at DESC, e.experience_id DESC
-            ";
-
-            return $this->fetchAll($sql, [
-                'group_id' => $groupId
-            ]);
-        }
-
+        // Returnerer true, hvis præcis én anmodning blev opdateret
+        return $stmt->rowCount() === 1;
+    }
 }

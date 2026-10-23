@@ -17,19 +17,22 @@
 
             <!-- Left column: about the group -->
             <div class="flow">
-            <section class="card flow" aria-labelledby="share-heading">
-                <h2 id="share-heading">Del en oplevelse</h2>
+            
+                <section class="card flow" aria-labelledby="share-heading">
+                    <h2 id="share-heading">Del en oplevelse</h2>
+                    <?php if ($group['posting_mode'] === 'open' || $memberRole === 'group_admin'): ?>
+                        <?php if ($group['posting_mode'] === 'open'): ?>
+                            <p>Start en oplevelse for din rejse. Du kan dele opslag uden en fast opslagsgrænse.</p>
+                        <?php else: ?>
+                            <p>Som gruppeadministrator kan du oprette oplevelser uden at anmode om godkendelse.</p>
+                        <?php endif; ?>
+                        <p><a class="button button--primary" href="<?= url('/create-experience?group_id=' . (int) $group['group_id']) ?>">Start en ny oplevelse</a></p>
+                    <?php else: ?>
+                        <p>I denne gruppe skal gruppens admin godkende din oplevelse, før du kan dele opslag.</p>
+                        <p><a class="button button--primary" href="<?= url('/create-experience?group_id=' . (int) $group['group_id']) ?>">Anmod om at dele en oplevelse</a></p>
+                    <?php endif; ?>
+                </section>
 
-                <?php if ($group['posting_mode'] === 'open'): ?>
-                    <!-- Åbne grupper kræver ikke godkendelse og har ingen opslagsgrænse -->
-                    <p>Start en oplevelse for din rejse. Du kan dele opslag uden en fast opslagsgrænse.</p>
-                    <p><a class="button button--primary" href="<?= url('/create-experience?group_id=' . (int) $group['group_id']) ?>">Start en ny oplevelse</a></p>
-                <?php else: ?>
-                    <!-- Grupper med godkendelse kræver tilladelse fra en gruppeadministrator -->
-                    <p>I denne gruppe skal gruppens admin godkende din oplevelse, før du kan dele opslag.</p>
-                    <p><a class="button button--primary" href="<?= url('/create-experience?group_id=' . (int) $group['group_id']) ?>">Anmod om at dele en oplevelse</a></p>
-                <?php endif; ?>
-            </section>
 
                 <section class="card flow" aria-labelledby="members-heading">
                     <h2 id="members-heading">Medlemmer</h2>
