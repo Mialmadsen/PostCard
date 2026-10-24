@@ -10,6 +10,7 @@ declare(strict_types=1);
 use PostCard\Core\Router;
 use PostCard\Core\Session;
 use PostCard\Core\Csrf;
+use PostCard\Core\Config;
 use PostCard\Controllers\PageController;
 use PostCard\Controllers\AuthController;
 use PostCard\Controllers\ExperienceController;
@@ -24,6 +25,9 @@ require_once __DIR__ . '/../app/Helpers/url.php';
 require_once __DIR__ . '/../app/Helpers/asset.php';
 require_once __DIR__ . '/../app/Helpers/input.php';
 require_once __DIR__ . '/../app/Helpers/redirect.php';
+require_once __DIR__ . '/../app/Helpers/date.php';
+
+date_default_timezone_set(Config::get('APP_TIMEZONE'));
 
 // The address the browser asked for, without the "?id=3" part.
 // e.g. "/PostCard/public/group"

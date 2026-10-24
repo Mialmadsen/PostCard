@@ -27,6 +27,9 @@ class Database
 
             // Strict mode: MySQL refuses missing or wrong values instead of guessing
             self::$pdo->exec("SET SESSION sql_mode = 'STRICT_ALL_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO'");
+
+            $offset = date('P');
+            self::$pdo->exec("SET time_zone = '$offset'");
         }
         return self::$pdo;
     }

@@ -20,4 +20,23 @@ class InvitationRepository extends Repository
             ]
         );
     }
+
+    public function findByGroup(int $groupId): array
+    {
+        return $this->fetchAll(
+            "SELECT invitation_id, created_at, expires_at, used_at,
+                    CASE
+                        WHEN used_at IS NOT NULL THEN 'used'
+                        WHEN expires_at <= NOW() THEN 'expired'
+                        ELSE 'waiting'
+                    END AS status
+             FROM invitations
+             WHERE group_id = :group_id
+             ORDER BY created_at DESC
+             LIMIT 20",
+            [
+                'group_id' => $groupId,
+            ]
+        );
+    }
 }

@@ -49,33 +49,37 @@
             <section class="card" aria-labelledby="sent-heading">
                 <h2 class="section-title" id="sent-heading">Dine links</h2>
 
-                <!-- LOOP: invitations for this group, newest first (invitations.created_at).
+                <!-- Invitations for this group, newest first.
                      Status: used_at set = "Brugt", expires_at passed = "Udløbet", else "Venter".
                      Only a waiting link has "Annuller". -->
-                <ul class="divided-list">
-                    <li class="flow">
-                        <p>Lavet <time datetime="2026-10-11">11. okt. 2026</time></p>
-                        <p class="meta">Venter · udløber <time datetime="2026-10-18">18. okt.</time></p>
-                        <!-- Sets expires_at to now, so the link stops working
-                             (it is then shown as "Udløbet"). For a link sent to the wrong person. -->
-                        <form class="js-confirm" action="<?= url('/invite') ?>" method="post"
-                            data-confirm="Vil du annullere linket? Det kan ikke bruges bagefter.">
-                            <?= \PostCard\Core\Csrf::field() ?>
-                            <input type="hidden" name="invitation_id" value="7">
-                            <input type="hidden" name="action" value="cancel">
-                            <button class="button button--secondary" type="submit">Annuller link</button>
-                        </form>
-                    </li>
-                    <li>
-                        <p>Lavet <time datetime="2026-10-03">3. okt. 2026</time></p>
-                        <p class="meta">Brugt <time datetime="2026-10-04">4. okt.</time></p>
-                    </li>
-                    <li>
-                        <p>Lavet <time datetime="2026-09-25">25. sep. 2026</time></p>
-                        <p class="meta">Udløbet <time datetime="2026-10-02">2. okt.</time> uden at blive brugt</p>
-                    </li>
-                </ul>
-                <!-- /LOOP -->
+                <?php if ($invitations === []): ?>
+                    <p>Du har ikke lavet nogen links endnu.</p>
+                <?php else: ?>
+                    <ul class="divided-list">
+                        <?php foreach ($invitations as $invitation): ?>
+                            <li class="flow">
+                                <p>Lavet <time datetime="<?= e($invitation['created_at']) ?>"><?= danishDate($invitation['created_at']) ?></time></p>
+
+                                <?php if ($invitation['status'] === 'waiting'): ?>
+                                    <p class="meta">Venter · udløber <time datetime="<?= e($invitation['expires_at']) ?>"><?= danishDate($invitation['expires_at'], 'd. MMM') ?></time></p>
+                                    <!-- Sets expires_at to now, so the link stops working
+                                         (it is then shown as "Udløbet"). For a link sent to the wrong person. -->
+                                    <form class="js-confirm" action="<?= url('/invite') ?>" method="post"
+                                        data-confirm="Vil du annullere linket? Det kan ikke bruges bagefter.">
+                                        <?= \PostCard\Core\Csrf::field() ?>
+                                        <input type="hidden" name="invitation_id" value="<?= e($invitation['invitation_id']) ?>">
+                                        <input type="hidden" name="action" value="cancel">
+                                        <button class="button button--secondary" type="submit">Annuller link</button>
+                                    </form>
+                                <?php elseif ($invitation['status'] === 'used'): ?>
+                                    <p class="meta">Brugt <time datetime="<?= e($invitation['used_at']) ?>"><?= danishDate($invitation['used_at'], 'd. MMM') ?></time></p>
+                                <?php else: ?>
+                                    <p class="meta">Udløbet <time datetime="<?= e($invitation['expires_at']) ?>"><?= danishDate($invitation['expires_at'], 'd. MMM') ?></time> uden at blive brugt</p>
+                                <?php endif; ?>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
             </section>
         </div>
     </div>

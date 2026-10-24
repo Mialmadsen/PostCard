@@ -109,6 +109,10 @@ class GroupController
         $group = $groups->findById($groupId);
         $inviteLink = Session::takeFlash('invite_link');
 
+        // The group's links for "Dine links", with status waiting / used / expired
+        $invitations = new InvitationRepository();
+        $groupInvitations = $invitations->findByGroup($groupId);
+
         //Now we show the page where we create invitation
         View::render(
             'invite',
@@ -117,9 +121,9 @@ class GroupController
                 'isLoggedIn' => true,
                 'group' => $group,
                 'inviteLink' => $inviteLink,
+                'invitations' => $groupInvitations,
                 'pageStyle' => 'invite',
                 'pageScripts' => ['copy-link', 'confirm'],
-
             ]
         );
     }
