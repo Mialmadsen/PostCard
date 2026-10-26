@@ -135,14 +135,11 @@
                             // Opretter linket til den enkelte oplevelse
                             $experienceUrl = url('/experience?id=' . (int)$experience['experience_id']);
 
-                            // Formaterer datoerne til dansk visning
-                            $startDate = new DateTimeImmutable($experience['start_date']);
-                            $endDate = new DateTimeImmutable($experience['end_date']);
+                            // Formaterer datoerne til dansk visning med den fælles helper
+                            $startFormatted = danishDate($experience['start_date'], 'dd.MM.y');
+                            $endFormatted = danishDate($experience['end_date'], 'dd.MM.y');
 
-                            $startFormatted = $startDate->format('d.m.Y');
-                            $endFormatted = $endDate->format('d.m.Y');
                             ?>
-
                             <article class="polaroid experience-card">
 
                                 <!-- Midlertidigt eksempelbillede, indtil oplevelser får rigtige billeder -->

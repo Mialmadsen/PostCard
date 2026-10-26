@@ -62,14 +62,14 @@
                 ·
 
                 <time datetime="<?= e($experience['start_date']) ?>">
-                    <?php // strtotime() og date() bruges til at formatere datoen ?>
-                    <?= date('d. M Y', strtotime($experience['start_date'])) ?>
+                    <?php // Formaterer startdatoen på dansk med den fælles helper ?>
+                    <?= e(danishDate($experience['start_date'])) ?>
                 </time>
 
                 –
 
                 <time datetime="<?= e($experience['end_date']) ?>">
-                    <?= date('d. M Y', strtotime($experience['end_date'])) ?>
+                    <?= e(danishDate($experience['end_date'])) ?>
                 </time>
 
                 <?php // Status er allerede beregnet og oversat i controlleren ?>

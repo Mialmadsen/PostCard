@@ -93,7 +93,7 @@
                         <p class="group-label">
                             Fra <?= e($authorName) ?> · sendt
                             <time datetime="<?= e($request['created_at']) ?>">
-                                <?= e(date('d.m.Y', strtotime($request['created_at']))) ?>
+                                <?= e(danishDate($request['created_at'], 'dd.MM.y')) ?>
                             </time>
                         </p>
 
