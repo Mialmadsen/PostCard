@@ -49,6 +49,10 @@
             <section class="card" aria-labelledby="sent-heading">
                 <h2 class="section-title" id="sent-heading">Dine links</h2>
 
+                <?php if ($inviteMessage !== null): ?>
+                    <p class="alert" role="status"><?= e($inviteMessage) ?></p>
+                <?php endif; ?>
+
                 <!-- Invitations for this group, newest first.
                      Status: used_at set = "Brugt", expires_at passed = "Udløbet", else "Venter".
                      Only a waiting link has "Annuller". -->
@@ -64,11 +68,11 @@
                                     <p class="meta">Venter · udløber <time datetime="<?= e($invitation['expires_at']) ?>"><?= danishDate($invitation['expires_at'], 'd. MMM') ?></time></p>
                                     <!-- Sets expires_at to now, so the link stops working
                                          (it is then shown as "Udløbet"). For a link sent to the wrong person. -->
-                                    <form class="js-confirm" action="<?= url('/invite') ?>" method="post"
+                                    <form class="js-confirm" action="<?= url('/cancel-invitation') ?>" method="post"
                                         data-confirm="Vil du annullere linket? Det kan ikke bruges bagefter.">
                                         <?= \PostCard\Core\Csrf::field() ?>
                                         <input type="hidden" name="invitation_id" value="<?= e($invitation['invitation_id']) ?>">
-                                        <input type="hidden" name="action" value="cancel">
+                                        <input type="hidden" name="group_id" value="<?= e($group['group_id']) ?>">
                                         <button class="button button--secondary" type="submit">Annuller link</button>
                                     </form>
                                 <?php elseif ($invitation['status'] === 'used'): ?>

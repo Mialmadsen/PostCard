@@ -108,6 +108,7 @@ class GroupController
         $groups = new GroupRepository();
         $group = $groups->findById($groupId);
         $inviteLink = Session::takeFlash('invite_link');
+        $inviteMessage = Session::takeFlash('invite_message');
 
         // The group's links for "Dine links", with status waiting / used / expired
         $invitations = new InvitationRepository();
@@ -122,6 +123,7 @@ class GroupController
                 'group' => $group,
                 'inviteLink' => $inviteLink,
                 'invitations' => $groupInvitations,
+                'inviteMessage' => $inviteMessage,
                 'pageStyle' => 'invite',
                 'pageScripts' => ['copy-link', 'confirm'],
             ]
@@ -153,6 +155,33 @@ class GroupController
         // build the full link
         $link = Config::get('APP_URL') . '/join?token=' . $token;
         Session::flash('invite_link', $link);
+
+        redirect('/invite?group_id=' . $groupId);
+    }
+
+    public function cancelInvitation(): void
+    {
+        // we read group id from the form and check it id it is whole number
+        $groupId = filter_var(input('group_id'), FILTER_VALIDATE_INT, [
+            'options' => ['min_range' => 1],
+        ]);
+        $invitationId = filter_var(input('invitation_id'), FILTER_VALIDATE_INT, [
+            'options' => ['min_range' => 1],
+        ]);
+
+        if ($groupId === false || $invitationId === false) {
+            http_response_code(404);
+            echo 'Linket findes ikke.';
+            exit;
+        }
+
+        Auth::requireGroupAdmin($groupId);
+
+        $invitations = new InvitationRepository();
+
+        $isCancelled = $invitations->cancel($invitationId, $groupId);
+
+        Session::flash('invite_message', $isCancelled ? 'Linket er annulleret.' : 'Linket kunne ikke annulleres. Det er allerede brugt eller udløbet.');
 
         redirect('/invite?group_id=' . $groupId);
     }

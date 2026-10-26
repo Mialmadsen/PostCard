@@ -39,4 +39,20 @@ class InvitationRepository extends Repository
             ]
         );
     }
+
+    public function cancel(int $invitationId, int $groupId): bool
+    {
+        return $this->execute(
+            'UPDATE invitations
+             SET expires_at = NOW()
+             WHERE invitation_id = :invitation_id
+               AND group_id = :group_id
+               AND used_at IS NULL
+               AND expires_at > NOW()',
+            [
+                'group_id' => $groupId,
+                'invitation_id' => $invitationId,
+            ]
+        ) === 1;
+    }
 }
