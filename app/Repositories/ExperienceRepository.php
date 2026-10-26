@@ -140,12 +140,10 @@ class ExperienceRepository extends Repository
             )
         ";
 
-        // Forbereder SQL-queryen gennem den fælles databaseforbindelse
-        // Prepared statements beskytter mod SQL injection
-        $stmt = $this->pdo->prepare($sql);
-
-        // Indsætter værdierne i placeholders og udfører queryen
-        $stmt->execute([
+        
+        // Indsætter oplevelsen gennem den fælles Repository-klasse
+        // insert() returnerer ID'et på den nye oplevelse
+        return $this->insert($sql, [
             'user_id' => $userId,
             'group_id' => $groupId,
             'name' => $name,
@@ -156,8 +154,6 @@ class ExperienceRepository extends Repository
             'post_limit' => $postLimit
         ]);
 
-        // Returnerer ID'et på den oplevelse, vi lige har oprettet
-        return (int) $this->pdo->lastInsertId();
     }
 
     // Henter alle oplevelser, som en bestemt bruger har oprettet
@@ -283,20 +279,17 @@ class ExperienceRepository extends Repository
                 AND experience_status = 'pending'
         ";
 
-        // Forbereder SQL-queryen
-        $stmt = $this->pdo->prepare($sql);
-
-        // Indsætter værdierne og udfører opdateringen
-        $stmt->execute([
+       
+        // Opdaterer anmodningen gennem den fælles Repository-klasse
+        // execute() returnerer antallet af ændrede rækker
+        return $this->execute($sql, [
+            'experience_id' => $experienceId,
+            'group_id' => $groupId,
             'status' => $status,
             'start_date' => $startDate,
             'end_date' => $endDate,
-            'post_limit' => $postLimit,
-            'experience_id' => $experienceId,
-            'group_id' => $groupId
-        ]);
+            'post_limit' => $postLimit
+        ]) === 1;
 
-        // Returnerer true, hvis præcis én anmodning blev opdateret
-        return $stmt->rowCount() === 1;
     }
 }

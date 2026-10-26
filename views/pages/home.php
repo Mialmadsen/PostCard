@@ -49,7 +49,7 @@
                                             <?php else: ?>
                                                 <?= (int) $experience['post_count'] ?> af <?= (int) $experience['post_limit'] ?> opslag brugt
                                             <?php endif; ?>
-                                            · slutter <?= date('d. M', strtotime($experience['end_date'])) ?>
+                                            · slutter <?= danishDate($experience['end_date'], 'd. MMM') ?>
                                         </p>
 
                                         <!-- Knappen vises kun i oplevelsens aktive periode -->
@@ -124,9 +124,9 @@
                                 </a>
                                 <div class="polaroid__body">
                                     <p class="postmark postmark--date polaroid__postmark post-card__postmark">
-                                        <time datetime="<?= e(date('Y-m-d', strtotime($post['date']))) ?>">
-                                            <?= date('d', strtotime($post['date'])) ?><br><?= date('M', strtotime($post['date'])) ?>
-                                        </time>
+                                    <time datetime="<?= e($post['date']) ?>">
+                                        <?= danishDate($post['date'], 'd') ?><br><?= danishDate($post['date'], 'MMM') ?>
+                                    </time>
                                     </p>
                                     <p class="group-label"><?= e($post['group_name']) ?> · Fastgjort</p>
                                     <h3 class="polaroid__title">
@@ -137,7 +137,9 @@
                                     <p class="post-card__caption"><?= e($post['caption'] ?? '') ?></p>
                                     <p class="meta">
                                         <?= e(trim($post['first_name'] . ' ' . $post['last_name'])) ?> ·
-                                        <time datetime="<?= e($post['date']) ?>"><?= date('d.m.Y', strtotime($post['date'])) ?></time>
+                                        <time datetime="<?= e($post['date']) ?>">
+                                            <?= danishDate($post['date'], 'dd.MM.y') ?>
+                                        </time>
                                     </p>
                                     <ul class="post-stats">
                                         <li>
@@ -179,8 +181,8 @@
                                     </a>
                                     <div class="polaroid__body">
                                         <p class="postmark postmark--date polaroid__postmark post-card__postmark">
-                                            <time datetime="<?= e(date('Y-m-d', strtotime($post['date']))) ?>">
-                                                <?= date('d', strtotime($post['date'])) ?><br><?= date('M', strtotime($post['date'])) ?>
+                                            <time datetime="<?= e($post['date']) ?>">
+                                                <?= danishDate($post['date'], 'd') ?><br><?= danishDate($post['date'], 'MMM') ?>
                                             </time>
                                         </p>
                                         <p class="group-label"><?= e($post['group_name']) ?></p>
@@ -192,7 +194,7 @@
                                         <p class="post-card__caption"><?= e($post['caption']) ?></p>
                                         <p class="meta">
                                             <?= e(trim($post['first_name'] . ' ' . $post['last_name'])) ?> ·
-                                            <time datetime="<?= e($post['date']) ?>"><?= date('d.m.Y', strtotime($post['date'])) ?></time>
+                                            <time datetime="<?= e($post['date']) ?>"><?= danishDate($post['date'], 'dd.MM.y') ?></time>
                                         </p>
                                         <ul class="post-stats">
                                             <li>
@@ -248,7 +250,7 @@
                                         <p><?= e($comment['body']) ?></p>
                                         <p class="meta">
                                             <time datetime="<?= e($comment['created_at']) ?>">
-                                                <?= date('d.m.Y H:i', strtotime($comment['created_at'])) ?>
+                                                <?= danishDate($comment['created_at'], 'dd.MM.y HH:mm') ?>
                                             </time>
                                         </p>
                                     </div>

@@ -200,32 +200,15 @@ class ExperienceController
         // Henter alle opslag, der hører til oplevelsen
         $posts = $this->postRepository->findByExperience($experienceId);
 
-        // Danske månedsforkortelser til datoerne på opslagene
-        $months = [
-            1 => 'jan',
-            2 => 'feb',
-            3 => 'mar',
-            4 => 'apr',
-            5 => 'maj',
-            6 => 'jun',
-            7 => 'jul',
-            8 => 'aug',
-            9 => 'sep',
-            10 => 'okt',
-            11 => 'nov',
-            12 => 'dec'
-        ];
 
         // Gennemgår hvert opslag og gør oplysningerne klar til viewet
         foreach ($posts as &$post) {
 
-            // Omdanner opslagets dato til et tidsstempel
-            $timestamp = strtotime($post['date']);
-
-            // Formaterer datoen til visning
-            $post['day'] = date('d', $timestamp);
-            $post['month'] = $months[(int) date('n', $timestamp)];
-            $post['relative_date'] = date('d.m.Y', $timestamp);
+            
+            // Formaterer opslagets dato med den fælles danske datohjælper
+            $post['day'] = danishDate($post['date'], 'd');
+            $post['month'] = danishDate($post['date'], 'MMM');
+            $post['relative_date'] = danishDate($post['date'], 'dd.MM.y');
 
             // Henter opslagets billedsti
             $image = $post['image'] ?? '';
