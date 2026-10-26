@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 function danishDate(string $dateTime, string $pattern = 'd. MMM y'): string
 {
-    // Use IntlDateFormatter if the intl extension is available
+    // Use IntlDateFormatter if the intl extension is available like on Halynas computer
     if (class_exists(\IntlDateFormatter::class)) {
         $formatter = new \IntlDateFormatter(
             'da_DK',                     // language + country
@@ -20,7 +20,7 @@ function danishDate(string $dateTime, string $pattern = 'd. MMM y'): string
         return $formatter->format($date);
     }
 
-    // Fallback if the intl extension is not installed
+    // Fallback if the intl extension is not installed like on Mias computer (XAMPP)
     $date = new \DateTimeImmutable($dateTime);
 
     // Danish month abbreviations
@@ -30,7 +30,7 @@ function danishDate(string $dateTime, string $pattern = 'd. MMM y'): string
         9 => 'sep.', 10 => 'okt.', 11 => 'nov.', 12 => 'dec.'
     ];
 
-    // Date patterns currently used in PostCard
+    // Date patterns used in our project
     $replacements = [
         'dd.MM.y HH:mm' => $date->format('d.m.Y H:i'),
         'dd.MM.y' => $date->format('d.m.Y'),
