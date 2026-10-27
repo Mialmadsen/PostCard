@@ -1,8 +1,8 @@
-DROP DATABASE IF EXISTS postcard;
+-- DROP DATABASE IF EXISTS postcard;
 -- utf8mb4 stores every character (æøå, Ukrainian letters, emoji);
 -- utf8mb4_danish_ci sorts the Danish way: æ, ø, å come after z.
-CREATE DATABASE postcard CHARACTER SET utf8mb4 COLLATE utf8mb4_danish_ci;
-USE postcard;
+-- CREATE DATABASE postcard CHARACTER SET utf8mb4 COLLATE utf8mb4_danish_ci;
+-- USE postcard;
 
 -- Rules used in every table:
 -- NOT NULL  = the value is required. Only optional fields may be NULL.

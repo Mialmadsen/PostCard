@@ -31,7 +31,7 @@
 -- "Today" in this data is around 2026-10-15.
 -- =====================================================================
 
-USE postcard;
+-- USE postcard;
 SET NAMES utf8mb4;
 
 
