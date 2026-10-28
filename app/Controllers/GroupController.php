@@ -8,6 +8,7 @@ use PostCard\Core\Auth;
 use PostCard\Core\View;
 use PostCard\Repositories\GroupRepository;
 use PostCard\Repositories\InvitationRepository;
+use PostCard\Repositories\GroupMemberRepository;
 use PostCard\Core\Config;
 use PostCard\Core\Session;
 
@@ -184,5 +185,80 @@ class GroupController
         Session::flash('invite_message', $isCancelled ? 'Linket er annulleret.' : 'Linket kunne ikke annulleres. Det er allerede brugt eller udløbet.');
 
         redirect('/invite?group_id=' . $groupId);
+    }
+
+    public function join(): void
+    {
+        $token = filter_input(INPUT_GET, 'token');
+
+        // 1. Look up the link, but only if the token is a usable string
+        $invitation = null;
+        if (is_string($token) && $token !== '' && strlen($token) <= 100) {
+            $invitations = new InvitationRepository();
+            $invitation = $invitations->findValidByTokenHash(hash('sha256', $token));
+        }
+
+        // 2. Unusable link: only the "Linket virker ikke" state, nothing about the group
+        if ($invitation === null) {
+            http_response_code(404);
+            View::render('join', [
+                'pageTitle' => 'Invitation',
+                'isLoggedIn' => Auth::userId() !== null,
+                'state' => 'invalid',
+            ]);
+            return;
+        }
+
+        // 3. Which of the other three states?
+        $userId = Auth::userId();
+        $members = new GroupMemberRepository();
+
+        if ($userId === null) {
+            $state = 'guest';
+        } elseif ($members->findActiveRole($userId, $invitation['group_id']) !== null) {
+            $state = 'member';
+        } else {
+            $state = 'join';
+        }
+
+        View::render('join', [
+            'pageTitle' => 'Invitation',
+            'isLoggedIn' => $userId !== null,
+            'state' => $state,
+            'invitation' => $invitation,
+            'memberCount' => $members->countActiveMembers($invitation['group_id']),
+            'token' => $token,
+        ]);
+    }
+
+    public function acceptInvitation(): void
+    {
+        Auth::requireLogin();
+        $token = input('token');
+        $invitations = new InvitationRepository();
+
+        $invitation = null;
+        if ($token !== '' && strlen($token) <= 100) {
+            $invitation = $invitations->findValidByTokenHash(hash('sha256', $token));
+        }
+
+        if ($invitation === null) {
+            redirect('/join?token=' . urlencode($token));
+        }
+
+        $userId = Auth::userId();
+        $members = new GroupMemberRepository();
+
+        if ($members->findActiveRole($userId, $invitation['group_id']) !== null) {
+            redirect('/group?id=' . $invitation['group_id']);
+        }
+
+        $joined = $invitations->accept($invitation['invitation_id'], $invitation['group_id'], $userId);
+
+        if (!$joined) {
+            redirect('/join?token=' . urlencode($token));
+        }
+
+        redirect('/group?id=' . $invitation['group_id']);
     }
 }

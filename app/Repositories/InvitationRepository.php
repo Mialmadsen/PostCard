@@ -55,4 +55,52 @@ class InvitationRepository extends Repository
             ]
         ) === 1;
     }
+
+    public function findValidByTokenHash(string $tokenHash): ?array
+    {
+        return $this->fetchOne(
+            'SELECT i.invitation_id, i.group_id, g.name, g.description, u.first_name, u.last_name
+             FROM invitations AS i
+             JOIN user_groups AS g ON g.group_id = i.group_id
+             JOIN users AS u ON u.user_id = i.created_by
+             WHERE i.token_hash = :token_hash
+               AND i.used_at IS NULL
+               AND i.expires_at > NOW()',
+            ['token_hash' => $tokenHash]
+        );
+    }
+
+    //In one transaction we mark the link as used and make a person that used it to become a member
+    public function accept(int $invitationId, int $groupId, int $userId): bool
+    {
+        return $this->transaction(function () use ($invitationId, $groupId, $userId) {
+            $claimed = $this->execute(
+                'UPDATE invitations
+                 SET used_at = NOW()
+                 WHERE invitation_id = :invitation_id
+                   AND used_at IS NULL
+                   AND expires_at > NOW()',
+                ['invitation_id' => $invitationId]
+            ) === 1;
+            // Returns 1 or false
+            if (!$claimed) {
+                return false;
+            }
+
+            $this->execute(
+                "INSERT INTO group_members (user_id, group_id)
+                 VALUES (:user_id, :group_id)
+                 ON DUPLICATE KEY UPDATE
+                     member_status = 'active',
+                     member_role = 'member',
+                     joined_at = NOW()",
+                [
+                    'user_id' => $userId,
+                    'group_id' => $groupId,
+                ]
+            );
+
+            return true;
+        });
+    }
 }

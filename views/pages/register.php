@@ -1,3 +1,7 @@
+<?php
+/** @var string $invite the invitation token, or '' when the page was not opened from an invitation */
+?>
+
 <main id="main" class="site-main">
     <div class="container">
         <div class="envelope envelope--still">
@@ -12,13 +16,16 @@
                     nedenfor.</p>
                 <?php endif; ?>
 
-                <!-- IF the page was opened from an invitation (/register?invite=…) and the link is valid:
-                <p class="alert">Når du har oprettet din bruger, bliver du medlem af <strong>Familien Nielsen</strong>.</p>
-                -->
+                <?php if ($invite !== ''): ?>
+                    <p class="alert">Når du har oprettet din bruger, kommer du tilbage til din invitation.</p>
+                <?php endif; ?>
 
                 <form class="form" action="<?= url('/register') ?>" method="post">
                     <?= \PostCard\Core\Csrf::field() ?>
-                    <!-- IF invitation: <input type="hidden" name="invite" value="TOKEN"> so the token survives the form -->
+                    <?php if ($invite !== ''): ?>
+                        <!-- Carries the invitation token through the form, so the user can be sent back to it -->
+                        <input type="hidden" name="invite" value="<?= e($invite) ?>">
+                    <?php endif; ?>
                     <div class="field-row">
                         <div class="field">
                             <label class="field__label" for="first-name">Fornavn</label>
@@ -109,7 +116,7 @@
 
                     <div class="form__actions">
                         <button class="button button--primary" type="submit">Opret bruger</button>
-                        <p>Har du allerede en bruger? <a href="<?= url('/login') ?>">Log ind</a></p>
+                        <p>Har du allerede en bruger? <a href="<?= url($invite !== '' ? '/login?invite=' . urlencode($invite) : '/login') ?>">Log ind</a></p>
                     </div>
                 </form>
             </div>

@@ -1,3 +1,7 @@
+<?php
+/** @var string $invite the invitation token, or '' when the page was not opened from an invitation */
+?>
+
 <main id="main" class="site-main">
     <div class="container">
         <div class="envelope envelope--still">
@@ -10,13 +14,16 @@
                     <p class="alert alert--error" role="alert"><?= e($error) ?></p>
                 <?php endif; ?>
 
-                <!-- IF the page was opened from an invitation (/login?invite=…) and the link is valid:
-                <p class="alert">Når du er logget ind, bliver du medlem af <strong>Familien Nielsen</strong>.</p>
-                -->
+                <?php if ($invite !== ''): ?>
+                    <p class="alert">Når du er logget ind, kommer du tilbage til din invitation.</p>
+                <?php endif; ?>
 
                 <form class="form" action="<?= url('/login') ?>" method="post">
                     <?= \PostCard\Core\Csrf::field() ?>
-                    <!-- IF invitation: <input type="hidden" name="invite" value="TOKEN"> so the token survives the form -->
+                    <?php if ($invite !== ''): ?>
+                        <!-- Carries the invitation token through the form, so the user can be sent back to it -->
+                        <input type="hidden" name="invite" value="<?= e($invite) ?>">
+                    <?php endif; ?>
                     <div class="field">
                         <label class="field__label" for="email">E-mail</label>
                         <input class="field__input" id="email" name="email" type="email" autocomplete="email"
@@ -32,7 +39,7 @@
                     <div class="form__actions">
                         <button class="button button--primary" type="submit">Log ind</button>
                         <a href="<?= url('/forgot-password') ?>">Glemt adgangskode?</a>
-                        <p>Ingen bruger endnu? <a href="<?= url('/register') ?>">Opret bruger</a></p>
+                        <p>Ingen bruger endnu? <a href="<?= url($invite !== '' ? '/register?invite=' . urlencode($invite) : '/register') ?>">Opret bruger</a></p>
                     </div>
                 </form>
             </div>

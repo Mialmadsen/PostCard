@@ -93,6 +93,16 @@
                                     Anmodninger
                                 </a>
                             </li>
+                            <li>
+                                <a href="<?= url('/invite?group_id=' . (int) $group['group_id']) ?>">
+                                    Inviter nye medlemmer
+                                </a>
+                            </li>
+                            <li>
+                                <a href="<?= url('/group-settings?group_id=' . (int) $group['group_id']) ?>">
+                                    Gruppens indstillinger
+                                </a>
+                            </li>
                         </ul>
                     </section>
                 <?php endif; ?>

@@ -13,9 +13,13 @@ class AuthController
 {
     public function showLogin(): void
     {
+        $invite = filter_input(INPUT_GET, 'invite');
+        $invite = is_string($invite) ? $invite : '';
+
         View::render('login', [
             'pageTitle' => 'Log ind',
             'isLoggedIn' => false,
+            'invite' => $invite,
         ]);
     }
 
@@ -24,6 +28,7 @@ class AuthController
     {
         $email = mb_strtolower(input('email'));
         $password = input('password', false);
+        $invite = input('invite');
         $users = new UserRepository();
         $user = $users->findByEmail($email);
 
@@ -35,6 +40,7 @@ class AuthController
                 'isLoggedIn' => false,
                 'error' => 'Forkert e-mail eller adgangskode.',
                 'email' => $email,
+                'invite' => $invite,
             ]);
             return;
         }
@@ -46,11 +52,17 @@ class AuthController
                 'isLoggedIn' => false,
                 'error' => 'Din bruger er spærret. Kontakt os, hvis du mener, det er en fejl.',
                 'email' => $email,
+                'invite' => $invite,
             ]);
             return;
         }
 
         Auth::login($user['user_id']);
+
+        if ($invite !== '') {
+            redirect('/join?token=' . urlencode($invite));
+        }
+
         redirect('/home');
     }
 
@@ -64,11 +76,15 @@ class AuthController
     // Show the empty registration form.
     public function showRegister(): void
     {
+        $invite = filter_input(INPUT_GET, 'invite');
+        $invite = is_string($invite) ? $invite : '';
+
         View::render('register', [
             'pageTitle' => 'Opret bruger',
             'isLoggedIn' => false,
-            'errors'=>[],
-            'old'=>[]
+            'errors' => [],
+            'invite' => $invite,
+            'old' => []
         ]);
     }
 
@@ -83,6 +99,9 @@ class AuthController
         $password = input('password', false);
         $passwordConfirm = input('password_confirm', false);
         $acceptsRules = input('accept_rules') === '1';
+        $invite = input('invite');
+
+
 
         // Needed to check whether the username and email are free.
         $users = new UserRepository();
@@ -155,12 +174,14 @@ class AuthController
                 'pageTitle' => 'Opret bruger',
                 'isLoggedIn' => false,
                 'errors' => $errors,
+                'invite' => $invite,
                 'old' => [
                     'first_name' => $firstName,
                     'last_name' => $lastName,
                     'username' => $username,
                     'email' => $email,
                     'birthdate' => $birthdate,
+
                 ],
             ]);
             return;
@@ -178,6 +199,11 @@ class AuthController
         );
 
         Auth::login($newUserId);
+
+        if ($invite !== '') {
+            redirect('/join?token=' . urlencode($invite));
+        }
+
         redirect('/home');
     }
 }

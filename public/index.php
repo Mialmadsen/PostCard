@@ -73,6 +73,8 @@ $router->add('POST', '/create-group', [GroupController::class, 'store']);
 $router->add('GET', '/invite', [GroupController::class, 'invite']);
 $router->add('POST', '/invite', [GroupController::class, 'createInvitation']);
 $router->add('POST', '/cancel-invitation', [GroupController::class, 'cancelInvitation']);
+$router->add('GET', '/join', [GroupController::class, 'join']);
+$router->add('POST', '/join', [GroupController::class, 'acceptInvitation']);
 $router->add('GET', '/group', [GroupPageController::class, 'show']);
 $router->add('GET', '/experience', [ExperienceController::class, 'show']);
 $router->add('GET', '/create-experience', [ExperienceController::class, 'create']);
