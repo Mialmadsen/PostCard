@@ -105,4 +105,21 @@ class GroupMemberRepository extends Repository
             ['group_id' => $groupId]
         );
     }
+
+    // gets everyone who is an active member in the group
+
+    public function findActiveByGroup(int $groupId): array
+    {
+        return $this->fetchAll(
+            "SELECT u.first_name, u.last_name, u.user_id,gm.member_role, gm.joined_at
+            FROM group_members AS gm
+            JOIN users AS u ON u.user_id=gm.user_id
+            WHERE gm.group_id =:group_id
+            AND gm.member_status ='active'
+            ORDER BY gm.member_role='group_admin' DESC, u.first_name,u.last_name",
+            [
+                'group_id' => $groupId
+            ]
+        );
+    }
 }

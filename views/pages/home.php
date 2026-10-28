@@ -230,15 +230,11 @@
                         <ul class="comment-list">
                             <?php foreach ($latestComments as $comment): ?>
                                 <?php
-                                    // Henter forfatterens fulde navn og initialer
+                                    // Henter forfatterens fulde navn
                                     $fullName = trim($comment['first_name'] . ' ' . $comment['last_name']);
-                                    $initials = mb_strtoupper(
-                                        mb_substr($comment['first_name'], 0, 1) .
-                                        mb_substr($comment['last_name'], 0, 1)
-                                    );
                                 ?>
                                 <li class="comment-item">
-                                    <span class="avatar" aria-hidden="true"><?= e($initials) ?></span>
+                                    <span class="avatar" aria-hidden="true"><?= e(initials($comment['first_name'], $comment['last_name'])) ?></span>
                                     <div>
                                         <p class="meta">
                                             <strong><?= e($fullName) ?></strong> på

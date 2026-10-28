@@ -39,14 +39,7 @@
                     <!-- Viser de første fire aktive medlemmer fra databasen -->
                     <div class="avatar-stack" aria-hidden="true">
                         <?php foreach ($members as $member): ?>
-                            <?php
-                            // Finder første bogstav i fornavn og efternavn
-                            $initials = mb_strtoupper(
-                                mb_substr($member['first_name'] ?? '', 0, 1) .
-                                mb_substr($member['last_name'] ?? '', 0, 1)
-                            );
-                            ?>
-                            <span class="avatar"><?= e($initials) ?></span>
+                            <span class="avatar"><?= e(initials($member['first_name'], $member['last_name'])) ?></span>
                         <?php endforeach; ?>
 
                         <!-- Viser antallet af resterende medlemmer -->

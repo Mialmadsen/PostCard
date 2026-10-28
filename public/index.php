@@ -18,6 +18,7 @@ use PostCard\Controllers\RequestController;
 use PostCard\Controllers\GroupController;
 use PostCard\Controllers\GroupPageController;
 use PostCard\Controllers\HomeController;
+use PostCard\Controllers\MemberController;
 
 require __DIR__ . '/../app/autoload.php';
 require_once __DIR__ . '/../app/Helpers/escape.php';
@@ -26,6 +27,7 @@ require_once __DIR__ . '/../app/Helpers/asset.php';
 require_once __DIR__ . '/../app/Helpers/input.php';
 require_once __DIR__ . '/../app/Helpers/redirect.php';
 require_once __DIR__ . '/../app/Helpers/date.php';
+require_once __DIR__ . '/../app/Helpers/initials.php';
 
 date_default_timezone_set(Config::get('APP_TIMEZONE'));
 
@@ -75,6 +77,7 @@ $router->add('POST', '/invite', [GroupController::class, 'createInvitation']);
 $router->add('POST', '/cancel-invitation', [GroupController::class, 'cancelInvitation']);
 $router->add('GET', '/join', [GroupController::class, 'join']);
 $router->add('POST', '/join', [GroupController::class, 'acceptInvitation']);
+$router->add('GET', '/members', [MemberController::class, 'index']);
 $router->add('GET', '/group', [GroupPageController::class, 'show']);
 $router->add('GET', '/experience', [ExperienceController::class, 'show']);
 $router->add('GET', '/create-experience', [ExperienceController::class, 'create']);
