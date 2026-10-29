@@ -122,8 +122,17 @@ class MemberController
         Auth::requireMember($groupId);
         $userId = Auth::userId();
         $members = new GroupMemberRepository();
-        $members->leave($groupId, $userId);
+        try {
+            $members->leave($groupId, $userId);
+        } catch (\PDOException $exception) {
+            // only code 45000. Any other database error go through
+            if ($exception->getCode() !== '45000') {
+                throw $exception;
+            }
 
+            Session::flash('member_message', 'Du er den eneste admin. Gør et andet medlem til admin, før du forlader gruppen.');
+            redirect('/members?group_id=' . $groupId);
+        }
 
         redirect('/home');
     }

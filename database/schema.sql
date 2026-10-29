@@ -179,3 +179,26 @@ CREATE TABLE site_settings (
 
 -- Indexes
 CREATE INDEX idx_group_members_group_status ON group_members (group_id, member_status);
+
+-- Triggers
+DELIMITER //
+
+CREATE TRIGGER trg_group_members_keep_admin
+BEFORE UPDATE ON group_members
+FOR EACH ROW
+BEGIN
+    IF OLD.member_role = 'group_admin' AND OLD.member_status = 'active'
+       AND (NEW.member_role <> 'group_admin' OR NEW.member_status <> 'active')
+       AND (SELECT COUNT(*)
+              FROM group_members
+             WHERE group_id = OLD.group_id
+               AND member_role = 'group_admin'
+               AND member_status = 'active'
+               AND user_id <> OLD.user_id) = 0
+    THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Gruppen skal have mindst én admin.';
+    END IF;
+END//
+
+DELIMITER ;
