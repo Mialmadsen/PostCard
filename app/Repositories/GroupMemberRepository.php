@@ -122,4 +122,56 @@ class GroupMemberRepository extends Repository
             ]
         );
     }
+
+    //Make a person admin of the group
+    public function makeAdmin(int $groupId, int $userId): bool
+    {
+        return $this->execute(
+            "UPDATE group_members
+            SET member_role ='group_admin'
+            WHERE group_id=:group_id
+            AND user_id=:user_id
+            AND member_status ='active'
+            AND member_role=
+            'member'",
+            [
+                'group_id' => $groupId,
+                'user_id' => $userId
+            ]
+        ) === 1;
+    }
+
+    //Remove member
+    public function removeMember(int $groupId, int $userId): bool
+    {
+        return $this->execute(
+            "UPDATE group_members
+            SET member_status ='removed'
+            WHERE group_id=:group_id
+            AND user_id=:user_id
+            AND member_status ='active'
+            AND member_role='member'",
+            [
+                'group_id' => $groupId,
+                'user_id' => $userId
+            ]
+        ) === 1;
+    }
+
+    //Leave the group
+    public function leave(int $groupId, int $userId): void
+    {
+        $this->execute(
+            "UPDATE group_members
+        SET member_status ='left'
+        WHERE group_id=:group_id
+            AND user_id=:user_id
+            AND member_status ='active'
+            ",
+            [
+                'group_id' => $groupId,
+                'user_id' => $userId
+            ]
+        );
+    }
 }

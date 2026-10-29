@@ -78,6 +78,9 @@ $router->add('POST', '/cancel-invitation', [GroupController::class, 'cancelInvit
 $router->add('GET', '/join', [GroupController::class, 'join']);
 $router->add('POST', '/join', [GroupController::class, 'acceptInvitation']);
 $router->add('GET', '/members', [MemberController::class, 'index']);
+$router->add('POST', '/make-admin', [MemberController::class, 'makeAdmin']);
+$router->add('POST', '/remove-member', [MemberController::class, 'removeMember']);
+$router->add('POST', '/leave-group', [MemberController::class, 'leaveGroup']);
 $router->add('GET', '/group', [GroupPageController::class, 'show']);
 $router->add('GET', '/experience', [ExperienceController::class, 'show']);
 $router->add('GET', '/create-experience', [ExperienceController::class, 'create']);

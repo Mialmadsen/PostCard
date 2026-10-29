@@ -176,3 +176,6 @@ CREATE TABLE site_settings (
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (setting_key)
 );
+
+-- Indexes
+CREATE INDEX idx_group_members_group_status ON group_members (group_id, member_status);

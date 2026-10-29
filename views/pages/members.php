@@ -4,6 +4,8 @@
 /** @var array $members */
 /** @var int $currentUserId */
 /** @var bool $isAdmin */
+/** @var string|null $memberMessage */
+
 
 
 ?>
@@ -35,6 +37,9 @@
             <?php endif; ?>
 
         </header>
+        <?php if ($memberMessage !== null): ?>
+            <p class="alert" role="status"><?= e($memberMessage) ?></p>
+        <?php endif; ?>
 
         <div class="card-stack">
             <section class="card" aria-labelledby="members-heading">
@@ -44,7 +49,8 @@
                     <?php foreach ($members as $member): ?>
                         <?php $fullName = $member['first_name'] . ' ' . $member['last_name']; ?>
                         <li class="member">
-                            <span class="avatar" aria-hidden="true"><?= e(initials($member['first_name'], $member['last_name'])) ?></span>
+                            <span class="avatar"
+                                aria-hidden="true"><?= e(initials($member['first_name'], $member['last_name'])) ?></span>
                             <div>
                                 <p class="member__name">
                                     <?= e($fullName) ?>
@@ -58,7 +64,8 @@
                                     <?php else: ?>
                                         Medlem siden
                                     <?php endif; ?>
-                                    <time datetime="<?= e($member['joined_at']) ?>"><?= danishDate($member['joined_at']) ?></time>
+                                    <time
+                                        datetime="<?= e($member['joined_at']) ?>"><?= danishDate($member['joined_at']) ?></time>
                                 </p>
                             </div>
 

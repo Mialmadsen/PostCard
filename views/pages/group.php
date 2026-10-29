@@ -56,21 +56,17 @@
                     ?>
                     <p><a href="<?= url('/members?group_id=' . (int) $group['group_id']) ?>">Se alle <?= (int) $memberCount ?> medlemmer</a></p>
 
-                    <!-- A CSRF token is added in Epic 2. Sets group_members.member_status = 'left'.
+                    <!-- Sets group_members.member_status = 'left'. The user id comes from the session, not the form.
                          IF the user is the only admin: no button, instead
                          <p class="meta">Du er den eneste admin. Gør et andet medlem til admin, før du forlader gruppen.</p> -->
                          <?php
-                        // TODO: Halyna implementerer funktionaliteten til at forlade en gruppe.
-                        // Formularen skal kobles til den korrekte POST-route,
-                        // have CSRF-beskyttelse og opdatere group_members.member_status til 'left'.
-                        // Gruppe-ID skal hentes dynamisk fra $group.
-                        // Den sidste gruppeadministrator må ikke kunne forlade gruppen,
+                        // TODO: Den sidste gruppeadministrator må ikke kunne forlade gruppen,
                         // før et andet medlem er gjort til administrator.
                         ?>
-                    <form class="js-confirm" action="group.php" method="post"
-                        data-confirm="Vil du forlade Familien Nielsen? Det, du har delt, bliver i gruppens album. Du skal have en ny invitation for at komme tilbage.">
-                        <input type="hidden" name="group_id" value="1">
-                        <input type="hidden" name="action" value="leave">
+                    <form class="js-confirm" action="<?= url('/leave-group') ?>" method="post"
+                        data-confirm="Vil du forlade <?= e($group['name']) ?>? Det, du har delt, bliver i gruppens album. Du skal have en ny invitation for at komme tilbage.">
+                        <?= \PostCard\Core\Csrf::field() ?>
+                        <input type="hidden" name="group_id" value="<?= (int) $group['group_id'] ?>">
                         <button class="button button--secondary" type="submit">Forlad gruppen</button>
                     </form>
                 </section>
