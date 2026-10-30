@@ -53,6 +53,7 @@
                     <?php
                     // TODO: Tilføj link til medlemsoversigten, når /members-routen er lavet.
                     // Linket skal bruge gruppens dynamiske ID og medlemstal.
+                    // tilføj også invitationslink til at invitere nye medlemmer, når /invite-routen er lavet.
                     ?>
                     <p><a href="<?= url('/members?group_id=' . (int) $group['group_id']) ?>">Se alle <?= (int) $memberCount ?> medlemmer</a></p>
 
