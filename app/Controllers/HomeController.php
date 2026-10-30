@@ -40,6 +40,34 @@ class HomeController
         $popularPosts = $postRepository->findPopularByUser($userId);
         $stickyPosts = $postRepository->findStickyByUser($userId);
 
+        // Gør billedadresserne klar til populære opslag
+        foreach ($popularPosts as &$post) {
+            // Bruger den beskyttede billedrute til Cloudinary-billeder
+            if (!empty($post['image_id'])) {
+                $post['image'] = url('/post-image?id=' . (int) $post['image_id']);
+            } else {
+                // Opslag uden billeder får ingen billedadresse
+                $post['image'] = null;
+            }
+        }
+
+        // Afslutter referencen fra foreach-løkken
+        unset($post);
+
+        // Gør billedadresserne klar til fastgjorte opslag
+        foreach ($stickyPosts as &$post) {
+            // Bruger den beskyttede billedrute til Cloudinary-billeder
+            if (!empty($post['image_id'])) {
+                $post['image'] = url('/post-image?id=' . (int) $post['image_id']);
+            } else {
+                // Opslag uden billeder får ingen billedadresse
+                $post['image'] = null;
+            }
+        }
+
+        // Afslutter referencen fra foreach-løkken
+        unset($post);
+
         // Henter de nyeste kommentarer fra brugerens grupper
         $commentRepository = new CommentRepository();
         $latestComments = $commentRepository->findLatestByUser($userId);

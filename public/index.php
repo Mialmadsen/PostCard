@@ -14,6 +14,8 @@ use PostCard\Core\Config;
 use PostCard\Controllers\PageController;
 use PostCard\Controllers\AuthController;
 use PostCard\Controllers\ExperienceController;
+use PostCard\Controllers\PostController;
+use PostCard\Controllers\PostImageController;
 use PostCard\Controllers\RequestController;
 use PostCard\Controllers\GroupController;
 use PostCard\Controllers\GroupPageController;
@@ -85,6 +87,9 @@ $router->add('GET', '/group', [GroupPageController::class, 'show']);
 $router->add('GET', '/experience', [ExperienceController::class, 'show']);
 $router->add('GET', '/create-experience', [ExperienceController::class, 'create']);
 $router->add('POST', '/create-experience', [ExperienceController::class, 'store']);
+$router->add('GET', '/create-post', [PostController::class, 'create']);
+$router->add('POST', '/create-post', [PostController::class, 'store']);
+$router->add('GET', '/post-image', [PostImageController::class, 'show']);
 $router->add('GET', '/requests', [RequestController::class, 'index']);
 $router->add('POST', '/requests', [RequestController::class, 'update']);
 

@@ -83,20 +83,23 @@ CREATE TABLE posts (
   FOREIGN KEY (experience_id) REFERENCES experiences(experience_id) ON DELETE CASCADE
 );
 
+
 -- Post images table
--- The photos are stored on Cloudinary. image_url is the address of the photo;
--- public_id is Cloudinary's name for it, needed to delete the photo there.
+-- All post images are stored privately on Cloudinary.
+-- PHP checks group access before generating signed image URLs.
 -- (Deleting a post removes these rows; PHP must delete the files on Cloudinary.)
 CREATE TABLE post_images (
   image_id INT NOT NULL AUTO_INCREMENT,
-  image_url VARCHAR(255) NOT NULL,
-  public_id VARCHAR(255) NULL,
+  public_id VARCHAR(255) NOT NULL,
+  cloudinary_version INT NOT NULL,
+  image_format VARCHAR(20) NOT NULL,
   post_id INT NOT NULL,
   alt_text VARCHAR(255) NULL,
   sort_order TINYINT NOT NULL DEFAULT 1,
   PRIMARY KEY (image_id),
   FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE
 );
+
 
 -- Comments table
 CREATE TABLE comments (

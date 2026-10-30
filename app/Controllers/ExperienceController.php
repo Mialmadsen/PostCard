@@ -200,38 +200,22 @@ class ExperienceController
         // Henter alle opslag, der hører til oplevelsen
         $posts = $this->postRepository->findByExperience($experienceId);
 
-
         // Gennemgår hvert opslag og gør oplysningerne klar til viewet
         foreach ($posts as &$post) {
 
-            
             // Formaterer opslagets dato med den fælles danske datohjælper
             $post['day'] = danishDate($post['date'], 'd');
             $post['month'] = danishDate($post['date'], 'MMM');
             $post['relative_date'] = danishDate($post['date'], 'dd.MM.y');
 
-            // Henter opslagets billedsti
-            $image = $post['image'] ?? '';
-
-            // Kontrollerer, om billedet er en ekstern URL
-            if (
-                is_string($image) &&
-                filter_var($image, FILTER_VALIDATE_URL)
-            ) {
-                // Eksterne billeder, fx Cloudinary, bruges direkte
-                $post['image'] = $image;
-
-            } elseif (is_string($image) && $image !== '') {
-
-                // Lokale billeder får den korrekte URL gennem asset()
-                $post['image'] = asset($image);
-
+            // Henter billedet gennem vores beskyttede billedrute.
+            // PHP kontrollerer brugerens gruppemedlemskab,
+            // før billedet hentes fra Cloudinary.
+            if (!empty($post['image_id'])) {
+                $post['image'] = url('/post-image?id=' . (int) $post['image_id']);
             } else {
-
-                // Hvis opslaget mangler et billede, bruges standardbilledet
-                $post['image'] = asset(
-                    'assets/images/sample/photo-1.jpg'
-                );
+                // Opslag uden billeder får ingen billedadresse.
+                $post['image'] = null;
             }
         }
 

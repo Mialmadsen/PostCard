@@ -178,36 +178,42 @@ VALUES
 -- public/assets/images/sample/, so they have a local path and no public_id
 -- (replace them with Cloudinary URLs once the sample photos are uploaded there).
 
+
+-- POST IMAGES
+-- All images are stored privately on Cloudinary.
+-- The same Cloudinary image can be used by multiple test posts.
+-- PHP checks group access before generating image URLs.
+
 INSERT INTO post_images
-(image_url, post_id, alt_text, sort_order)
+(public_id, cloudinary_version, image_format, post_id, alt_text, sort_order)
 VALUES
-('assets/images/sample/photo-4.jpg', 1, 'Udsigt fra et klippeplateau ned over en lang, blå fjord', 1),
-('assets/images/sample/photo-3.jpg', 2, 'Højt vandfald i en grøn skov med tåge over træerne', 1),
-('assets/images/sample/photo-1.jpg', 3, 'Høje granitklipper og grantræer, der spejler sig i en rolig flod', 1),
-('assets/images/sample/photo-5.jpg', 4, 'Smal vej gennem grønne bjerge og stejle klipper under en grå himmel', 1),
-('assets/images/sample/photo-4.jpg', 5, 'Udsigt fra et klippeplateau ned over en lang, blå fjord', 1),
-('assets/images/sample/photo-3.jpg', 5, 'Højt vandfald i en grøn skov med tåge over træerne', 2),
-('assets/images/sample/photo-1.jpg', 5, 'Høje granitklipper og grantræer ved en rolig flod', 3),
-('assets/images/sample/photo-6.jpg', 6, 'Lyse klipper og store sten i et turkis hav', 1),
+('b0ypytvmam7xuaaamzbe', 1793362822, 'jpg', 1, 'Udsigt fra et klippeplateau ned over en lang, blå fjord', 1),
+('utunc3o3s5fyoea56nu2', 1793362821, 'jpg', 2, 'Højt vandfald i en grøn skov med tåge over træerne', 1),
+('cddkvjci5tms1qlpg29f', 1793362819, 'jpg', 3, 'Høje granitklipper og grantræer, der spejler sig i en rolig flod', 1),
+('qqwmtmndegyygbwbzykg', 1793362823, 'jpg', 4, 'Smal vej gennem grønne bjerge og stejle klipper under en grå himmel', 1),
+('b0ypytvmam7xuaaamzbe', 1793362822, 'jpg', 5, 'Udsigt fra et klippeplateau ned over en lang, blå fjord', 1),
+('utunc3o3s5fyoea56nu2', 1793362821, 'jpg', 5, 'Højt vandfald i en grøn skov med tåge over træerne', 2),
+('cddkvjci5tms1qlpg29f', 1793362819, 'jpg', 5, 'Høje granitklipper og grantræer ved en rolig flod', 3),
+('yf1kxqzq8rhksvmd8czt', 1793362824, 'jpg', 6, 'Lyse klipper og store sten i et turkis hav', 1),
 
-('assets/images/sample/photo-5.jpg', 7, 'Smal vej gennem grønne bjerge og stejle klipper under en grå himmel', 1),
-('assets/images/sample/photo-3.jpg', 8, 'Højt vandfald i en grøn skov med tåge over træerne', 1),
-('assets/images/sample/photo-6.jpg', 9, 'Lyse klipper og store sten i et turkis hav', 1),
+('qqwmtmndegyygbwbzykg', 1793362823, 'jpg', 7, 'Smal vej gennem grønne bjerge og stejle klipper under en grå himmel', 1),
+('utunc3o3s5fyoea56nu2', 1793362821, 'jpg', 8, 'Højt vandfald i en grøn skov med tåge over træerne', 1),
+('yf1kxqzq8rhksvmd8czt', 1793362824, 'jpg', 9, 'Lyse klipper og store sten i et turkis hav', 1),
 
-('assets/images/sample/photo-2.jpg', 10, 'Gult telt i sneen foran snedækkede bjergtoppe', 1),
-('assets/images/sample/photo-2.jpg', 11, 'Telt og stengærde i sneen med høje bjerge i baggrunden', 1),
+('vetjbtcbglnj0feluk9g', 1793362820, 'jpg', 10, 'Gult telt i sneen foran snedækkede bjergtoppe', 1),
+('vetjbtcbglnj0feluk9g', 1793362820, 'jpg', 11, 'Telt og stengærde i sneen med høje bjerge i baggrunden', 1),
 
-('assets/images/sample/photo-5.jpg', 12, 'Smal vej gennem grønne bjerge og stejle klipper', 1),
-('assets/images/sample/photo-6.jpg', 12, 'Lyse klipper og store sten i et turkis hav', 2),
-('assets/images/sample/photo-1.jpg', 13, 'Høje granitklipper og grantræer, der spejler sig i en rolig flod', 1),
-('assets/images/sample/photo-3.jpg', 14, 'Højt vandfald i en grøn skov med tåge over træerne', 1),
+('qqwmtmndegyygbwbzykg', 1793362823, 'jpg', 12, 'Smal vej gennem grønne bjerge og stejle klipper', 1),
+('yf1kxqzq8rhksvmd8czt', 1793362824, 'jpg', 12, 'Lyse klipper og store sten i et turkis hav', 2),
+('cddkvjci5tms1qlpg29f', 1793362819, 'jpg', 13, 'Høje granitklipper og grantræer, der spejler sig i en rolig flod', 1),
+('utunc3o3s5fyoea56nu2', 1793362821, 'jpg', 14, 'Højt vandfald i en grøn skov med tåge over træerne', 1),
 
-('assets/images/sample/photo-1.jpg', 15, 'Klipper og grantræer i bjergene', 1),
-('assets/images/sample/photo-6.jpg', 16, 'Lyse klipper og store sten i et turkis hav', 1),
+('cddkvjci5tms1qlpg29f', 1793362819, 'jpg', 15, 'Klipper og grantræer i bjergene', 1),
+('yf1kxqzq8rhksvmd8czt', 1793362824, 'jpg', 16, 'Lyse klipper og store sten i et turkis hav', 1),
 
-('assets/images/sample/photo-5.jpg', 17, 'Smal vej gennem grønne bjerge under en grå himmel', 1),
-('assets/images/sample/photo-3.jpg', 18, 'Højt vandfald i en grøn skov med tåge over træerne', 1),
-('assets/images/sample/photo-1.jpg', 19, 'Grantræer ved en rolig flod med klipper i baggrunden', 1);
+('qqwmtmndegyygbwbzykg', 1793362823, 'jpg', 17, 'Smal vej gennem grønne bjerge under en grå himmel', 1),
+('utunc3o3s5fyoea56nu2', 1793362821, 'jpg', 18, 'Højt vandfald i en grøn skov med tåge over træerne', 1),
+('cddkvjci5tms1qlpg29f', 1793362819, 'jpg', 19, 'Grantræer ved en rolig flod med klipper i baggrunden', 1);
 
 
 -- COMMENTS

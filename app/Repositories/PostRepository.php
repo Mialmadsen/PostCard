@@ -22,14 +22,39 @@ class PostRepository extends Repository
                 p.caption,
                 p.created_at AS date,
 
-                -- Henter det første billede til opslaget
+                -- Henter ID'et på opslagets første billede
                 (
-                    SELECT pi.image_url
+                    SELECT pi.image_id
                     FROM post_images AS pi
                     WHERE pi.post_id = p.post_id
                     ORDER BY pi.sort_order, pi.image_id
                     LIMIT 1
-                ) AS image,
+                ) AS image_id,
+
+                -- Henter Cloudinary-oplysninger for opslagets første billede
+                (
+                    SELECT pi.public_id
+                    FROM post_images AS pi
+                    WHERE pi.post_id = p.post_id
+                    ORDER BY pi.sort_order, pi.image_id
+                    LIMIT 1
+                ) AS image_public_id,
+
+                (
+                    SELECT pi.cloudinary_version
+                    FROM post_images AS pi
+                    WHERE pi.post_id = p.post_id
+                    ORDER BY pi.sort_order, pi.image_id
+                    LIMIT 1
+                ) AS image_version,
+
+                (
+                    SELECT pi.image_format
+                    FROM post_images AS pi
+                    WHERE pi.post_id = p.post_id
+                    ORDER BY pi.sort_order, pi.image_id
+                    LIMIT 1
+                ) AS image_format,
 
                 -- Tæller hvor mange likes opslaget har
                 (
@@ -76,14 +101,39 @@ class PostRepository extends Repository
                 u.first_name,
                 u.last_name,
 
-                -- Henter det første billede til opslaget
+                -- Henter ID'et på opslagets første billede
                 (
-                    SELECT pi.image_url
+                    SELECT pi.image_id
                     FROM post_images AS pi
                     WHERE pi.post_id = p.post_id
                     ORDER BY pi.sort_order, pi.image_id
                     LIMIT 1
-                ) AS image,
+                ) AS image_id,
+
+                -- Henter Cloudinary-oplysninger for opslagets første billede
+                (
+                    SELECT pi.public_id
+                    FROM post_images AS pi
+                    WHERE pi.post_id = p.post_id
+                    ORDER BY pi.sort_order, pi.image_id
+                    LIMIT 1
+                ) AS image_public_id,
+
+                (
+                    SELECT pi.cloudinary_version
+                    FROM post_images AS pi
+                    WHERE pi.post_id = p.post_id
+                    ORDER BY pi.sort_order, pi.image_id
+                    LIMIT 1
+                ) AS image_version,
+
+                (
+                    SELECT pi.image_format
+                    FROM post_images AS pi
+                    WHERE pi.post_id = p.post_id
+                    ORDER BY pi.sort_order, pi.image_id
+                    LIMIT 1
+                ) AS image_format,
 
                 -- Tæller antal likes
                 (
@@ -144,14 +194,39 @@ class PostRepository extends Repository
                 u.first_name,
                 u.last_name,
 
-                -- Henter det første billede til opslaget
+                -- Henter ID'et på opslagets første billede
                 (
-                    SELECT pi.image_url
+                    SELECT pi.image_id
                     FROM post_images AS pi
                     WHERE pi.post_id = p.post_id
                     ORDER BY pi.sort_order, pi.image_id
                     LIMIT 1
-                ) AS image,
+                ) AS image_id,
+
+                -- Henter Cloudinary-oplysninger for opslagets første billede
+                (
+                    SELECT pi.public_id
+                    FROM post_images AS pi
+                    WHERE pi.post_id = p.post_id
+                    ORDER BY pi.sort_order, pi.image_id
+                    LIMIT 1
+                ) AS image_public_id,
+
+                (
+                    SELECT pi.cloudinary_version
+                    FROM post_images AS pi
+                    WHERE pi.post_id = p.post_id
+                    ORDER BY pi.sort_order, pi.image_id
+                    LIMIT 1
+                ) AS image_version,
+
+                (
+                    SELECT pi.image_format
+                    FROM post_images AS pi
+                    WHERE pi.post_id = p.post_id
+                    ORDER BY pi.sort_order, pi.image_id
+                    LIMIT 1
+                ) AS image_format,
 
                 -- Tæller antal likes
                 (
@@ -197,4 +272,203 @@ class PostRepository extends Repository
             'user_id' => $userId
         ]);
     }
+
+
+    // Opretter et nyt opslag i databasen
+    public function create(
+        int $experienceId,
+        string $caption,
+        string $location
+    ): int {
+        // SQL-query til at indsætte opslaget i posts-tabellen
+        $sql = "
+            INSERT INTO posts (experience_id, caption, location)
+            VALUES (:experience_id, :caption, :location)
+        ";
+
+        // Genbruger insert() fra den fælles Repository-klasse.
+        // Returnerer ID'et på det nye opslag.
+        return $this->insert($sql, [
+            'experience_id' => $experienceId,
+            'caption' => $caption,
+            'location' => $location
+        ]);
+    }
+
+
+    // Gemmer oplysninger om et billede, der er uploadet til Cloudinary
+    public function addImage(
+        int $postId,
+        string $publicId,
+        int $cloudinaryVersion,
+        string $imageFormat,
+        ?string $altText,
+        int $sortOrder
+    ): int {
+        // SQL-query til at knytte Cloudinary-billedet til et opslag
+        $sql = "
+            INSERT INTO post_images (
+                post_id,
+                public_id,
+                cloudinary_version,
+                image_format,
+                alt_text,
+                sort_order
+            )
+            VALUES (
+                :post_id,
+                :public_id,
+                :cloudinary_version,
+                :image_format,
+                :alt_text,
+                :sort_order
+            )
+        ";
+
+        // Genbruger insert() fra vores fælles Repository-klasse
+        return $this->insert($sql, [
+            'post_id' => $postId,
+            'public_id' => $publicId,
+            'cloudinary_version' => $cloudinaryVersion,
+            'image_format' => $imageFormat,
+            'alt_text' => $altText,
+            'sort_order' => $sortOrder
+        ]);
+    }
+
+
+    // Opretter et opslag og gemmer alle billeder i én transaktion.
+    // Hvis noget fejler, bliver ændringerne i databasen rullet tilbage.
+    public function createWithImages(
+        int $experienceId,
+        string $caption,
+        string $location,
+        array $images
+    ): int {
+        // Genbruger transaction() fra den fælles Repository-klasse.
+        return $this->transaction(function () use (
+            $experienceId,
+            $caption,
+            $location,
+            $images
+        ): int {
+            // Låser oplevelsen, mens opslaget bliver oprettet.
+            // Andre oprettelser i samme oplevelse må vente.
+            $experience = $this->fetchOne(
+                "
+                SELECT
+                    e.experience_id,
+                    e.user_id,
+                    e.group_id,
+                    e.experience_status,
+                    e.start_date,
+                    e.end_date,
+                    e.post_limit,
+                    g.posting_mode
+                FROM experiences AS e
+                INNER JOIN user_groups AS g
+                    ON e.group_id = g.group_id
+                WHERE e.experience_id = :experience_id
+                FOR UPDATE
+                ",
+                ['experience_id' => $experienceId]
+            );
+
+            // Kontrollerer, at oplevelsen stadig findes.
+            if ($experience === null) {
+                throw new \RuntimeException(
+                    'Oplevelsen blev ikke fundet.'
+                );
+            }
+
+            // Kontrollerer, at den indloggede bruger ejer oplevelsen.
+            if ((int) $experience['user_id'] !== \PostCard\Core\Auth::userId()) {
+                throw new \RuntimeException(
+                    'Du kan kun oprette opslag i dine egne oplevelser.'
+                );
+            }
+
+            // Kontrollerer, at brugeren stadig er aktivt medlem af gruppen.
+            $isMember = $this->fetchValue(
+                "
+                SELECT 1
+                FROM group_members
+                WHERE user_id = :user_id
+                    AND group_id = :group_id
+                    AND member_status = 'active'
+                LIMIT 1
+                ",
+                [
+                    'user_id' => \PostCard\Core\Auth::userId(),
+                    'group_id' => $experience['group_id']
+                ]
+            );
+
+            if (!$isMember) {
+                throw new \RuntimeException(
+                    'Du har ikke adgang til denne gruppe.'
+                );
+            }
+
+            // Kontrollerer, at oplevelsen er godkendt og aktiv i dag.
+            $experienceService = new \PostCard\Services\ExperienceService();
+            $status = $experienceService->getStatus($experience);
+
+            if (!$status['isActive']) {
+                throw new \RuntimeException(
+                    'Du kan ikke oprette opslag i denne oplevelse lige nu.'
+                );
+            }
+
+            // Tæller opslagene, mens oplevelsen er låst.
+            $postsUsed = (int) $this->fetchValue(
+                "
+                SELECT COUNT(*)
+                FROM posts
+                WHERE experience_id = :experience_id
+                ",
+                ['experience_id' => $experienceId]
+            );
+
+            // Genbruger ExperienceService til at beregne opslaggrænsen.
+            $postCounts = $experienceService->getPostCounts(
+                $experience,
+                $postsUsed
+            );
+
+            // Kontrollerer, om opslaggrænsen er nået.
+            if (
+                $postCounts['postsRemaining'] !== null &&
+                $postCounts['postsRemaining'] <= 0
+            ) {
+                throw new \RuntimeException(
+                    'Der er ikke flere opslag tilbage i denne oplevelse.'
+                );
+            }
+
+            // Opretter først selve opslaget.
+            $postId = $this->create(
+                $experienceId,
+                $caption,
+                $location
+            );
+
+            // Gemmer derefter billederne på opslaget.
+            foreach ($images as $index => $image) {
+                $this->addImage(
+                    $postId,
+                    $image['public_id'],
+                    (int) $image['version'],
+                    $image['format'],
+                    $image['alt_text'] ?? null,
+                    $index + 1
+                );
+            }
+
+            // Returnerer ID'et på det nye opslag.
+            return $postId;
+        });
+    }
+
+
 }

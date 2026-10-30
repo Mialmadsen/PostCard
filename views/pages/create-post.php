@@ -1,24 +1,41 @@
-<?php
-$pageTitle = 'Nyt opslag';
-$isLoggedIn = true;
-$pageStyle = 'create-post';
-$pageScripts = ['photo-preview'];
-require __DIR__ . '/../views/partials/header.php';
-?>
-
 <main id="main" class="site-main">
     <div class="container">
+        
         <nav class="breadcrumb" aria-label="Du er her">
             <ol class="breadcrumb__list">
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="home.php">Mine grupper</a></li>
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="group.php?id=1">Familien Nielsen</a></li>
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="experience.php?id=1">Sommer i Norge</a></li>
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="create-post.php?experience=1" aria-current="page">Nyt opslag</a></li>
+                <li class="breadcrumb__item">
+                    <a class="breadcrumb__link" href="<?= e(url('/home')) ?>">
+                        Mine grupper
+                    </a>
+                </li>
+
+                <li class="breadcrumb__item">
+                    <a class="breadcrumb__link" href="<?= e(url('/group?id=' . $experience['group_id'])) ?>">
+                        <?= e($experience['group_name']) ?>
+                    </a>
+                </li>
+
+                <li class="breadcrumb__item">
+                    <a class="breadcrumb__link" href="<?= e(url('/experience?id=' . $experience['experience_id'])) ?>">
+                        <?= e($experience['name']) ?>
+                    </a>
+                </li>
+
+                <li class="breadcrumb__item">
+                    <a class="breadcrumb__link"
+                    href="<?= e(url('/create-post?experience=' . $experience['experience_id'])) ?>"
+                    aria-current="page">
+                        Nyt opslag
+                    </a>
+                </li>
             </ol>
         </nav>
 
+
         <header class="page-header">
-            <p class="group-label">Familien Nielsen · Sommer i Norge</p>
+            <p class="group-label">
+                <?= e($experience['group_name']) ?> · <?= e($experience['name']) ?>
+            </p>
             <h1>Nyt opslag</h1>
         </header>
 
@@ -33,18 +50,38 @@ require __DIR__ . '/../views/partials/header.php';
             <aside class="card flow" aria-labelledby="audience-heading">
                 <h2 id="audience-heading">Til</h2>
                 <dl class="address">
+                    
                     <div>
                         <dt class="group-label">Gruppe</dt>
-                        <dd class="address__value">Familien Nielsen</dd>
+                        <dd class="address__value">
+                            <?= e($experience['group_name']) ?>
+                        </dd>
                     </div>
                     <div>
                         <dt class="group-label">Oplevelse</dt>
-                        <dd class="address__value">Sommer i Norge</dd>
+                        <dd class="address__value">
+                            <?= e($experience['name']) ?>
+                        </dd>
                     </div>
+
+                    
                     <div>
                         <dt class="group-label">Opslag tilbage</dt>
-                        <dd class="address__value">14 af 20 · slutter <time datetime="2026-10-15">15. okt. 2026</time></dd>
+                        <dd class="address__value">
+                            <?php if ($postCounts['postsRemaining'] === null): ?>
+                                Ubegrænset antal opslag
+                            <?php else: ?>
+                                <?= e((string) $postCounts['postsRemaining']) ?>
+                                af <?= e((string) $postCounts['postLimit']) ?>
+                            <?php endif; ?>
+
+                            · slutter
+                            <time datetime="<?= e($experience['end_date']) ?>">
+                                <?= e(danishDate($experience['end_date'], 'd. MMM y')) ?>
+                            </time>
+                        </dd>
                     </div>
+
                 </dl>
             </aside>
 
@@ -53,9 +90,11 @@ require __DIR__ . '/../views/partials/header.php';
             <section class="card" aria-labelledby="form-heading">
                 <h2 class="section-title" id="form-heading">Dit opslag</h2>
 
-                <!-- A CSRF token is added in Epic 2 -->
-                <form class="form" action="create-post.php" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="experience_id" value="1">
+                <!-- A CSRF token is added -->
+                    <form class="form" action="<?= e(url('/create-post')) ?>" method="post" enctype="multipart/form-data">
+                        <?= \PostCard\Core\Csrf::field() ?>
+                        <input type="hidden" name="experience_id" value="<?= e((string) $experience['experience_id']) ?>">
+
 
                     <div class="field">
                         <!-- "Vis det" is only a visible title (pairs with "Fortæl om det" below).
@@ -74,7 +113,7 @@ require __DIR__ . '/../views/partials/header.php';
                         </label>
                         <!-- The empty span is filled by photo-preview.js ("2 af 5 billeder valgt.");
                              role="status" makes screen readers read it when it changes -->
-                        <p class="meta" id="photos-hint">1–5 billeder i JPG, PNG eller WebP, højst 10 MB hver. Du vælger selv forsidebilledet.
+                        <p class="meta" id="photos-hint">1–5 billeder i JPG, PNG eller WebP, højst 5 MB hver. Du vælger selv forsidebilledet.
                             <span class="js-photo-status" role="status"></span></p>
                     </div>
 
@@ -96,11 +135,28 @@ require __DIR__ . '/../views/partials/header.php';
                     </div>
 
                     <!-- Answers "What happens when I publish?" before the button -->
-                    <p class="alert">Opslaget bliver vist i <strong>Sommer i Norge</strong> og kan kun ses af medlemmerne af <strong>Familien Nielsen</strong>. Det bruger 1 af dine 14 opslag.</p>
+                    <p class="alert">
+                        Opslaget bliver vist i
+                        <strong><?= e($experience['name']) ?></strong>
+                        og kan kun ses af medlemmerne af
+                        <strong><?= e($experience['group_name']) ?></strong>.
+
+                        <?php if ($postCounts['postsRemaining'] === null): ?>
+                            Der er ingen opslaggrænse for denne oplevelse.
+                        <?php else: ?>
+                            Det bruger 1 af dine
+                            <?= e((string) $postCounts['postsRemaining']) ?>
+                            resterende opslag.
+                        <?php endif; ?>
+                    </p>
+
 
                     <div class="button-row">
                         <button class="button button--primary" type="submit">Udgiv opslag</button>
-                        <a class="button button--secondary" href="experience.php?id=1">Annuller</a>
+                        <a class="button button--secondary"
+                            href="<?= e(url('/experience?id=' . $experience['experience_id'])) ?>">
+                            Annuller
+                        </a>
                     </div>
                 </form>
             </section>
@@ -132,5 +188,3 @@ require __DIR__ . '/../views/partials/header.php';
         </button>
     </li>
 </template>
-
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>

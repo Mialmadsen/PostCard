@@ -5,7 +5,7 @@
 // This is only a convenience: the server checks number, type and size again.
 
 const MAX_PHOTOS = 5;                                  // saved and new photos together
-const MAX_SIZE = 10 * 1024 * 1024;                     // 10 MB, the same as the hint text says
+const MAX_SIZE = 5 * 1024 * 1024;                      // 5 MB, the same as the hint text says
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 const input = document.querySelector('.js-photo-input');
@@ -42,7 +42,7 @@ if (input && list && status && template) {
             if (!ALLOWED_TYPES.includes(file.type)) {
                 messages.push(`${file.name} er ikke et JPG-, PNG- eller WebP-billede.`);
             } else if (file.size > MAX_SIZE) {
-                messages.push(`${file.name} er større end 10 MB.`);
+                messages.push(`${file.name} er større end 5 MB.`);
             } else if (photos.length >= MAX_PHOTOS) {
                 messages.push(`Du kan højst have ${MAX_PHOTOS} billeder.`);
                 break;
