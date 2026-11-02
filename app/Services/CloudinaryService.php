@@ -127,7 +127,6 @@ class CloudinaryService
 
         $response = curl_exec($curl);
         $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
 
         // Stopper, hvis Cloudinary afviser uploaden.
         if ($response === false || $httpCode < 200 || $httpCode >= 300) {
@@ -211,7 +210,6 @@ class CloudinaryService
 
         $response = curl_exec($curl);
         $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
 
         if ($response === false || $httpCode < 200 || $httpCode >= 300) {
             throw new \RuntimeException('Billedet kunne ikke slettes fra Cloudinary.');
@@ -295,7 +293,6 @@ class CloudinaryService
 
         $response = curl_exec($curl);
         $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
 
         // Stopper, hvis Cloudinary ikke returnerer billedet.
         if (
