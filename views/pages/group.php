@@ -4,6 +4,19 @@
 
 <main id="main" class="site-main">
     <div class="container">
+        <?php
+        // Opretter breadcrumbs til den aktuelle gruppe
+        $breadcrumbs = [
+            ['label' => 'Mine grupper', 'path' => '/home'],
+            [
+                'label' => $group['name'],
+                'path' => '/group?id=' . (int) $group['group_id']
+            ],
+        ];
+
+        // Indlæser den fælles breadcrumbs-fil
+        require __DIR__ . '/../partials/breadcrumbs.php';
+        ?>
         <p class="eyebrow">Gruppe</p>
         <h1><?= e($group['name']) ?></h1>
         <p><?= e($group['description'] ?? '') ?></p>
@@ -49,21 +62,12 @@
                     </div>
 
                     <p class="meta"><?= (int) $memberCount ?> medlemmer i gruppen</p>
-                    <!-- /LOOP -->
-                    <?php
-                    // TODO: Tilføj link til medlemsoversigten, når /members-routen er lavet.
-                    // Linket skal bruge gruppens dynamiske ID og medlemstal.
-                    // tilføj også invitationslink til at invitere nye medlemmer, når /invite-routen er lavet.
-                    ?>
                     <p><a href="<?= url('/members?group_id=' . (int) $group['group_id']) ?>">Se alle <?= (int) $memberCount ?> medlemmer</a></p>
 
                     <!-- Sets group_members.member_status = 'left'. The user id comes from the session, not the form.
                          IF the user is the only admin: no button, instead
                          <p class="meta">Du er den eneste admin. Gør et andet medlem til admin, før du forlader gruppen.</p> -->
-                         <?php
-                        // TODO: Den sidste gruppeadministrator må ikke kunne forlade gruppen,
-                        // før et andet medlem er gjort til administrator.
-                        ?>
+                         
                     <form class="js-confirm" action="<?= url('/leave-group') ?>" method="post"
                         data-confirm="Vil du forlade <?= e($group['name']) ?>? Det, du har delt, bliver i gruppens album. Du skal have en ny invitation for at komme tilbage.">
                         <?= \PostCard\Core\Csrf::field() ?>
@@ -135,6 +139,13 @@
                             // Opretter linket til den enkelte oplevelse
                             $experienceUrl = url('/experience?id=' . (int)$experience['experience_id']);
 
+                            // Finder oplevelsens billede fra databasen.
+                            // Hvis oplevelsen ikke har billeder endnu, vises eksempelbilledet.
+                            $imageUrl = !empty($experience['image_id'])
+                            ? url('/post-image?id=' . (int) $experience['image_id'])
+                            : asset('assets/images/sample/photo-4.jpg');
+
+
                             // Formaterer datoerne til dansk visning med den fælles helper
                             $startFormatted = danishDate($experience['start_date'], 'dd.MM.y');
                             $endFormatted = danishDate($experience['end_date'], 'dd.MM.y');
@@ -142,16 +153,18 @@
                             ?>
                             <article class="polaroid experience-card">
 
-                                <!-- Midlertidigt eksempelbillede, indtil oplevelser får rigtige billeder -->
-                                <a href="<?= e($experienceUrl) ?>" tabindex="-1" aria-hidden="true">
-                                    <img
-                                        class="polaroid__photo"
-                                        src="<?= e(asset('assets/images/sample/photo-4.jpg')) ?>"
-                                        alt=""
-                                        width="800"
-                                        height="600"
-                                        loading="lazy">
-                                </a>
+                                
+                            <!-- Viser et billede fra oplevelsens opslag eller eksempelbilledet, hvis der ikke er nogen -->
+                            <a href="<?= e($experienceUrl) ?>" tabindex="-1" aria-hidden="true">
+                                <img
+                                    class="polaroid__photo"
+                                    src="<?= e($imageUrl) ?>"
+                                    alt=""
+                                    width="800"
+                                    height="600"
+                                    loading="lazy">
+                            </a>
+
 
                                 <div class="polaroid__body experience-card__body">
 

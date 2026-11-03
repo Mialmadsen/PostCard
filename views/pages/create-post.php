@@ -1,35 +1,20 @@
 <main id="main" class="site-main">
     <div class="container">
         
-        <nav class="breadcrumb" aria-label="Du er her">
-            <ol class="breadcrumb__list">
-                <li class="breadcrumb__item">
-                    <a class="breadcrumb__link" href="<?= e(url('/home')) ?>">
-                        Mine grupper
-                    </a>
-                </li>
+        
+        <?php
+        // Opretter breadcrumbs til siden, hvor brugeren laver et nyt opslag.
+        $breadcrumbs = [
+            ['label' => 'Mine grupper', 'path' => '/home'],
+            ['label' => $experience['group_name'], 'path' => '/group?id=' . (int) $experience['group_id']],
+            ['label' => $experience['name'], 'path' => '/experience?id=' . (int) $experience['experience_id']],
+            ['label' => 'Nyt opslag', 'path' => '/create-post?experience=' . (int) $experience['experience_id']],
+        ];
 
-                <li class="breadcrumb__item">
-                    <a class="breadcrumb__link" href="<?= e(url('/group?id=' . $experience['group_id'])) ?>">
-                        <?= e($experience['group_name']) ?>
-                    </a>
-                </li>
+        // Indlæser den fælles breadcrumbs-fil.
+        require __DIR__ . '/../partials/breadcrumbs.php';
+        ?>
 
-                <li class="breadcrumb__item">
-                    <a class="breadcrumb__link" href="<?= e(url('/experience?id=' . $experience['experience_id'])) ?>">
-                        <?= e($experience['name']) ?>
-                    </a>
-                </li>
-
-                <li class="breadcrumb__item">
-                    <a class="breadcrumb__link"
-                    href="<?= e(url('/create-post?experience=' . $experience['experience_id'])) ?>"
-                    aria-current="page">
-                        Nyt opslag
-                    </a>
-                </li>
-            </ol>
-        </nav>
 
 
         <header class="page-header">

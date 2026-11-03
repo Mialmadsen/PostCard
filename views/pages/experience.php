@@ -3,34 +3,20 @@ Viewet bruger de variabler, som controlleren sender videre, til at vise oplevels
 
 <main id="main" class="site-main">
     <div class="container">
-        <nav class="breadcrumb" aria-label="Du er her">
-            <ol class="breadcrumb__list">
-                <li class="breadcrumb__item">
-                    <a class="breadcrumb__link" href="<?= url('/home') ?>">
-                        Mine grupper
-                    </a>
-                </li>
-                <li class="breadcrumb__item">
-                    <a
-                        class="breadcrumb__link"
-                        href="<?= url('/group') ?>?id=<?= (int) $experience['group_id'] ?>">
-                        <?php
-                        // e() sikrer, at gruppens navn vises som tekst
-                        // i stedet for at blive fortolket som HTML
-                        ?>
-                        <?= e($experience['group_name']) ?>
-                    </a>
-                </li>
-                <li class="breadcrumb__item">
-                    <a
-                        class="breadcrumb__link"
-                        href="<?= url('/experience') ?>?id=<?= (int) $experience['experience_id'] ?>"
-                        aria-current="page">
-                        <?= e($experience['name']) ?>
-                    </a>
-                </li>
-            </ol>
-        </nav>
+        
+        <?php
+        // Opretter breadcrumbs, så brugeren kan navigere
+        // tilbage til sine grupper og den aktuelle gruppe.
+        $breadcrumbs = [
+            ['label' => 'Mine grupper', 'path' => '/home'],
+            ['label' => $experience['group_name'], 'path' => '/group?id=' . (int) $experience['group_id']],
+            ['label' => $experience['name'], 'path' => '/experience?id=' . (int) $experience['experience_id']],
+        ];
+
+        // Indlæser den fælles breadcrumbs-fil.
+        require __DIR__ . '/../partials/breadcrumbs.php';
+        ?>
+
 
         <header class="page-header experience-header">
             <p class="group-label">

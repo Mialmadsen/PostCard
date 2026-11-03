@@ -17,14 +17,12 @@ class GroupPageController
         // Kontrollerer, at brugeren er logget ind
         Auth::requireLogin();
 
-        // Henter gruppens ID fra URL'en
-        $groupId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+        // Henter gruppens ID fra URL'en gennem den fælles helper
+        $groupId = queryId('id');
 
-        // Kontrollerer, at gruppe-ID'et er gyldigt
-        if (!$groupId || $groupId < 1) {
-            http_response_code(400);
-            echo 'Ugyldigt gruppe-ID';
-            return;
+        // Stopper, hvis gruppe-ID'et mangler eller er ugyldigt
+        if ($groupId === null) {
+            abort(400, 'Ugyldigt gruppe-ID');
         }
 
         // Kontrollerer, at brugeren er medlem af gruppen
@@ -36,9 +34,7 @@ class GroupPageController
 
         // Kontrollerer, at gruppen findes
         if (!$group) {
-            http_response_code(404);
-            echo 'Gruppen blev ikke fundet';
-            return;
+            abort(404, 'Gruppen blev ikke fundet');
         }
 
         // Henter antallet af aktive medlemmer, brugerens rolle og de første medlemmer i gruppen

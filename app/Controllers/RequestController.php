@@ -34,12 +34,8 @@ class RequestController
         // Finder alle grupper, hvor brugeren er administrator
         $groups = $this->groupMemberRepository->findAdminGroupsByUser($userId);
 
-        // Henter den valgte gruppe fra URL'en
-        $groupId = filter_input(
-            INPUT_GET,
-            'group_id',
-            FILTER_VALIDATE_INT
-        );
+        // Henter den valgte gruppe fra URL'en med den fælles helper
+        $groupId = queryId('group_id');
 
         // Hvis ingen gruppe er valgt, vælges den første administratorgruppe
         if (!isset($_GET['group_id']) && !empty($groups)) {
@@ -62,7 +58,7 @@ class RequestController
             }
 }
 
-        if ($groupId !== null && $groupId !== false && $groupId > 0) {
+        if ($groupId !== null) {
 
             // Kontrollerer, at brugeren er administrator for gruppen
             Auth::requireGroupAdmin($groupId);
@@ -73,8 +69,7 @@ class RequestController
         } elseif (isset($_GET['group_id'])) {
 
             // Stopper, hvis gruppe-ID'et er ugyldigt
-            http_response_code(400);
-            exit('Ugyldigt gruppe-ID.');
+            abort(400, 'Ugyldigt gruppe-ID.');
         }
 
         // Sender data videre til Requests-viewet
@@ -98,20 +93,15 @@ class RequestController
         // Brugeren skal være logget ind
         Auth::requireLogin();
 
-        // Henter ID'et på oplevelsen fra formularen
-        $experienceId = filter_input(
-            INPUT_POST,
-            'experience_id',
-            FILTER_VALIDATE_INT
-        );
+        // Henter ID'et på oplevelsen fra formularen med den fælles helper
+        $experienceId = inputId('experience_id');
 
         // Henter administratorens beslutning
         $decision = input('decision');
 
         // Kontrollerer, at oplevelsens ID og beslutningen er gyldige
-        if (!$experienceId || !in_array($decision, ['approve', 'reject'], true)) {
-            http_response_code(400);
-            exit('Ugyldig anmodning.');
+        if ($experienceId === null || !in_array($decision, ['approve', 'reject'], true)) {
+            abort(400, 'Ugyldig anmodning.');
         }
 
         // Finder oplevelsen i databasen
@@ -119,8 +109,7 @@ class RequestController
 
         // Stopper, hvis oplevelsen ikke findes eller ikke afventer godkendelse
         if ($experience === null || $experience['experience_status'] !== 'pending') {
-            http_response_code(404);
-            exit('Anmodningen findes ikke længere.');
+            abort(404, 'Anmodningen findes ikke længere.');
         }
 
         // Finder gruppen, som oplevelsen tilhører
@@ -136,6 +125,7 @@ class RequestController
             $startDate = input('start_date');
             $endDate = input('end_date');
 
+            // Henter opslagsgrænsen fra formularen og kontrollerer, at det er et heltal
             $postLimit = filter_input(
                 INPUT_POST,
                 'post_limit',
@@ -157,8 +147,7 @@ class RequestController
                 $postLimit < 1 ||
                 $postLimit > 50
             ) {
-                http_response_code(400);
-                exit('Kontroller datoerne og antal opslag.');
+                abort(400, 'Kontroller datoerne og antal opslag.');
             }
 
             // Godkender oplevelsen og gemmer eventuelle ændringer
@@ -183,8 +172,7 @@ class RequestController
 
         // Hvis oplevelsen allerede er blevet behandlet, vises en fejl
         if (!$updated) {
-            http_response_code(409);
-            exit('Anmodningen er allerede blevet behandlet.');
+            abort(409, 'Anmodningen er allerede blevet behandlet.');
         }
 
         // Gemmer en bekræftelsesbesked som en flash message

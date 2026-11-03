@@ -19,16 +19,11 @@ class PostImageController
         Auth::requireLogin();
 
         // Henter billedets ID fra URL'en, fx /post-image?id=1.
-        $imageId = filter_input(
-            INPUT_GET,
-            'id',
-            FILTER_VALIDATE_INT
-        );
+        $imageId = queryId('id');
 
         // Kontrollerer, at billedets ID er gyldigt.
-        if (!$imageId || $imageId < 1) {
-            http_response_code(400);
-            exit('Ugyldigt billed-ID.');
+        if ($imageId === null) {
+            abort(400, 'Ugyldigt billed-ID.');
         }
 
         // Finder billedet og gruppen, som opslaget tilhører.
@@ -57,8 +52,7 @@ class PostImageController
 
         // Stopper, hvis billedet ikke findes.
         if (!$image) {
-            http_response_code(404);
-            exit('Billedet blev ikke fundet.');
+            abort(404, 'Billedet blev ikke fundet.');
         }
 
         // Kontrollerer, at brugeren er aktivt medlem af gruppen.
@@ -75,8 +69,7 @@ class PostImageController
         $format = strtolower((string) $image['image_format']);
 
         if (!isset($mimeTypes[$format])) {
-            http_response_code(500);
-            exit('Ukendt billedformat.');
+            abort(500, 'Ukendt billedformat.');
         }
 
         try {
@@ -117,9 +110,8 @@ class PostImageController
             error_log(
                 'PostCard billedfejl: ' . $exception->getMessage()
             );
-        
-            http_response_code(502);
-            exit('Billedet kunne ikke indlæses.');
+
+            abort(502, 'Billedet kunne ikke indlæses.');
         }
     }
 }

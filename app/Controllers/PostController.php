@@ -35,17 +35,12 @@ class PostController
         // Kontrollerer, at brugeren er logget ind
         Auth::requireLogin();
 
-        // Henter experience-ID fra URL'en, fx ?experience=1
-        $experienceId = filter_input(
-            INPUT_GET,
-            'experience',
-            FILTER_VALIDATE_INT
-        );
+        // Henter oplevelsens ID fra URL'en med den fælles helper
+        $experienceId = queryId('experience');
 
-        // Kontrollerer, at ID'et er gyldigt
-        if (!$experienceId || $experienceId < 1) {
-            http_response_code(400);
-            exit('Ugyldigt experience-ID.');
+        // Stopper, hvis oplevelsens ID mangler eller er ugyldigt
+        if ($experienceId === null) {
+            abort(400, 'Ugyldigt experience-ID.');
         }
 
         // Henter oplevelsen fra databasen
@@ -53,8 +48,7 @@ class PostController
 
         // Kontrollerer, at oplevelsen findes
         if ($experience === null) {
-            http_response_code(404);
-            exit('Oplevelsen blev ikke fundet.');
+            abort(404, 'Oplevelsen blev ikke fundet.');
         }
 
         // Kontrollerer, at brugeren er medlem af gruppen
@@ -63,8 +57,7 @@ class PostController
         // Kontrollerer, at den indloggede bruger ejer oplevelsen.
         // Kun oplevelsens ejer må oprette opslag i den.
         if ((int) $experience['user_id'] !== Auth::userId()) {
-            http_response_code(403);
-            exit('Du kan kun oprette opslag i dine egne oplevelser.');
+            abort(403, 'Du kan kun oprette opslag i dine egne oplevelser.');
         }
 
         // Genbruger ExperienceService til at kontrollere,
@@ -73,8 +66,7 @@ class PostController
 
         // Brugeren må kun oprette opslag i aktive oplevelser.
         if (!$status['isActive']) {
-            http_response_code(403);
-            exit('Du kan ikke oprette opslag i denne oplevelse lige nu.');
+            abort(403, 'Du kan ikke oprette opslag i denne oplevelse lige nu.');
         }
 
         // Henter alle opslag, der allerede findes i oplevelsen.
@@ -95,8 +87,7 @@ class PostController
             $postCounts['postsRemaining'] !== null &&
             $postCounts['postsRemaining'] <= 0
         ) {
-            http_response_code(403);
-            exit('Der er ikke flere opslag tilbage i denne oplevelse.');
+            abort(403, 'Der er ikke flere opslag tilbage i denne oplevelse.');
         }
 
         // Sender oplysningerne videre til formularen
@@ -116,17 +107,12 @@ class PostController
         // Kontrollerer, at brugeren er logget ind
         Auth::requireLogin();
 
-        // Henter experience-ID fra formularen
-        $experienceId = filter_input(
-            INPUT_POST,
-            'experience_id',
-            FILTER_VALIDATE_INT
-        );
+        // Henter oplevelsens ID fra formularen med den fælles helper
+        $experienceId = inputId('experience_id');
 
-        // Kontrollerer, at experience-ID er gyldigt
-        if (!$experienceId || $experienceId < 1) {
-            http_response_code(400);
-            exit('Ugyldigt experience-ID.');
+        // Stopper, hvis oplevelsens ID mangler eller er ugyldigt
+        if ($experienceId === null) {
+            abort(400, 'Ugyldigt experience-ID.');
         }
 
         // Henter oplevelsen fra databasen
@@ -134,8 +120,7 @@ class PostController
 
         // Kontrollerer, at oplevelsen findes
         if ($experience === null) {
-            http_response_code(404);
-            exit('Oplevelsen blev ikke fundet.');
+            abort(404, 'Oplevelsen blev ikke fundet.');
         }
 
         // Kontrollerer, at brugeren er aktivt medlem af gruppen
@@ -143,8 +128,7 @@ class PostController
 
         // Kontrollerer, at brugeren ejer oplevelsen
         if ((int) $experience['user_id'] !== Auth::userId()) {
-            http_response_code(403);
-            exit('Du kan kun oprette opslag i dine egne oplevelser.');
+            abort(403, 'Du kan kun oprette opslag i dine egne oplevelser.');
         }
 
         // Genbruger ExperienceService til at kontrollere,
@@ -153,8 +137,7 @@ class PostController
 
         // Opslag må kun oprettes i aktive oplevelser.
         if (!$status['isActive']) {
-            http_response_code(403);
-            exit('Du kan ikke oprette opslag i denne oplevelse lige nu.');
+            abort(403, 'Du kan ikke oprette opslag i denne oplevelse lige nu.');
         }
 
         // Henter de opslag, der allerede findes i oplevelsen.
@@ -175,8 +158,7 @@ class PostController
             $postCounts['postsRemaining'] !== null &&
             $postCounts['postsRemaining'] <= 0
         ) {
-            http_response_code(403);
-            exit('Der er ikke flere opslag tilbage i denne oplevelse.');
+            abort(403, 'Der er ikke flere opslag tilbage i denne oplevelse.');
         }
 
         // Henter tekst og lokation fra formularen.
@@ -185,8 +167,7 @@ class PostController
 
         // Kontrollerer, at begge værdier er tekst.
         if (!is_string($caption) || !is_string($location)) {
-            http_response_code(400);
-            exit('Ugyldige formularoplysninger.');
+            abort(400, 'Ugyldige formularoplysninger.');
         }
 
         // Fjerner unødvendige mellemrum før og efter teksten.
@@ -195,14 +176,12 @@ class PostController
 
         // Kontrollerer tekstens maksimale længde.
         if (mb_strlen($caption) > 2000) {
-            http_response_code(400);
-            exit('Teksten må højst være 2000 tegn.');
+            abort(400, 'Teksten må højst være 2000 tegn.');
         }
 
         // Lokation må højst være 150 tegn.
         if (mb_strlen($location) > 150) {
-            http_response_code(400);
-            exit('Lokationen må højst være 150 tegn.');
+            abort(400, 'Lokationen må højst være 150 tegn.');
         }
 
         // Kontrollerer, at formularen indeholder uploadede billeder.
@@ -210,8 +189,7 @@ class PostController
             !isset($_FILES['photos']) ||
             !is_array($_FILES['photos']['name'] ?? null)
         ) {
-            http_response_code(400);
-            exit('Du skal vælge mindst ét billede.');
+            abort(400, 'Du skal vælge mindst ét billede.');
         }
 
         // Tæller hvor mange billeder brugeren har forsøgt at uploade.
@@ -219,8 +197,7 @@ class PostController
 
         // Et opslag skal indeholde mellem 1 og 5 billeder.
         if ($photoCount < 1 || $photoCount > 5) {
-            http_response_code(400);
-            exit('Du skal vælge mellem 1 og 5 billeder.');
+            abort(400, 'Du skal vælge mellem 1 og 5 billeder.');
         }
 
         // Samler oplysningerne om hvert billede i sit eget array.
@@ -246,8 +223,7 @@ class PostController
 
         // Kontrollerer, at beskrivelserne er sendt som en liste.
         if (!is_array($altTexts)) {
-            http_response_code(400);
-            exit('Ugyldige billedbeskrivelser.');
+            abort(400, 'Ugyldige billedbeskrivelser.');
         }
 
         // Kontrollerer beskrivelsen til hvert billede.
@@ -256,8 +232,7 @@ class PostController
 
             // Hver beskrivelse skal være tekst.
             if (!is_string($altText)) {
-                http_response_code(400);
-                exit('Ugyldig billedbeskrivelse.');
+                abort(400, 'Ugyldig billedbeskrivelse.');
             }
 
             // Fjerner unødvendige mellemrum.
@@ -265,8 +240,7 @@ class PostController
 
             // Databasen tillader højst 255 tegn.
             if (mb_strlen($altText) > 255) {
-                http_response_code(400);
-                exit('Billedbeskrivelsen må højst være 255 tegn.');
+                abort(400, 'Billedbeskrivelsen må højst være 255 tegn.');
             }
 
             // Gemmer den validerede beskrivelse.
@@ -282,8 +256,7 @@ class PostController
             !is_string($cover) ||
             !preg_match('/^new-(0|[1-9][0-9]*)$/', $cover)
         ) {
-            http_response_code(400);
-            exit('Ugyldigt forsidebillede.');
+            abort(400, 'Ugyldigt forsidebillede.');
         }
 
         // Fjerner "new-" og finder billedets nummer.
@@ -298,8 +271,7 @@ class PostController
             $coverIndex < 0 ||
             $coverIndex >= $photoCount
         ) {
-            http_response_code(400);
-            exit('Ugyldigt forsidebillede.');
+            abort(400, 'Ugyldigt forsidebillede.');
         }
 
         // Opretter opslaget gennem PostService.

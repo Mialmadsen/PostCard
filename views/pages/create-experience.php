@@ -17,19 +17,22 @@ if ($selectedGroup === null && $selectedGroupId === null) {
 
 <main id="main" class="site-main">
     <div class="container">
-        <nav class="breadcrumb" aria-label="Du er her">
-            <ol class="breadcrumb__list">
-                <li class="breadcrumb__item">
-                    <a class="breadcrumb__link" href="<?= url('/home') ?>">Mine grupper</a>
-                </li>
-                <li class="breadcrumb__item">
-                    <span id="breadcrumb-group"><?= e($selectedGroup['name'] ?? 'Vælg gruppe') ?></span>
-                </li>
-                <li class="breadcrumb__item">
-                    <span aria-current="page">Ny oplevelse</span>
-                </li>
-            </ol>
-        </nav>
+        <?php
+        // Opretter breadcrumbs til siden, hvor brugeren opretter en oplevelse
+        $breadcrumbs = [
+            ['label' => 'Mine grupper', 'path' => '/home'],
+            [
+                'label' => $selectedGroup['name'] ?? 'Vælg gruppe',
+                'path' => $selectedGroup !== null
+                    ? '/group?id=' . (int) $selectedGroup['group_id']
+                    : '/home'
+            ],
+            ['label' => 'Ny oplevelse', 'path' => '/create-experience'],
+        ];
+
+        // Indlæser den fælles breadcrumbs-fil.
+        require __DIR__ . '/../partials/breadcrumbs.php';
+        ?>
 
         <header class="page-header">
             <p class="group-label" id="header-group"><?= e($selectedGroup['name'] ?? 'Vælg gruppe') ?></p>
@@ -161,7 +164,12 @@ if ($selectedGroup === null && $selectedGroupId === null) {
 <script>
 // Finder de HTML-elementer, vi skal opdatere
 const groupSelect = document.getElementById('group');
-const breadcrumbGroup = document.getElementById('breadcrumb-group');
+
+// Finder gruppens link i de fælles breadcrumbs
+const breadcrumbGroup = document.querySelector(
+    '.breadcrumb__item:nth-child(2) .breadcrumb__link'
+);
+
 const headerGroup = document.getElementById('header-group');
 const addressGroup = document.getElementById('address-group');
 const postingDescription = document.getElementById('posting-description');
@@ -180,7 +188,13 @@ function updateGroupInformation() {
     const memberRole = selectedOption.dataset.memberRole || '';
 
     // Opdaterer gruppenavnet forskellige steder på siden
-    breadcrumbGroup.textContent = groupName;
+    if (breadcrumbGroup) {
+        breadcrumbGroup.textContent = groupName;
+        breadcrumbGroup.href = groupSelect.value
+            ? '<?= url('/group?id=') ?>' + groupSelect.value
+            : '<?= url('/home') ?>';
+    }
+
     headerGroup.textContent = groupName;
     addressGroup.textContent = groupName;
 

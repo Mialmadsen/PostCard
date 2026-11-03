@@ -45,17 +45,12 @@ class ExperienceController
         // Kontrollerer, om brugeren er logget ind
         Auth::requireLogin();
 
-        // Henter experience-ID fra URL'en, fx ?id=1
-        $experienceId = filter_input(
-            INPUT_GET,
-            'id',
-            FILTER_VALIDATE_INT
-        );
+        // Henter oplevelsens ID fra URL'en med den fælles helper
+        $experienceId = queryId('id');
 
-        // Kontrollerer, at ID'et er gyldigt
-        if (!$experienceId || $experienceId < 1) {
-            http_response_code(400);
-            exit('Ugyldigt experience-ID.');
+        // Stopper, hvis ID'et mangler eller er ugyldigt
+        if ($experienceId === null) {
+            abort(400, 'Ugyldigt experience-ID.');
         }
 
         // Henter oplevelsen og alle oplysninger til siden
@@ -81,8 +76,8 @@ class ExperienceController
         // Henter alle grupper, som brugeren er aktivt medlem af
         $groups = $this->groupMemberRepository->findActiveGroupsByUser($userId);
 
-        // Henter eventuelt et gruppe-ID fra URL'en
-        $selectedGroupId = filter_input(INPUT_GET, 'group_id', FILTER_VALIDATE_INT);
+        // Henter eventuelt et gruppe-ID fra URL'en med den fælles helper
+        $selectedGroupId = queryId('group_id');
 
         // Kontrollerer, at den valgte gruppe findes blandt brugerens grupper
         $allowedGroupIds = array_map('intval', array_column($groups, 'group_id'));
@@ -111,12 +106,8 @@ class ExperienceController
         // Henter den indloggede brugers ID
         $userId = Auth::userId();
 
-        // Henter oplysningerne fra formularen
-        $groupId = filter_input(
-            INPUT_POST,
-            'group_id',
-            FILTER_VALIDATE_INT
-        );
+        // Henter gruppens ID fra formularen med den fælles helper 
+        $groupId = inputId('group_id');
 
         // Henter formularens oplysninger gennem den fælles input helper
         $name = input('name');
@@ -125,9 +116,8 @@ class ExperienceController
         $endDate = input('end_date');
 
         // Kontrollerer, at der er valgt en gyldig gruppe
-        if (!$groupId || $groupId < 1) {
-            http_response_code(400);
-            exit('Du skal vælge en gyldig gruppe.');
+        if ($groupId === null) {
+            abort(400, 'Du skal vælge en gyldig gruppe.');
         }
 
         // Kontrollerer, at brugeren er aktivt medlem af gruppen
@@ -190,8 +180,7 @@ class ExperienceController
 
         // Viser en 404-fejl, hvis oplevelsen ikke findes
         if ($experience === null) {
-            http_response_code(404);
-            exit('Oplevelsen blev ikke fundet.');
+            abort(404, 'Oplevelsen blev ikke fundet.');
         }
 
         // Kontrollerer, at brugeren er aktivt medlem af gruppen

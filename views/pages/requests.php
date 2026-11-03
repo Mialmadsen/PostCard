@@ -4,25 +4,18 @@
 ?>
 
 <main id="main" class="site-main">
-    <div class="container container--text">
-        <nav class="breadcrumb" aria-label="Du er her">
-            <ol class="breadcrumb__list">
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/home') ?>">Mine grupper</a></li>
+    <div class="container container--text"> 
+        <?php
+        // Opretter breadcrumbs til gruppens anmodninger
+        $breadcrumbs = [
+            ['label' => 'Mine grupper', 'path' => '/home'],
+            ['label' => $groupName, 'path' => '/group?id=' . (int) $groupId],
+            ['label' => 'Anmodninger', 'path' => '/requests?group_id=' . (int) $groupId],
+        ];
 
-                <!-- Viser gruppens navn uden link, indtil gruppesiden er lavet -->
-                <li class="breadcrumb__item">
-                    <span><?= e($groupName) ?></span>
-                </li>
-
-                <li class="breadcrumb__item">
-                    <a class="breadcrumb__link"
-                    href="<?= url('/requests?group_id=' . (int) $groupId) ?>"
-                    aria-current="page">
-                        Anmodninger
-                    </a>
-                </li>
-            </ol>
-        </nav>
+        // Indlæser den fælles breadcrumbs-fil
+        require __DIR__ . '/../partials/breadcrumbs.php';
+        ?>
 
         <header class="page-header">
             <p class="group-label"><?= e($groupName) ?> · kun for admins</p>

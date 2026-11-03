@@ -192,6 +192,8 @@ class ExperienceRepository extends Repository
         ]);
     }
 
+    
+    
     // Henter godkendte og afsluttede oplevelser i en bestemt gruppe
     public function findVisibleByGroup(int $groupId): array
     {
@@ -206,9 +208,23 @@ class ExperienceRepository extends Repository
                 e.post_limit,
                 u.first_name,
                 u.last_name,
+
+                -- Tæller antallet af opslag i oplevelsen
                 (SELECT COUNT(*)
                  FROM posts AS p
-                 WHERE p.experience_id = e.experience_id) AS post_count
+                 WHERE p.experience_id = e.experience_id) AS post_count,
+
+                -- Finder et billede fra det seneste opslag med billeder
+                -- Billedets ID bruges til at hente billedet via PostImageController
+                (SELECT pi.image_id
+                 FROM posts AS p
+                 INNER JOIN post_images AS pi
+                    ON pi.post_id = p.post_id
+                 WHERE p.experience_id = e.experience_id
+                 ORDER BY p.created_at DESC, p.post_id DESC,
+                          pi.image_id ASC
+                 LIMIT 1) AS image_id
+
             FROM experiences AS e
             INNER JOIN users AS u
                 ON e.user_id = u.user_id
@@ -221,6 +237,7 @@ class ExperienceRepository extends Repository
             'group_id' => $groupId
         ]);
     }
+
 
     // Henter alle oplevelser, der afventer godkendelse i en bestemt gruppe
     public function findPendingByGroup(int $groupId): array
