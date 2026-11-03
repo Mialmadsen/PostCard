@@ -31,6 +31,7 @@ jobs:
           protocol: ftps
           username: ${{ secrets.SIMPLY_FTP_POSTCARD_USERNAME }}
           password: ${{ secrets.SIMPLY_FTP_POSTCARD_PASSWORD }}
+          timeout: 120000
           local-dir: ./
           server-dir: /public_html/postcard/
           exclude: |
