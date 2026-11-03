@@ -31,6 +31,12 @@ require_once __DIR__ . '/../app/Helpers/redirect.php';
 require_once __DIR__ . '/../app/Helpers/date.php';
 require_once __DIR__ . '/../app/Helpers/initials.php';
 
+// Show errors on my own PC, hide them on the live site (both still write them to the log)
+$isLocal = Config::get('APP_ENV') === 'local';
+ini_set('display_errors', $isLocal ? '1' : '0');
+ini_set('log_errors', '1');
+error_reporting(E_ALL);
+
 date_default_timezone_set(Config::get('APP_TIMEZONE'));
 
 // The address the browser asked for, without the "?id=3" part.
