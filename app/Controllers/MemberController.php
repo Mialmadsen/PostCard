@@ -18,14 +18,12 @@ class MemberController
     {
 
         //the group id from the address
-        $groupId = filter_input(INPUT_GET, 'group_id', FILTER_VALIDATE_INT);
+        $groupId = queryId('group_id');
 
         //if id is not valid we stop and give 404
 
-        if (!is_int($groupId) || $groupId < 1) {
-            http_response_code(404);
-            echo 'Gruppen findes ikke.';
-            exit;
+        if ($groupId === null) {
+            abort(404, 'Gruppen findes ikke.');
         }
 
         //guard: ANY member may see the list 
@@ -60,17 +58,11 @@ class MemberController
     //it reads the two ids from the form, checks that user is admin of that group, makes the change, saves a message, and sends the user back to the members page
     public function makeAdmin(): void
     {
-        $groupId = filter_var(input('group_id'), FILTER_VALIDATE_INT, [
-            'options' => ['min_range' => 1],
-        ]);
-        $userId = filter_var(input('user_id'), FILTER_VALIDATE_INT, [
-            'options' => ['min_range' => 1],
-        ]);
+        $groupId = inputId('group_id');
+        $userId = inputId('user_id');
 
-        if ($groupId === false || $userId === false) {
-            http_response_code(404);
-            echo 'Medlemmet findes ikke.';
-            exit;
+        if ($groupId === null || $userId === null) {
+            abort(404, 'Medlemmet findes ikke.');
         }
 
         Auth::requireGroupAdmin($groupId);
@@ -84,17 +76,11 @@ class MemberController
     //Removes the user
     public function removeMember(): void
     {
-        $groupId = filter_var(input('group_id'), FILTER_VALIDATE_INT, [
-            'options' => ['min_range' => 1],
-        ]);
-        $userId = filter_var(input('user_id'), FILTER_VALIDATE_INT, [
-            'options' => ['min_range' => 1],
-        ]);
+        $groupId = inputId('group_id');
+        $userId = inputId('user_id');
 
-        if ($groupId === false || $userId === false) {
-            http_response_code(404);
-            echo 'Medlemmet findes ikke.';
-            exit;
+        if ($groupId === null || $userId === null) {
+            abort(404, 'Medlemmet findes ikke.');
         }
 
         Auth::requireGroupAdmin($groupId);
@@ -108,15 +94,11 @@ class MemberController
     //To leave the group yourself
     public function leaveGroup(): void
     {
-        $groupId = filter_var(input('group_id'), FILTER_VALIDATE_INT, [
-            'options' => ['min_range' => 1],
-        ]);
+        $groupId = inputId('group_id');
 
 
-        if ($groupId === false) {
-            http_response_code(404);
-            echo 'Gruppen findes ikke.';
-            exit;
+        if ($groupId === null) {
+            abort(404, 'Gruppen findes ikke.');
         }
 
         Auth::requireMember($groupId);

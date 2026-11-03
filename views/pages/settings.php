@@ -5,12 +5,13 @@
 
 <main id="main" class="site-main">
     <div class="container container--text">
-        <nav class="breadcrumb" aria-label="Du er her">
-            <ol class="breadcrumb__list">
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/profile') ?>">Min profil</a></li>
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/settings') ?>" aria-current="page">Indstillinger</a></li>
-            </ol>
-        </nav>
+        <?php
+        $breadcrumbs = [
+            ['label' => 'Min profil', 'path' => '/profile'],
+            ['label' => 'Indstillinger', 'path' => '/settings'],
+        ];
+        require __DIR__ . '/../partials/breadcrumbs.php';
+        ?>
 
         <header class="page-header">
             <p class="eyebrow">Min profil</p>

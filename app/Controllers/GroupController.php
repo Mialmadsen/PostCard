@@ -92,14 +92,12 @@ class GroupController
     public function invite(): void
     {
         //the group id from the address
-        $groupId = filter_input(INPUT_GET, 'group_id', FILTER_VALIDATE_INT);
+        $groupId = queryId('group_id');
 
         //if id is not valid we stop and give 404
 
-        if (!is_int($groupId) || $groupId < 1) {
-            http_response_code(404);
-            echo 'Gruppen findes ikke.';
-            exit;
+        if ($groupId === null) {
+            abort(404, 'Gruppen findes ikke.');
         }
 
         //only the group admin can invite so we check that it is the right admin
@@ -134,14 +132,10 @@ class GroupController
     public function createInvitation(): void
     {
         // we read group id from the form and check it id it is whole number
-        $groupId = filter_var(input('group_id'), FILTER_VALIDATE_INT, [
-            'options' => ['min_range' => 1],
-        ]);
+        $groupId = inputId('group_id');
 
-        if ($groupId === false) {
-            http_response_code(404);
-            echo 'Gruppen findes ikke.';
-            exit;
+        if ($groupId === null) {
+            abort(404, 'Gruppen findes ikke.');
         }
 
         Auth::requireGroupAdmin($groupId);
@@ -163,17 +157,11 @@ class GroupController
     public function cancelInvitation(): void
     {
         // we read group id from the form and check it id it is whole number
-        $groupId = filter_var(input('group_id'), FILTER_VALIDATE_INT, [
-            'options' => ['min_range' => 1],
-        ]);
-        $invitationId = filter_var(input('invitation_id'), FILTER_VALIDATE_INT, [
-            'options' => ['min_range' => 1],
-        ]);
+        $groupId = inputId('group_id');
+        $invitationId = inputId('invitation_id');
 
-        if ($groupId === false || $invitationId === false) {
-            http_response_code(404);
-            echo 'Linket findes ikke.';
-            exit;
+        if ($groupId === null || $invitationId === null) {
+            abort(404, 'Linket findes ikke.');
         }
 
         Auth::requireGroupAdmin($groupId);

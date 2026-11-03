@@ -30,6 +30,7 @@ require_once __DIR__ . '/../app/Helpers/input.php';
 require_once __DIR__ . '/../app/Helpers/redirect.php';
 require_once __DIR__ . '/../app/Helpers/date.php';
 require_once __DIR__ . '/../app/Helpers/initials.php';
+require_once __DIR__ . '/../app/Helpers/abort.php';
 
 // Show errors on my own PC, hide them on the live site (both still write them to the log)
 $isLocal = Config::get('APP_ENV') === 'local';
@@ -104,9 +105,7 @@ $handler = $router->find($requestMethod, $path);
 
 // Unknown address: we tell the browser (404) and the visitor, then stop.
 if ($handler === null) {
-    http_response_code(404);
-    echo 'Siden findes ikke';
-    exit;
+    abort(404, 'Siden findes ikke');
 }
 
 // Read the two words off the note: 'PostCard\Controllers\PageController' and 'landing'.

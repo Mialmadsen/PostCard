@@ -12,17 +12,14 @@
 
 <main id="main" class="site-main">
     <div class="container container--text">
-        <nav class="breadcrumb" aria-label="Du er her">
-            <ol class="breadcrumb__list">
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/home') ?>">Mine grupper</a>
-                </li>
-                <li class="breadcrumb__item"><a class="breadcrumb__link"
-                        href="<?= url('/group?id=' . $group['group_id']) ?>"><?= e($group['name']) ?></a></li>
-                <li class="breadcrumb__item"><a class="breadcrumb__link"
-                        href="<?= url('/members?group_id=' . $group['group_id']) ?>" aria-current="page">Medlemmer</a>
-                </li>
-            </ol>
-        </nav>
+        <?php
+        $breadcrumbs = [
+            ['label' => 'Mine grupper', 'path' => '/home'],
+            ['label' => $group['name'], 'path' => '/group?id=' . $group['group_id']],
+            ['label' => 'Medlemmer', 'path' => '/members?group_id=' . $group['group_id']],
+        ];
+        require __DIR__ . '/../partials/breadcrumbs.php';
+        ?>
 
         <header class="page-header">
             <p class="group-label"><?= e($group['name']) ?></p>

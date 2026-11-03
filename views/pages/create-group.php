@@ -1,13 +1,12 @@
 <main id="main" class="site-main">
     <div class="container container--text">
-        <nav class="breadcrumb" aria-label="Du er her">
-            <ol class="breadcrumb__list">
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/home') ?>">Mine grupper</a></li>
-                <li class="breadcrumb__item"><a class="breadcrumb__link" href="<?= url('/create-group') ?>"
-                        aria-current="page">Ny
-                        gruppe</a></li>
-            </ol>
-        </nav>
+        <?php
+        $breadcrumbs = [
+            ['label' => 'Mine grupper', 'path' => '/home'],
+            ['label' => 'Ny gruppe', 'path' => '/create-group'],
+        ];
+        require __DIR__ . '/../partials/breadcrumbs.php';
+        ?>
 
         <header class="page-header">
             <p class="eyebrow">Ny gruppe</p>

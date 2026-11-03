@@ -41,9 +41,7 @@ class Auth
     {
         $role = self::roleIn($groupId);
         if ($role === null) {
-            http_response_code(403);
-            echo 'Du har ikke adgang til denne gruppe.';
-            exit;
+            abort(403, 'Du har ikke adgang til denne gruppe.');
         }
     }
 
@@ -52,9 +50,7 @@ class Auth
     {
         $role = self::roleIn($groupId);
         if ($role !== 'group_admin') {
-            http_response_code(403);
-            echo 'Kun gruppens administrator har adgang til denne side.';
-            exit;
+            abort(403, 'Kun gruppens administrator har adgang til denne side.');
         }
     }
 
@@ -65,9 +61,7 @@ class Auth
         $users = new UserRepository();
         $isOperator = $users->isOperator(self::userId());
         if ($isOperator === false) {
-            http_response_code(403);
-            echo 'Kun operatører har adgang til denne side.';
-            exit;
+            abort(403, 'Kun operatører har adgang til denne side.');
         }
     }
 

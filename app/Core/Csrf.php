@@ -28,9 +28,7 @@ class Csrf
     {
         $sentToken = $_POST['csrf_token'] ?? '';
         if (!is_string($sentToken) || !hash_equals(self::token(), $sentToken)) {
-            http_response_code(403);
-            echo 'Formularen er udløbet. Gå tilbage, genindlæs siden og prøv igen';
-            exit;
+            abort(403, 'Formularen er udløbet. Gå tilbage, genindlæs siden og prøv igen');
         }
     }
 }
