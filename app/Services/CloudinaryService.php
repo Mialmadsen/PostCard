@@ -115,7 +115,7 @@ class CloudinaryService
                 'Kunne ikke starte billedupload.'
             );
         }
-
+        //curl er en PHP-funktion, der bruges til at sende HTTP-anmodninger
         curl_setopt_array($curl, [
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => $postFields,
