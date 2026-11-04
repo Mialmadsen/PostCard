@@ -204,4 +204,38 @@ BEGIN
     END IF;
 END//
 
+CREATE TRIGGER trg_posts_check_limits
+BEFORE INSERT ON posts
+FOR EACH ROW
+BEGIN
+    DECLARE experience_start DATE;
+    DECLARE experience_end DATE;
+    DECLARE max_posts INT;
+    DECLARE current_posts INT;
+
+    -- Henter datoer og post limit fra den tilhørende experience
+    SELECT start_date, end_date, post_limit
+    INTO experience_start, experience_end, max_posts
+    FROM experiences
+    WHERE experience_id = NEW.experience_id;
+
+    -- Kontrollerer om experience er aktiv på dags dato
+    IF CURDATE() < experience_start OR CURDATE() > experience_end THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Du kan kun oprette opslag under din experience.';
+    END IF;
+
+    -- Tæller hvor mange opslag der allerede findes
+    SELECT COUNT(*)
+    INTO current_posts
+    FROM posts
+    WHERE experience_id = NEW.experience_id;
+
+    -- Kontrollerer om post limit er nået
+    IF current_posts >= max_posts THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = 'Du har nået grænsen for antal opslag.';
+    END IF;
+END//
+
 DELIMITER ;
