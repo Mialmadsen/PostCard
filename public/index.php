@@ -88,6 +88,8 @@ $router->add('POST', '/invite', [GroupController::class, 'createInvitation']);
 $router->add('POST', '/cancel-invitation', [GroupController::class, 'cancelInvitation']);
 $router->add('GET', '/join', [GroupController::class, 'join']);
 $router->add('POST', '/join', [GroupController::class, 'acceptInvitation']);
+$router->add('GET', '/group-settings', [GroupController::class, 'settings']);
+$router->add('POST', '/group-settings', [GroupController::class, 'updateSettings']);
 $router->add('GET', '/members', [MemberController::class, 'index']);
 $router->add('POST', '/make-admin', [MemberController::class, 'makeAdmin']);
 $router->add('POST', '/remove-member', [MemberController::class, 'removeMember']);

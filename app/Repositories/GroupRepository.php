@@ -50,4 +50,23 @@ class GroupRepository extends Repository
             ['group_id' => $groupId]
         );
     }
+    // Updates the group settings
+    public function update(int $groupId, string $name, ?string $description, string $postingMode, int $defaultPostLimit): void
+    {
+        $this->execute(
+            'UPDATE user_groups
+         SET name = :name,
+             description = :description,
+             posting_mode = :posting_mode,
+             default_post_limit = :default_post_limit
+         WHERE group_id = :group_id',
+            [
+                'group_id' => $groupId,
+                'name' => $name,
+                'description' => $description,
+                'posting_mode' => $postingMode,
+                'default_post_limit' => $defaultPostLimit,
+            ]
+        );
+    }
 }

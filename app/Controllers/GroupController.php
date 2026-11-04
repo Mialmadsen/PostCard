@@ -34,29 +34,7 @@ class GroupController
         $postingMode = input('posting_mode');
         $postLimitText = input('default_post_limit');
 
-        $errors = [];
-
-        if ($name === '') {
-            $errors['name'] = 'Skriv gruppens navn.';
-        } elseif (mb_strlen($name) > 100) {
-            $errors['name'] = 'Navnet må højst være 100 tegn.';
-        }
-
-        if (mb_strlen($description) > 1000) {
-            $errors['description'] = 'Beskrivelsen må højst være 1000 tegn.';
-        }
-
-        if (!in_array($postingMode, ['open', 'permission'], true)) {
-            $errors['posting_mode'] = 'Vælg, hvem der må dele oplevelser.';
-        }
-
-        $defaultPostLimit = filter_var($postLimitText, FILTER_VALIDATE_INT, [
-            'options' => ['min_range' => 1, 'max_range' => 50],
-        ]);
-
-        if ($defaultPostLimit === false) {
-            $errors['default_post_limit'] = 'Skriv et helt tal mellem 1 og 50';
-        }
+        $errors = $this->validateGroup($name, $description, $postingMode, $postLimitText);
 
         // We check if there are any errors and either stop and send the person back to form, or continue and create a new group
         if ($errors !== []) {
@@ -77,6 +55,8 @@ class GroupController
 
         // The happy end of creating a new group, save and go on
         $descriptionOrNull = $description === '' ? null : $description;
+        // validateGroup() already let only a whole number 1–50 through, so (int) just turns '20' into 20
+        $defaultPostLimit = (int) $postLimitText;
         $groups = new GroupRepository();
         $groupId = $groups->createWithAdmin(
             Auth::userId(),
@@ -128,6 +108,82 @@ class GroupController
         );
     }
 
+    public function settings(): void
+    {
+        // The group id from the address
+        $groupId = queryId('group_id');
+
+        if ($groupId === null) {
+            abort(404, 'Gruppen findes ikke.');
+        }
+
+        // Only the group admin can change it, so we check that it is the right admin
+        Auth::requireGroupAdmin($groupId);
+
+        // (your comment)
+        $groups = new GroupRepository();
+        $group = $groups->findById($groupId);
+
+        $settingsMessage = Session::takeFlash('settings_message');
+
+
+        View::render('group-settings', [
+            'pageTitle' => 'Indstillinger · ' . $group['name'],
+            'isLoggedIn' => true,
+            'group' => $group,
+            'settingsMessage' => $settingsMessage,
+            'errors' => [],
+            'old' => $group,
+        ]);
+    }
+
+    public function updateSettings(): void
+    {
+        $groupId = inputId('group_id');
+
+        if ($groupId === null) {
+            abort(404, 'Gruppen findes ikke.');
+        }
+
+        Auth::requireGroupAdmin($groupId);
+        $name = input('name');
+        $description = input('description');
+        $postingMode = input('posting_mode');
+        $postLimitText = input('default_post_limit');
+
+        $errors = $this->validateGroup($name, $description, $postingMode, $postLimitText);
+        if ($errors !== []) {
+            // the saved group, for the page title, breadcrumbs and header
+            $groups = new GroupRepository();
+            $group = $groups->findById($groupId);
+
+            http_response_code(422);
+            View::render('group-settings', [
+                'pageTitle' => 'Indstillinger · ' . $group['name'],
+                'isLoggedIn' => true,
+                'group' => $group,
+                'errors' => $errors,
+                'settingsMessage' => null,
+                'old' => [
+                    'name' => $name,
+                    'description' => $description,
+                    'posting_mode' => $postingMode,
+                    'default_post_limit' => $postLimitText,
+                ],
+            ]);
+            return;
+        }
+
+        //we save if no mistakes
+        $descriptionOrNull = $description === '' ? null : $description;
+        $defaultPostLimit = (int)$postLimitText;
+        $groups = new GroupRepository();
+        $groups->update($groupId, $name, $descriptionOrNull, $postingMode, $defaultPostLimit);
+
+        Session::flash('settings_message', 'Indstillingerne er gemt.');
+        redirect('/group-settings?group_id=' . $groupId);
+    }
+
     public function createInvitation(): void
     {
         // We read the group id from the form and check if it is a whole number
@@ -166,7 +222,6 @@ class GroupController
         Auth::requireGroupAdmin($groupId);
 
         $invitations = new InvitationRepository();
-
         $isCancelled = $invitations->cancel($invitationId, $groupId);
 
         Session::flash('invite_message', $isCancelled ? 'Linket er annulleret.' : 'Linket kunne ikke annulleres. Det er allerede brugt eller udløbet.');
@@ -247,5 +302,35 @@ class GroupController
         }
 
         redirect('/group?id=' . $invitation['group_id']);
+    }
+
+    // Checks the four group fields (used by create and settings)
+    private function validateGroup(string $name, string $description, string $postingMode, string $postLimitText): array
+    {
+        $errors = [];
+
+        if ($name === '') {
+            $errors['name'] = 'Skriv gruppens navn.';
+        } elseif (mb_strlen($name) > 100) {
+            $errors['name'] = 'Navnet må højst være 100 tegn.';
+        }
+
+        if (mb_strlen($description) > 1000) {
+            $errors['description'] = 'Beskrivelsen må højst være 1000 tegn.';
+        }
+
+        if (!in_array($postingMode, ['open', 'permission'], true)) {
+            $errors['posting_mode'] = 'Vælg, hvem der må dele oplevelser.';
+        }
+
+        $defaultPostLimit = filter_var($postLimitText, FILTER_VALIDATE_INT, [
+            'options' => ['min_range' => 1, 'max_range' => 50],
+        ]);
+
+        if ($defaultPostLimit === false) {
+            $errors['default_post_limit'] = 'Skriv et helt tal mellem 1 og 50';
+        }
+
+        return $errors;
     }
 }
