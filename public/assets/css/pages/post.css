@@ -101,3 +101,52 @@
 .post-pager__link--next {
   margin-left: auto;
 }
+
+
+
+/* Dato og kommentarhandlinger på samme linje */
+.comment__footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.comment__footer .meta {
+  margin: 0;
+}
+
+/* Små, diskrete knapper til kommentarer */
+.comment__action {
+  display: inline-block;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-primary);
+  font: inherit;
+  font-size: var(--text-small);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.comment__edit > summary {
+  list-style: none;
+}
+
+.comment__edit > summary::-webkit-details-marker {
+  display: none;
+}
+
+.comment__action--delete {
+  color: var(--color-text);
+}
+
+/* Redigeringsformularen åbner under kommentaren */
+.comment__edit[open] {
+  flex-basis: 100%;
+}
+
+.comment__edit .form {
+  margin-top: 0.75rem;
+}

@@ -71,9 +71,6 @@
                     <p class="meta">En oplevelse har en periode og et antal opslag (normalt 20, op til 5 billeder pr. opslag). I nogle grupper skal gruppens admin godkende den først.</p>
                 </section>
 
-
-                
-                
                 <!-- Viser den indloggede brugers grupper -->
                 <section class="card" aria-labelledby="groups-heading">
                     <h2 class="section-title" id="groups-heading">Mine grupper</h2>
@@ -143,10 +140,14 @@
                                     </p>
                                     <ul class="post-stats">
                                         <li>
-                                            <button class="post-stats__item like-button" type="button" aria-pressed="false">
-                                                <svg class="post-stats__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" /></svg>
-                                                <?= (int) $post['likes'] ?> <span class="visually-hidden">synes godt om</span>
-                                            </button>
+                                            <form action="<?= e(url('/post-like')) ?>" method="post">
+                                                <?= \PostCard\Core\Csrf::field() ?>
+                                                <input type="hidden" name="post_id" value="<?= (int) $post['id'] ?>">
+                                                <button class="post-stats__item like-button" type="submit" aria-pressed="<?= $post['hasLiked'] ? 'true' : 'false' ?>" aria-label="<?= $post['hasLiked'] ? 'Fjern like' : 'Synes godt om' ?>">
+                                                    <svg class="post-stats__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" /></svg>
+                                                    <?= (int) $post['likes'] ?> <span class="visually-hidden">synes godt om</span>
+                                                </button>
+                                            </form>
                                         </li>
                                         <li>
                                             <a class="post-stats__item" href="<?= url('/post?id=' . (int) $post['id'] . '#comments') ?>">
@@ -162,8 +163,6 @@
                     <?php endif; ?>
                 </section>
 
-
-                
                 <!-- Viser populære opslag fra brugerens grupper -->
                 <section aria-labelledby="trending-heading">
                     <h2 class="section-title" id="trending-heading">Populært i dine grupper</h2>
@@ -198,10 +197,14 @@
                                         </p>
                                         <ul class="post-stats">
                                             <li>
-                                                <button class="post-stats__item like-button" type="button" aria-pressed="false">
-                                                    <svg class="post-stats__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" /></svg>
-                                                    <?= (int) $post['likes'] ?> <span class="visually-hidden">synes godt om</span>
-                                                </button>
+                                                <form action="<?= e(url('/post-like')) ?>" method="post">
+                                                    <?= \PostCard\Core\Csrf::field() ?>
+                                                    <input type="hidden" name="post_id" value="<?= (int) $post['id'] ?>">
+                                                    <button class="post-stats__item like-button" type="submit" aria-pressed="<?= $post['hasLiked'] ? 'true' : 'false' ?>" aria-label="<?= $post['hasLiked'] ? 'Fjern like' : 'Synes godt om' ?>">
+                                                        <svg class="post-stats__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" /></svg>
+                                                        <?= (int) $post['likes'] ?> <span class="visually-hidden">synes godt om</span>
+                                                    </button>
+                                                </form>
                                             </li>
                                             <li>
                                                 <a class="post-stats__item" href="<?= url('/post?id=' . (int) $post['id'] . '#comments') ?>">
@@ -218,8 +221,6 @@
                     <?php endif; ?>
                 </section>
 
-
-                
                 <!-- Viser de nyeste kommentarer fra brugerens grupper -->
                 <section class="card" aria-labelledby="comments-heading">
                     <h2 class="section-title" id="comments-heading">Nyeste kommentarer</h2>
@@ -244,6 +245,27 @@
                                             · <?= e($comment['group_name']) ?>
                                         </p>
                                         <p><?= e($comment['body']) ?></p>
+                                        <?php if ((int) $comment['user_id'] === \PostCard\Core\Auth::userId()): ?>
+                                            <div class="comment__footer">
+                                                <details class="comment__edit">
+                                                    <summary class="comment__action">Rediger</summary>
+                                                    <form class="form" action="<?= e(url('/update-comment')) ?>" method="post">
+                                                        <?= \PostCard\Core\Csrf::field() ?>
+                                                        <input type="hidden" name="comment_id" value="<?= (int) $comment['comment_id'] ?>">
+                                                        <div class="field">
+                                                            <label class="field__label" for="home-comment-<?= (int) $comment['comment_id'] ?>">Rediger kommentar</label>
+                                                            <textarea class="field__input" id="home-comment-<?= (int) $comment['comment_id'] ?>" name="body" rows="3" maxlength="2000" required><?= e($comment['body']) ?></textarea>
+                                                        </div>
+                                                        <button class="button button--primary" type="submit">Gem ændringer</button>
+                                                    </form>
+                                                </details>
+                                                <form action="<?= e(url('/delete-comment')) ?>" method="post" onsubmit="return confirm('Er du sikker på, at du vil slette kommentaren?');">
+                                                    <?= \PostCard\Core\Csrf::field() ?>
+                                                    <input type="hidden" name="comment_id" value="<?= (int) $comment['comment_id'] ?>">
+                                                    <button class="comment__action comment__action--delete" type="submit">Slet</button>
+                                                </form>
+                                            </div>
+                                        <?php endif; ?>
                                         <p class="meta">
                                             <time datetime="<?= e($comment['created_at']) ?>">
                                                 <?= danishDate($comment['created_at'], 'dd.MM.y HH:mm') ?>

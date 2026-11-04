@@ -21,6 +21,8 @@ use PostCard\Controllers\GroupController;
 use PostCard\Controllers\GroupPageController;
 use PostCard\Controllers\HomeController;
 use PostCard\Controllers\MemberController;
+use PostCard\Controllers\CommentController;
+use PostCard\Controllers\LikeController;
 
 require __DIR__ . '/../app/autoload.php';
 require_once __DIR__ . '/../app/Helpers/escape.php';
@@ -96,6 +98,14 @@ $router->add('GET', '/create-experience', [ExperienceController::class, 'create'
 $router->add('POST', '/create-experience', [ExperienceController::class, 'store']);
 $router->add('GET', '/create-post', [PostController::class, 'create']);
 $router->add('POST', '/create-post', [PostController::class, 'store']);
+$router->add('GET', '/post', [PostController::class, 'show']);
+$router->add('GET', '/edit-post', [PostController::class, 'edit']);
+$router->add('POST', '/edit-post', [PostController::class, 'update']);
+$router->add('POST', '/delete-post', [PostController::class, 'delete']);
+$router->add('POST', '/post-comment', [CommentController::class, 'store']);
+$router->add('POST', '/update-comment', [CommentController::class, 'update']);
+$router->add('POST', '/delete-comment', [CommentController::class, 'delete']);
+$router->add('POST', '/post-like', [LikeController::class, 'toggle']);
 $router->add('GET', '/post-image', [PostImageController::class, 'show']);
 $router->add('GET', '/requests', [RequestController::class, 'index']);
 $router->add('POST', '/requests', [RequestController::class, 'update']);

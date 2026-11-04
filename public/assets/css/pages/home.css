@@ -42,3 +42,51 @@
   font-weight: var(--weight-medium);
 }
 
+/* Rediger og slet kommentarer på forsiden */
+.comment-item .comment__footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.comment-item .comment__edit {
+  position: relative;
+}
+
+.comment-item .comment__edit summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.comment-item .comment__edit summary::-webkit-details-marker {
+  display: none;
+}
+
+.comment-item .comment__action {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-primary, #a84e2a);
+  font: inherit;
+  font-size: 0.875rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.comment-item .comment__action:hover {
+  text-decoration: none;
+}
+
+.comment-item .comment__footer form {
+  margin: 0;
+}
+
+.comment-item .comment__edit[open] {
+  flex-basis: 100%;
+}
+
+.comment-item .comment__edit .form {
+  margin-top: 0.75rem;
+}
+

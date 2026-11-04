@@ -1,62 +1,43 @@
 <?php
 declare(strict_types=1);
 
-// Controlleren håndterer requests til oplevelser.
-// Den henter data gennem repositories og bruger ExperienceService til at beregne opslaggrænser og oplevelsens aktuelle status.
-// Til sidst sender den oplysningerne videre til vores views.
-
 namespace PostCard\Controllers;
 
-// Repositories til at hente og gemme data i databasen
 use PostCard\Repositories\ExperienceRepository;
-use PostCard\Repositories\PostRepository;
+use PostCard\Repositories\PostFeedRepository;
 use PostCard\Repositories\GroupMemberRepository;
-
-// Fælles klasser til visning og adgangskontrol
+use PostCard\Repositories\LikeRepository;
 use PostCard\Core\View;
 use PostCard\Core\Auth;
-
-// Service med regler og beregninger for oplevelser
 use PostCard\Services\ExperienceService;
 
 class ExperienceController
 {
-    // Repositories og service-objekter gemmes som private properties, så de kan bruges i controllerens metoder
     private ExperienceRepository $experienceRepository;
-    private PostRepository $postRepository;
+    private PostFeedRepository $postFeedRepository;
     private GroupMemberRepository $groupMemberRepository;
+    private LikeRepository $likeRepository;
     private ExperienceService $experienceService;
 
-    // Constructoren kører automatisk, når controlleren oprettes
+    // Opretter repositories og service, som controlleren bruger.
     public function __construct()
     {
-        // Opretter vores repository-objekter
         $this->experienceRepository = new ExperienceRepository();
-        $this->postRepository = new PostRepository();
+        $this->postFeedRepository = new PostFeedRepository();
         $this->groupMemberRepository = new GroupMemberRepository();
-
-        // Opretter vores service-objekt
+        $this->likeRepository = new LikeRepository();
         $this->experienceService = new ExperienceService();
     }
 
-    // Viser en bestemt oplevelse gennem routeren
+    // Viser en bestemt oplevelse.
     public function show(): void
     {
-        // Kontrollerer, om brugeren er logget ind
         Auth::requireLogin();
-
-        // Henter oplevelsens ID fra URL'en med den fælles helper
         $experienceId = queryId('id');
-
-        // Stopper, hvis ID'et mangler eller er ugyldigt
         if ($experienceId === null) {
             abort(400, 'Ugyldigt experience-ID.');
         }
-
-        // Henter oplevelsen og alle oplysninger til siden
         $data = $this->getExperienceData($experienceId);
-
-        // Sender oplysningerne videre til vores experience-view
         View::render('experience', array_merge($data, [
             'pageTitle' => $data['experience']['name'],
             'pageStyle' => 'experience',
@@ -64,30 +45,18 @@ class ExperienceController
         ]));
     }
 
-    // Viser formularen til at oprette en ny oplevelse
+    // Viser formularen til at oprette en ny oplevelse.
     public function create(): void
     {
-        // Kontrollerer, at brugeren er logget ind
         Auth::requireLogin();
-
-        // Henter den indloggede brugers ID
         $userId = Auth::userId();
-
-        // Henter alle grupper, som brugeren er aktivt medlem af
         $groups = $this->groupMemberRepository->findActiveGroupsByUser($userId);
-
-        // Henter eventuelt et gruppe-ID fra URL'en med den fælles helper
         $selectedGroupId = queryId('group_id');
-
-        // Kontrollerer, at den valgte gruppe findes blandt brugerens grupper
         $allowedGroupIds = array_map('intval', array_column($groups, 'group_id'));
-
         if ($selectedGroupId && !in_array($selectedGroupId, $allowedGroupIds, true)) {
             http_response_code(403);
             exit('Du har ikke adgang til denne gruppe.');
         }
-
-        // Sender grupperne og det valgte gruppe-ID videre til formularen
         View::render('create-experience', [
             'pageTitle' => 'Opret oplevelse',
             'pageStyle' => 'create-experience',
@@ -97,55 +66,26 @@ class ExperienceController
         ]);
     }
 
-    // Modtager formularen og opretter en ny oplevelse
+    // Modtager formularen og opretter en ny oplevelse.
     public function store(): void
     {
-        // Kontrollerer, at brugeren er logget ind
         Auth::requireLogin();
-
-        // Henter den indloggede brugers ID
         $userId = Auth::userId();
-
-        // Henter gruppens ID fra formularen med den fælles helper 
         $groupId = inputId('group_id');
-
-        // Henter formularens oplysninger gennem den fælles input helper
         $name = input('name');
         $description = input('description');
         $startDate = input('start_date');
         $endDate = input('end_date');
-
-        // Kontrollerer, at der er valgt en gyldig gruppe
         if ($groupId === null) {
             abort(400, 'Du skal vælge en gyldig gruppe.');
         }
-
-        // Kontrollerer, at brugeren er aktivt medlem af gruppen
         Auth::requireMember($groupId);
-
-        // Kontrollerer oplevelsens navn og beskrivelse
-        if (
-            $name === '' ||
-            mb_strlen($name) > 100 ||
-            mb_strlen($description) > 1000
-        ) {
+        if ($name === '' || mb_strlen($name) > 100 || mb_strlen($description) > 1000) {
             http_response_code(400);
             exit('Kontroller oplevelsens navn og beskrivelse.');
         }
-
-        // Opretter dato-objekter til validering
-        $start = \DateTimeImmutable::createFromFormat(
-            '!Y-m-d',
-            $startDate
-        );
-
-        $end = \DateTimeImmutable::createFromFormat(
-            '!Y-m-d',
-            $endDate
-        );
-
-        // Kontrollerer, at datoerne er gyldige kalenderdatoer
-        // og at slutdatoen ikke ligger før startdatoen
+        $start = \DateTimeImmutable::createFromFormat('!Y-m-d', $startDate);
+        $end = \DateTimeImmutable::createFromFormat('!Y-m-d', $endDate);
         if (
             $start === false ||
             $end === false ||
@@ -156,9 +96,6 @@ class ExperienceController
             http_response_code(400);
             exit('Vælg en gyldig periode. Slutdatoen må ikke være før startdatoen.');
         }
-
-        // Gemmer oplevelsen gennem ExperienceRepository
-        // Repository bestemmer, om status skal være approved eller pending
         $experienceId = $this->experienceRepository->create(
             $userId,
             $groupId,
@@ -167,73 +104,39 @@ class ExperienceController
             $startDate,
             $endDate
         );
-
-        // Sender brugeren videre til den nye oplevelse gennem helper-funktionen redirect()
         redirect('/experience?id=' . $experienceId);
     }
 
-    // Henter og samler oplysninger til experience-siden
+    // Henter og samler oplysninger til experience-siden.
     private function getExperienceData(int $experienceId): array
     {
-        // Henter oplevelsen fra databasen
         $experience = $this->experienceRepository->find($experienceId);
-
-        // Viser en 404-fejl, hvis oplevelsen ikke findes
         if ($experience === null) {
             abort(404, 'Oplevelsen blev ikke fundet.');
         }
-
-        // Kontrollerer, at brugeren er aktivt medlem af gruppen
         Auth::requireMember((int) $experience['group_id']);
-
-        // Henter alle opslag, der hører til oplevelsen
-        $posts = $this->postRepository->findByExperience($experienceId);
-
-        // Gennemgår hvert opslag og gør oplysningerne klar til viewet
+        $posts = $this->postFeedRepository->findByExperience($experienceId);
+        $userId = Auth::userId();
         foreach ($posts as &$post) {
-
-            // Formaterer opslagets dato med den fælles danske datohjælper
+            // Finder ud af, om den indloggede bruger allerede har liket opslaget.
+            $post['hasLiked'] = $this->likeRepository->hasLiked((int) $post['id'], $userId);
             $post['day'] = danishDate($post['date'], 'd');
             $post['month'] = danishDate($post['date'], 'MMM');
             $post['relative_date'] = danishDate($post['date'], 'dd.MM.y');
-
-            // Henter billedet gennem vores beskyttede billedrute.
-            // PHP kontrollerer brugerens gruppemedlemskab,
-            // før billedet hentes fra Cloudinary.
+            // Billeder hentes gennem den beskyttede billedrute.
             if (!empty($post['image_id'])) {
                 $post['image'] = url('/post-image?id=' . (int) $post['image_id']);
             } else {
-                // Opslag uden billeder får ingen billedadresse.
                 $post['image'] = null;
             }
         }
-
-        // Afslutter referencen fra foreach-løkken
         unset($post);
-
-        // Tæller antallet af opslag i oplevelsen
         $postsUsed = count($posts);
-
-        // ExperienceService beregner opslaggrænse og resterende opslag
-        $postCounts = $this->experienceService->getPostCounts(
-            $experience,
-            $postsUsed
-        );
-
-        // ExperienceService beregner status og resterende dage
-        $experienceStatus = $this->experienceService->getStatus(
-            $experience
-        );
-
-        // Samler alle oplysningerne i ét array
-        // Nøglerne er de samme som før, så viewet ikke skal ændres
-        return array_merge(
-            [
-                'experience' => $experience,
-                'posts' => $posts
-            ],
-            $postCounts,
-            $experienceStatus
-        );
+        $postCounts = $this->experienceService->getPostCounts($experience, $postsUsed);
+        $experienceStatus = $this->experienceService->getStatus($experience);
+        return array_merge([
+            'experience' => $experience,
+            'posts' => $posts
+        ], $postCounts, $experienceStatus);
     }
 }

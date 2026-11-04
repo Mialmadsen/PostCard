@@ -32,8 +32,8 @@ if (input && list && status && template) {
     });
     if (photos.length > 0) {
         cover = photos[0];
-        update();
     }
+    update();
 
     input.addEventListener('change', () => {
         const messages = [];
