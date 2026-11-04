@@ -182,6 +182,8 @@ CREATE TABLE site_settings (
 
 -- Indexes
 CREATE INDEX idx_group_members_group_status ON group_members (group_id, member_status);
+CREATE INDEX idx_posts_experience_created ON posts (experience_id, created_at);
+CREATE INDEX idx_likes_post_created ON likes (post_id, created_at);
 
 -- Triggers
 DELIMITER //
