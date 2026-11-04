@@ -106,34 +106,32 @@ class GroupMemberRepository extends Repository
         );
     }
 
-    // gets everyone who is an active member in the group
-
+    // Gets everyone who is an active member in the group
     public function findActiveByGroup(int $groupId): array
     {
         return $this->fetchAll(
-            "SELECT u.first_name, u.last_name, u.user_id,gm.member_role, gm.joined_at
+            "SELECT u.first_name, u.last_name, u.user_id, gm.member_role, gm.joined_at
             FROM group_members AS gm
-            JOIN users AS u ON u.user_id=gm.user_id
-            WHERE gm.group_id =:group_id
-            AND gm.member_status ='active'
-            ORDER BY gm.member_role='group_admin' DESC, u.first_name,u.last_name",
+            JOIN users AS u ON u.user_id = gm.user_id
+            WHERE gm.group_id = :group_id
+            AND gm.member_status = 'active'
+            ORDER BY gm.member_role = 'group_admin' DESC, u.first_name, u.last_name",
             [
                 'group_id' => $groupId
             ]
         );
     }
 
-    //Make a person admin of the group
+    // Make a person admin of the group
     public function makeAdmin(int $groupId, int $userId): bool
     {
         return $this->execute(
             "UPDATE group_members
-            SET member_role ='group_admin'
-            WHERE group_id=:group_id
-            AND user_id=:user_id
-            AND member_status ='active'
-            AND member_role=
-            'member'",
+            SET member_role = 'group_admin'
+            WHERE group_id = :group_id
+            AND user_id = :user_id
+            AND member_status = 'active'
+            AND member_role = 'member'",
             [
                 'group_id' => $groupId,
                 'user_id' => $userId
@@ -141,16 +139,16 @@ class GroupMemberRepository extends Repository
         ) === 1;
     }
 
-    //Remove member
+    // Remove a member
     public function removeMember(int $groupId, int $userId): bool
     {
         return $this->execute(
             "UPDATE group_members
-            SET member_status ='removed'
-            WHERE group_id=:group_id
-            AND user_id=:user_id
-            AND member_status ='active'
-            AND member_role='member'",
+            SET member_status = 'removed'
+            WHERE group_id = :group_id
+            AND user_id = :user_id
+            AND member_status = 'active'
+            AND member_role = 'member'",
             [
                 'group_id' => $groupId,
                 'user_id' => $userId
@@ -158,16 +156,15 @@ class GroupMemberRepository extends Repository
         ) === 1;
     }
 
-    //Leave the group
+    // Leave the group
     public function leave(int $groupId, int $userId): void
     {
         $this->execute(
             "UPDATE group_members
-        SET member_status ='left'
-        WHERE group_id=:group_id
-            AND user_id=:user_id
-            AND member_status ='active'
-            ",
+            SET member_status = 'left'
+            WHERE group_id = :group_id
+            AND user_id = :user_id
+            AND member_status = 'active'",
             [
                 'group_id' => $groupId,
                 'user_id' => $userId

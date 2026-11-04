@@ -12,7 +12,7 @@ use PostCard\Repositories\GroupMemberRepository;
 use PostCard\Core\Config;
 use PostCard\Core\Session;
 
-// Create a group page , the log in is checked, the form is rendered, read and validated, stores errors.
+// Create a group page: the login is checked, the form is rendered, read and validated, and errors are stored.
 class GroupController
 {
     public function create(): void
@@ -91,19 +91,18 @@ class GroupController
 
     public function invite(): void
     {
-        //the group id from the address
+        // The group id from the address
         $groupId = queryId('group_id');
 
-        //if id is not valid we stop and give 404
-
+        // If the id is not valid, we stop and give 404
         if ($groupId === null) {
             abort(404, 'Gruppen findes ikke.');
         }
 
-        //only the group admin can invite so we check that it is the right admin
+        // Only the group admin can invite, so we check that it is the right admin
         Auth::requireGroupAdmin($groupId);
 
-        //now we get the group communicating with DB
+        // Now we get the group from the database
         $groups = new GroupRepository();
         $group = $groups->findById($groupId);
         $inviteLink = Session::takeFlash('invite_link');
@@ -113,7 +112,7 @@ class GroupController
         $invitations = new InvitationRepository();
         $groupInvitations = $invitations->findByGroup($groupId);
 
-        //Now we show the page where we create invitation
+        // Now we show the page where we create invitations
         View::render(
             'invite',
             [
@@ -131,7 +130,7 @@ class GroupController
 
     public function createInvitation(): void
     {
-        // we read group id from the form and check it id it is whole number
+        // We read the group id from the form and check if it is a whole number
         $groupId = inputId('group_id');
 
         if ($groupId === null) {
@@ -140,14 +139,14 @@ class GroupController
 
         Auth::requireGroupAdmin($groupId);
 
-        //Make the token
+        // Make the token
         $token = bin2hex(random_bytes(32));
         $tokenHash = hash('sha256', $token);
 
         $invitations = new InvitationRepository();
         $invitations->create($groupId, Auth::userId(), $tokenHash);
 
-        // build the full link
+        // Build the full link
         $link = Config::get('APP_URL') . '/join?token=' . $token;
         Session::flash('invite_link', $link);
 
@@ -156,7 +155,7 @@ class GroupController
 
     public function cancelInvitation(): void
     {
-        // we read group id from the form and check it id it is whole number
+        // We read the two ids from the form and check if they are whole numbers
         $groupId = inputId('group_id');
         $invitationId = inputId('invitation_id');
 

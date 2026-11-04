@@ -8,35 +8,30 @@ use PostCard\Core\Auth;
 use PostCard\Core\View;
 use PostCard\Core\Session;
 use PostCard\Repositories\GroupRepository;
-
 use PostCard\Repositories\GroupMemberRepository;
 
 class MemberController
 {
-
     public function index(): void
     {
-
-        //the group id from the address
+        // The group id from the address
         $groupId = queryId('group_id');
 
-        //if id is not valid we stop and give 404
-
+        // If the id is not valid, we stop and give 404
         if ($groupId === null) {
             abort(404, 'Gruppen findes ikke.');
         }
 
-        //guard: ANY member may see the list 
+        // Guard: ANY member may see the list
         Auth::requireMember($groupId);
 
-        //now we get the group communicating with DB
+        // Now we get the group from the database
         $groups = new GroupRepository();
         $group = $groups->findById($groupId);
         $members = new GroupMemberRepository();
         $memberList = $members->findActiveByGroup($groupId);
         $role = $members->findActiveRole(Auth::userId(), $groupId);
         $memberMessage = Session::takeFlash('member_message');
-
 
         View::render(
             'members',
@@ -50,12 +45,11 @@ class MemberController
                 'pageStyle' => 'members',
                 'pageScripts' => ['confirm'],
                 'memberMessage' => $memberMessage,
-
             ]
         );
     }
 
-    //it reads the two ids from the form, checks that user is admin of that group, makes the change, saves a message, and sends the user back to the members page
+    // It reads the two ids from the form, checks that the user is admin of that group, makes the change, saves a message, and sends the user back to the members page
     public function makeAdmin(): void
     {
         $groupId = inputId('group_id');
@@ -73,7 +67,7 @@ class MemberController
         redirect('/members?group_id=' . $groupId);
     }
 
-    //Removes the user
+    // Removes the user
     public function removeMember(): void
     {
         $groupId = inputId('group_id');
@@ -91,11 +85,10 @@ class MemberController
         redirect('/members?group_id=' . $groupId);
     }
 
-    //To leave the group yourself
+    // To leave the group yourself
     public function leaveGroup(): void
     {
         $groupId = inputId('group_id');
-
 
         if ($groupId === null) {
             abort(404, 'Gruppen findes ikke.');
@@ -107,7 +100,7 @@ class MemberController
         try {
             $members->leave($groupId, $userId);
         } catch (\PDOException $exception) {
-            // only code 45000. Any other database error go through
+            // Only code 45000. Any other database error goes through
             if ($exception->getCode() !== '45000') {
                 throw $exception;
             }

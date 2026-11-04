@@ -1,12 +1,15 @@
 <?php
 
 declare(strict_types=1);
-// it is like a surname to the class
+
+// The namespace is like a surname for the class
 namespace PostCard\Core;
 
 class Database
-{ //type of data:PHP Data Object, there is no connection first, so it is null
+{
+    // Type PDO (PHP Data Object). There is no connection at first, so it is null
     private static ?\PDO $pdo = null;
+
     public static function connection(): \PDO
     {
         if (self::$pdo === null) {
@@ -16,9 +19,10 @@ class Database
             $user = Config::get('DB_USER');
             $password = Config::get('DB_PASS');
 
+            // DSN (data source name): one string with the connection details in a fixed order
             $dsn = "mysql:host=$host;port=$port;dbname=$databaseName;charset=utf8mb4";
-            // data source name , it is a string with information in specific order
-            //we create a new pdo with three parameters : dsn, username and password and return it , so that it is used in all other requests to connect, coffee machine metaphor
+
+            // We create the PDO once from the DSN, user and password. Every later request uses the same connection (the coffee machine metaphor)
             self::$pdo = new \PDO($dsn, $user, $password, [
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
                 \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
@@ -31,6 +35,7 @@ class Database
             $offset = date('P');
             self::$pdo->exec("SET time_zone = '$offset'");
         }
+
         return self::$pdo;
     }
 }

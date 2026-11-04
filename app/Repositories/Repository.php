@@ -54,7 +54,7 @@ abstract class Repository
         return (int) $this->pdo->lastInsertId();
     }
 
-    //To carry on Update and Delete, it returns the number of rows that are changed
+    // Run an UPDATE or DELETE and return the number of rows that were changed.
     protected function execute(string $sql, array $params = []): int
     {
         $statement = $this->pdo->prepare($sql);
@@ -63,7 +63,7 @@ abstract class Repository
         return $statement->rowCount();
     }
 
-    //Works for number of queries and it receives function as parameter
+    // Run several queries as one transaction: all are saved, or none. It receives the work as a function.
     protected function transaction(callable $work): mixed
     {
         $this->pdo->beginTransaction();

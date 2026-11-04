@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// Danish date text, the same on every computer and host 
+// Danish date text, the same on every computer and host
 function danishDate(string $dateTime, string $pattern = 'd. MMM y'): string
 {
     $date = new \DateTimeImmutable($dateTime);

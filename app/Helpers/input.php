@@ -1,7 +1,9 @@
 <?php
 
 declare(strict_types=1);
-//It is a file for reading what the user sent 
+
+// It is a file for reading what the user sent
+
 // Read a POST field safely: always a string ('' if missing or not text), trimmed unless $trim is false.
 function input(string $key, bool $trim = true): string
 {
@@ -17,7 +19,7 @@ function input(string $key, bool $trim = true): string
     return $trim ? trim($value) : $value;
 }
 
-//reads from POST
+// Reads an id from POST
 function inputId(string $key): ?int
 {
     $id = filter_var(input($key), FILTER_VALIDATE_INT, [
@@ -26,7 +28,7 @@ function inputId(string $key): ?int
     return $id === false ? null : $id;
 }
 
-//reads from GET
+// Reads an id from GET
 function queryId(string $key): ?int
 {
     // From the address

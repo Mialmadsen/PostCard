@@ -7,7 +7,7 @@ namespace PostCard\Repositories;
 // All SQL for the invitations table
 class InvitationRepository extends Repository
 {
-    // saves token's hash that is valid 7 days
+    // Saves the token's hash, valid for 7 days
     public function create(int $groupId, int $createdBy, string $tokenHash): void
     {
         $this->insert(
@@ -70,7 +70,7 @@ class InvitationRepository extends Repository
         );
     }
 
-    //In one transaction we mark the link as used and make a person that used it to become a member
+    // In one transaction we mark the link as used and make the person who used it a member
     public function accept(int $invitationId, int $groupId, int $userId): bool
     {
         return $this->transaction(function () use ($invitationId, $groupId, $userId) {

@@ -101,8 +101,6 @@ class AuthController
         $acceptsRules = input('accept_rules') === '1';
         $invite = input('invite');
 
-
-
         // Needed to check whether the username and email are free.
         $users = new UserRepository();
 
@@ -181,7 +179,6 @@ class AuthController
                     'username' => $username,
                     'email' => $email,
                     'birthdate' => $birthdate,
-
                 ],
             ]);
             return;
