@@ -6,7 +6,6 @@ namespace PostCard\Controllers;
 
 use PostCard\Core\Auth;
 use PostCard\Core\View;
-use PostCard\Repositories\UserRepository;
 use PostCard\Repositories\GroupRepository;
 
 // User can manage the profile
@@ -18,8 +17,8 @@ class ProfileController
         Auth::requireLogin();
 
 
-        $users = new UserRepository();
-        $user = $users->findById(Auth::userId());
+        // the same row the header uses: first name, last name, username
+        $user = Auth::user();
 
         $groups = new GroupRepository();
         $userGroups = $groups->findByUser(Auth::userId());

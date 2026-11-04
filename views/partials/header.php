@@ -8,6 +8,7 @@
  *   $isOperator – optional: true on the operator pages (admin-*.php), shows only "Log ud"
  *   $pageStyle  – optional: name of a stylesheet in assets/css/pages/ (without .css)
  *   $pageScripts – optional: list of scripts in assets/js/ (without .js), e.g. ['lightbox']
+ *   $currentUser – always set by View::render: the logged-in user's name, or null
  */
 $pageTitle = $pageTitle ?? 'Del din oplevelse';
 $isLoggedIn = $isLoggedIn ?? false;
@@ -131,8 +132,9 @@ if (session_status() === PHP_SESSION_NONE) {
                         <li class="user-menu">
                             <button class="user-menu__button js-user-menu-button" type="button"
                                 aria-expanded="false" aria-controls="user-menu-list">
-                                <span class="avatar" aria-hidden="true">MN</span>
-                                <span class="user-menu__name">Mia</span>
+                                <span class="avatar"
+                                    aria-hidden="true"><?= e(initials($currentUser['first_name'], $currentUser['last_name'])) ?></span>
+                                <span class="user-menu__name"><?= e($currentUser['first_name']) ?></span>
                                 <span class="visually-hidden">– åbn brugermenu</span>
                                 <svg class="user-menu__chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                                     <path d="m6 9 6 6 6-6" />
