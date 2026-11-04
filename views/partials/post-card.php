@@ -52,25 +52,23 @@
 
     <ul class="post-stats">
 
-        <li>
-            <button
-                class="post-stats__item like-button"
-                type="button"
-                aria-pressed="false"
-                disabled>
-
-                <svg class="post-stats__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" />
-                </svg>
-
-                <?php
-                // Viser antallet af likes, som PostRepository har hentet fra databasen
-                // (int) sikrer, at antallet bliver vist som et heltal
-                ?>
-                <?= (int) $post['likes'] ?>
-                <span class="visually-hidden">synes godt om</span>
-            </button>
+        
+        <li class="post-stats__item">
+            <!-- Formular til at like eller unlike opslaget -->
+            <form action="<?= e(url('/post-like')) ?>" method="post">
+                <?= \PostCard\Core\Csrf::field() ?>
+                <input type="hidden" name="post_id" value="<?= (int) $post['id'] ?>">
+                <button type="submit" class="like-button"
+                        aria-pressed="<?= !empty($post['hasLiked']) ? 'true' : 'false' ?>"
+                        aria-label="<?= !empty($post['hasLiked']) ? 'Fjern like' : 'Synes godt om' ?>">
+                    <svg class="post-stats__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" />
+                    </svg>
+                    <?= (int) $post['likes'] ?>
+                </button>
+            </form>
         </li>
+
 
         <li>
             <a class="post-stats__item" href="<?= url('/post') ?>?id=<?= (int) $post['id'] ?>#comments">
@@ -91,7 +89,6 @@
         <li class="post-stats__item">
             <?php
             // Viser antallet af registrerede visninger fra databasen
-            // Antallet bliver endnu ikke automatisk opdateret ved besøg
             ?>
             Set af <?= (int) $post['views'] ?>
         </li>

@@ -1,278 +1,25 @@
 <?php
-// Filen henter opslag fra databasen.
-// Vi bruger SQL-queries med JOIN og subqueries til at hente
-// opslag, billeder, likes, kommentarer og visninger.
+// Repository til oprettelse, redigering og sletning af opslag.
 
 declare(strict_types=1);
 
 namespace PostCard\Repositories;
 
-// Klassen henter opslag fra databasen.
+// Klassen håndterer opslag i databasen.
 // extends Repository betyder, at klassen arver de fælles
 // databasefunktioner fra vores parent-klasse Repository.php.
 class PostRepository extends Repository
 {
-    // Henter alle opslag, der hører til en bestemt oplevelse
-    public function findByExperience(int $experienceId): array
+    // Repository til at håndtere billeder på opslag.
+    private PostImageRepository $postImageRepository;
+    
+    public function __construct()
     {
-        $sql = "
-            SELECT
-                p.post_id AS id,
-                p.location,
-                p.caption,
-                p.created_at AS date,
-
-                -- Henter ID'et på opslagets første billede
-                (
-                    SELECT pi.image_id
-                    FROM post_images AS pi
-                    WHERE pi.post_id = p.post_id
-                    ORDER BY pi.sort_order, pi.image_id
-                    LIMIT 1
-                ) AS image_id,
-
-                -- Henter Cloudinary-oplysninger for opslagets første billede
-                (
-                    SELECT pi.public_id
-                    FROM post_images AS pi
-                    WHERE pi.post_id = p.post_id
-                    ORDER BY pi.sort_order, pi.image_id
-                    LIMIT 1
-                ) AS image_public_id,
-
-                (
-                    SELECT pi.cloudinary_version
-                    FROM post_images AS pi
-                    WHERE pi.post_id = p.post_id
-                    ORDER BY pi.sort_order, pi.image_id
-                    LIMIT 1
-                ) AS image_version,
-
-                (
-                    SELECT pi.image_format
-                    FROM post_images AS pi
-                    WHERE pi.post_id = p.post_id
-                    ORDER BY pi.sort_order, pi.image_id
-                    LIMIT 1
-                ) AS image_format,
-
-                -- Tæller hvor mange likes opslaget har
-                (
-                    SELECT COUNT(*)
-                    FROM likes AS l
-                    WHERE l.post_id = p.post_id
-                ) AS likes,
-
-                -- Tæller hvor mange kommentarer opslaget har
-                (
-                    SELECT COUNT(*)
-                    FROM comments AS c
-                    WHERE c.post_id = p.post_id
-                ) AS comments,
-
-                -- Tæller hvor mange visninger opslaget har
-                (
-                    SELECT COUNT(*)
-                    FROM post_views AS pv
-                    WHERE pv.post_id = p.post_id
-                ) AS views
-
-            FROM posts AS p
-            WHERE p.experience_id = :experience_id
-            ORDER BY p.created_at DESC, p.post_id DESC
-        ";
-
-        // Returnerer alle opslag fra den valgte oplevelse
-        return $this->fetchAll($sql, [
-            'experience_id' => $experienceId
-        ]);
+        // Opretter den fælles databaseforbindelse fra Repository.php.
+        parent::__construct();
+        // Opretter repository til opslagets billeder.
+        $this->postImageRepository = new PostImageRepository();
     }
-
-    // Henter populære opslag fra den indloggede brugers grupper
-    public function findPopularByUser(int $userId): array
-    {
-        $sql = "
-            SELECT
-                p.post_id AS id,
-                p.location,
-                p.caption,
-                p.created_at AS date,
-                g.name AS group_name,
-                u.first_name,
-                u.last_name,
-
-                -- Henter ID'et på opslagets første billede
-                (
-                    SELECT pi.image_id
-                    FROM post_images AS pi
-                    WHERE pi.post_id = p.post_id
-                    ORDER BY pi.sort_order, pi.image_id
-                    LIMIT 1
-                ) AS image_id,
-
-                -- Henter Cloudinary-oplysninger for opslagets første billede
-                (
-                    SELECT pi.public_id
-                    FROM post_images AS pi
-                    WHERE pi.post_id = p.post_id
-                    ORDER BY pi.sort_order, pi.image_id
-                    LIMIT 1
-                ) AS image_public_id,
-
-                (
-                    SELECT pi.cloudinary_version
-                    FROM post_images AS pi
-                    WHERE pi.post_id = p.post_id
-                    ORDER BY pi.sort_order, pi.image_id
-                    LIMIT 1
-                ) AS image_version,
-
-                (
-                    SELECT pi.image_format
-                    FROM post_images AS pi
-                    WHERE pi.post_id = p.post_id
-                    ORDER BY pi.sort_order, pi.image_id
-                    LIMIT 1
-                ) AS image_format,
-
-                -- Tæller antal likes
-                (
-                    SELECT COUNT(*)
-                    FROM likes AS l
-                    WHERE l.post_id = p.post_id
-                ) AS likes,
-
-                -- Tæller antal kommentarer
-                (
-                    SELECT COUNT(*)
-                    FROM comments AS c
-                    WHERE c.post_id = p.post_id
-                ) AS comments,
-
-                -- Tæller antal visninger
-                (
-                    SELECT COUNT(*)
-                    FROM post_views AS pv
-                    WHERE pv.post_id = p.post_id
-                ) AS views
-
-            FROM posts AS p
-            INNER JOIN experiences AS e ON p.experience_id = e.experience_id
-            INNER JOIN user_groups AS g ON e.group_id = g.group_id
-            INNER JOIN users AS u ON e.user_id = u.user_id
-            INNER JOIN group_members AS gm
-                ON gm.group_id = e.group_id
-                AND gm.user_id = :user_id
-                AND gm.member_status = 'active'
-
-            -- Henter opslag fra de seneste 7 dage
-            -- og kun fra godkendte eller afsluttede oplevelser
-            WHERE p.created_at >= NOW() - INTERVAL 7 DAY
-                AND e.experience_status IN ('approved', 'closed')
-
-            -- Sorterer efter flest likes og derefter nyeste opslag
-            ORDER BY likes DESC, p.created_at DESC
-            LIMIT 3
-        ";
-
-        // Returnerer højst tre populære opslag fra brugerens grupper
-        return $this->fetchAll($sql, [
-            'user_id' => $userId
-        ]);
-    }
-
-    // Henter fastgjorte opslag fra grupper, hvor brugeren er aktivt medlem
-    public function findStickyByUser(int $userId): array
-    {
-        $sql = "
-            SELECT
-                p.post_id AS id,
-                p.location,
-                p.caption,
-                p.created_at AS date,
-                g.name AS group_name,
-                u.first_name,
-                u.last_name,
-
-                -- Henter ID'et på opslagets første billede
-                (
-                    SELECT pi.image_id
-                    FROM post_images AS pi
-                    WHERE pi.post_id = p.post_id
-                    ORDER BY pi.sort_order, pi.image_id
-                    LIMIT 1
-                ) AS image_id,
-
-                -- Henter Cloudinary-oplysninger for opslagets første billede
-                (
-                    SELECT pi.public_id
-                    FROM post_images AS pi
-                    WHERE pi.post_id = p.post_id
-                    ORDER BY pi.sort_order, pi.image_id
-                    LIMIT 1
-                ) AS image_public_id,
-
-                (
-                    SELECT pi.cloudinary_version
-                    FROM post_images AS pi
-                    WHERE pi.post_id = p.post_id
-                    ORDER BY pi.sort_order, pi.image_id
-                    LIMIT 1
-                ) AS image_version,
-
-                (
-                    SELECT pi.image_format
-                    FROM post_images AS pi
-                    WHERE pi.post_id = p.post_id
-                    ORDER BY pi.sort_order, pi.image_id
-                    LIMIT 1
-                ) AS image_format,
-
-                -- Tæller antal likes
-                (
-                    SELECT COUNT(*)
-                    FROM likes AS l
-                    WHERE l.post_id = p.post_id
-                ) AS likes,
-
-                -- Tæller antal kommentarer
-                (
-                    SELECT COUNT(*)
-                    FROM comments AS c
-                    WHERE c.post_id = p.post_id
-                ) AS comments,
-
-                -- Tæller antal visninger
-                (
-                    SELECT COUNT(*)
-                    FROM post_views AS pv
-                    WHERE pv.post_id = p.post_id
-                ) AS views
-
-            FROM posts AS p
-            INNER JOIN experiences AS e ON p.experience_id = e.experience_id
-            INNER JOIN user_groups AS g ON e.group_id = g.group_id
-            INNER JOIN users AS u ON e.user_id = u.user_id
-            INNER JOIN group_members AS gm
-                ON gm.group_id = e.group_id
-                AND gm.user_id = :user_id
-                AND gm.member_status = 'active'
-
-            -- Henter kun fastgjorte opslag fra godkendte eller afsluttede oplevelser
-            WHERE p.is_sticky = 1
-                AND e.experience_status IN ('approved', 'closed')
-
-            -- Viser de nyeste fastgjorte opslag først
-            ORDER BY p.created_at DESC
-            LIMIT 3
-        ";
-
-        // Returnerer højst tre fastgjorte opslag fra brugerens grupper
-        return $this->fetchAll($sql, [
-            'user_id' => $userId
-        ]);
-    }
-
 
     // Opretter et nyt opslag i databasen
     public function create(
@@ -292,47 +39,6 @@ class PostRepository extends Repository
             'experience_id' => $experienceId,
             'caption' => $caption,
             'location' => $location
-        ]);
-    }
-
-
-    // Gemmer oplysninger om et billede, der er uploadet til Cloudinary
-    public function addImage(
-        int $postId,
-        string $publicId,
-        int $cloudinaryVersion,
-        string $imageFormat,
-        ?string $altText,
-        int $sortOrder
-    ): int {
-        // SQL-query til at knytte Cloudinary-billedet til et opslag
-        $sql = "
-            INSERT INTO post_images (
-                post_id,
-                public_id,
-                cloudinary_version,
-                image_format,
-                alt_text,
-                sort_order
-            )
-            VALUES (
-                :post_id,
-                :public_id,
-                :cloudinary_version,
-                :image_format,
-                :alt_text,
-                :sort_order
-            )
-        ";
-
-        // Genbruger insert() fra vores fælles Repository-klasse
-        return $this->insert($sql, [
-            'post_id' => $postId,
-            'public_id' => $publicId,
-            'cloudinary_version' => $cloudinaryVersion,
-            'image_format' => $imageFormat,
-            'alt_text' => $altText,
-            'sort_order' => $sortOrder
         ]);
     }
 
@@ -455,7 +161,7 @@ class PostRepository extends Repository
 
             // Gemmer derefter billederne på opslaget.
             foreach ($images as $index => $image) {
-                $this->addImage(
+                $this->postImageRepository->addImage(
                     $postId,
                     $image['public_id'],
                     (int) $image['version'],
@@ -470,5 +176,196 @@ class PostRepository extends Repository
         });
     }
 
+
+    // Henter et bestemt opslag, hvis brugeren er aktivt medlem af gruppen.
+    public function findById(int $postId, int $userId): ?array
+    {
+        $sql = "
+            SELECT
+                p.post_id AS id,
+                p.experience_id,
+                p.caption,
+                p.location,
+                p.created_at AS date,
+                e.name AS experience_name,
+                e.group_id,
+                g.name AS group_name,
+                u.user_id AS author_id,
+                u.first_name,
+                u.last_name,
+
+                -- Tæller antal likes
+                (
+                    SELECT COUNT(*)
+                    FROM likes AS l
+                    WHERE l.post_id = p.post_id
+                ) AS likes,
+
+                -- Tæller antal kommentarer
+                (
+                    SELECT COUNT(*)
+                    FROM comments AS c
+                    WHERE c.post_id = p.post_id
+                ) AS comments,
+
+                -- Tæller antal visninger
+                (
+                    SELECT COUNT(*)
+                    FROM post_views AS pv
+                    WHERE pv.post_id = p.post_id
+                ) AS views
+
+            FROM posts AS p
+            INNER JOIN experiences AS e
+                ON p.experience_id = e.experience_id
+            INNER JOIN user_groups AS g
+                ON e.group_id = g.group_id
+            INNER JOIN users AS u
+                ON e.user_id = u.user_id
+            INNER JOIN group_members AS gm
+                ON gm.group_id = e.group_id
+                AND gm.user_id = :user_id
+                AND gm.member_status = 'active'
+
+            WHERE p.post_id = :post_id
+                AND e.experience_status IN ('approved', 'closed')
+            LIMIT 1
+        ";
+
+        return $this->fetchOne($sql, [
+            'post_id' => $postId,
+            'user_id' => $userId
+        ]);
+    }
+
+
+    // Opdaterer tekst og lokation på brugerens eget opslag.
+    public function update(int $postId, int $userId, string $caption, string $location): int
+    {
+        $sql = "
+            UPDATE posts
+            SET caption = :caption,
+                location = :location
+            WHERE post_id = :post_id
+                AND experience_id IN (
+                    SELECT experience_id
+                    FROM experiences
+                    WHERE user_id = :user_id
+                )
+        ";
+
+        return $this->execute($sql, [
+            'caption' => $caption,
+            'location' => $location,
+            'post_id' => $postId,
+            'user_id' => $userId
+        ]);
+    }
+
+
+    // Sletter et opslag, hvis det tilhører den indloggede bruger.
+    public function delete(int $postId, int $userId): int
+    {
+        $sql = "
+            DELETE FROM posts
+            WHERE post_id = :post_id
+                AND experience_id IN (
+                    SELECT experience_id
+                    FROM experiences
+                    WHERE user_id = :user_id
+                )
+        ";
+
+        // CASCADE sletter automatisk tilknyttede rækker
+        // i comments, likes, post_views og post_images.
+        return $this->execute($sql, [
+            'post_id' => $postId,
+            'user_id' => $userId
+        ]);
+    }
+
+
+    // Gemmer alle ændringer til opslag og billeder i én transaktion.
+    public function saveImageChanges(
+        int $postId,
+        int $userId,
+        string $caption,
+        string $location,
+        array $keptImages,
+        array $removeIds,
+        array $savedAltTexts,
+        array $uploadedImages,
+        string $cover
+    ): void {
+        $this->transaction(function () use (
+            $postId, $userId, $caption, $location, $keptImages,
+            $removeIds, $savedAltTexts, $uploadedImages, $cover
+        ): void {
+            // Låser opslaget og kontrollerer ejerskab.
+            $post = $this->fetchOne("
+                SELECT p.post_id
+                FROM posts AS p
+                INNER JOIN experiences AS e ON p.experience_id = e.experience_id
+                WHERE p.post_id = :post_id AND e.user_id = :user_id
+                FOR UPDATE
+            ", ['post_id' => $postId, 'user_id' => $userId]);
+            if ($post === null) {
+                throw new \RuntimeException('Du har ikke adgang til at ændre opslaget.');
+            }
+            // Kontrollerer billederne igen, mens opslaget er låst.
+            $currentImages = $this->postImageRepository->findImagesByPost($postId);
+            $currentIds = array_map(fn($image) => (int) $image['image_id'], $currentImages);
+            $expectedIds = array_merge(
+                array_map(fn($image) => (int) $image['image_id'], $keptImages),
+                array_map('intval', array_keys($removeIds))
+            );
+            sort($currentIds);
+            sort($expectedIds);
+            if ($currentIds !== $expectedIds) {
+                throw new \RuntimeException('Billederne er blevet ændret. Genindlæs siden og prøv igen.');
+            }
+            // Opdaterer opslagets tekst og lokation.
+            $this->update($postId, $userId, $caption, $location);
+            // Sletter billeder, som brugeren har fjernet.
+            foreach (array_keys($removeIds) as $imageId) {
+                $this->postImageRepository->deleteImage((int) $imageId, $postId, $userId);
+            }
+            // Opdaterer alt-tekster på de billeder, der beholdes.
+            foreach ($keptImages as $image) {
+                $imageId = (int) $image['image_id'];
+                $altText = $savedAltTexts[$imageId] ?? $image['alt_text'] ?? '';
+                $this->postImageRepository->updateImageAltText($imageId, $postId, $userId, $altText);
+            }
+            // Gemmer nye billeder i databasen.
+            $newImageIds = [];
+            foreach ($uploadedImages as $index => $image) {
+                $newImageIds[$index] = $this->postImageRepository->addImage(
+                    $postId,
+                    $image['public_id'],
+                    (int) $image['version'],
+                    $image['format'],
+                    $image['alt_text'],
+                    count($keptImages) + $index + 1
+                );
+            }
+            // Finder ID'et på det valgte forsidebillede.
+            if (str_starts_with($cover, 'saved-')) {
+                $coverId = (int) substr($cover, 6);
+            } else {
+                $coverIndex = (int) substr($cover, 4);
+                $coverId = $newImageIds[$coverIndex];
+            }
+            // Forsidebilledet placeres først, derefter de øvrige billeder.
+            $allIds = array_merge(
+                array_map(fn($image) => (int) $image['image_id'], $keptImages),
+                array_values($newImageIds)
+            );
+            $allIds = array_values(array_filter($allIds, fn($id) => $id !== $coverId));
+            array_unshift($allIds, $coverId);
+            foreach ($allIds as $index => $imageId) {
+                $this->postImageRepository->updateImageSortOrder($imageId, $postId, $userId, $index + 1);
+            }
+        });
+    }
 
 }

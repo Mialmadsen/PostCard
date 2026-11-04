@@ -8,8 +8,9 @@ use PostCard\Core\Auth;
 use PostCard\Core\View;
 use PostCard\Repositories\GroupMemberRepository;
 use PostCard\Repositories\ExperienceRepository;
-use PostCard\Repositories\PostRepository;
+use PostCard\Repositories\PostFeedRepository;
 use PostCard\Repositories\CommentRepository;
+use PostCard\Repositories\LikeRepository;
 use PostCard\Repositories\UserRepository;
 
 class HomeController
@@ -36,9 +37,20 @@ class HomeController
         $experiences = $experienceRepository->findByUser($userId);
 
         // Henter populære og fastgjorte opslag fra brugerens grupper
-        $postRepository = new PostRepository();
-        $popularPosts = $postRepository->findPopularByUser($userId);
-        $stickyPosts = $postRepository->findStickyByUser($userId);
+        $postFeedRepository = new PostFeedRepository();
+        $popularPosts = $postFeedRepository->findPopularByUser($userId);
+        $stickyPosts = $postFeedRepository->findStickyByUser($userId);
+
+        // Henter like-status for hvert opslag, så knapperne viser korrekt status.
+        $likeRepository = new LikeRepository();
+        foreach ($popularPosts as &$post) {
+            $post['hasLiked'] = $likeRepository->hasLiked((int) $post['id'], $userId);
+        }
+        unset($post);
+        foreach ($stickyPosts as &$post) {
+            $post['hasLiked'] = $likeRepository->hasLiked((int) $post['id'], $userId);
+        }
+        unset($post);
 
         // Gør billedadresserne klar til populære opslag
         foreach ($popularPosts as &$post) {

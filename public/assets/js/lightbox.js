@@ -21,4 +21,35 @@ const lightbox = new PhotoSwipeLightbox({
     indexIndicatorSep: ' af ',
 });
 
+// Finder billedernes rigtige dimensioner, før PhotoSwipe åbnes.
+lightbox.options.openPromise = async () => {
+    const images = document.querySelectorAll(
+        '.js-lightbox-gallery .js-lightbox-link'
+    );
+
+    await Promise.all(Array.from(images, async (link) => {
+        const img = link.querySelector('img');
+
+        // Bruger dimensionerne, hvis billedet allerede er indlæst.
+        if (img && img.complete && img.naturalWidth > 0) {
+            link.dataset.pswpWidth = img.naturalWidth;
+            link.dataset.pswpHeight = img.naturalHeight;
+            return;
+        }
+
+        // Ellers indlæses billedet for at finde dimensionerne.
+        const image = new Image();
+        image.src = link.href;
+
+        try {
+            await image.decode();
+
+            link.dataset.pswpWidth = image.naturalWidth;
+            link.dataset.pswpHeight = image.naturalHeight;
+        } catch (error) {
+            console.error('Kunne ikke finde billedets dimensioner:', error);
+        }
+    }));
+};
+
 lightbox.init();
