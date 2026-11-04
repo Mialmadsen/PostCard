@@ -23,6 +23,7 @@ use PostCard\Controllers\HomeController;
 use PostCard\Controllers\MemberController;
 use PostCard\Controllers\CommentController;
 use PostCard\Controllers\LikeController;
+use PostCard\Controllers\ProfileController;
 
 require __DIR__ . '/../app/autoload.php';
 require_once __DIR__ . '/../app/Helpers/escape.php';
@@ -90,6 +91,7 @@ $router->add('GET', '/join', [GroupController::class, 'join']);
 $router->add('POST', '/join', [GroupController::class, 'acceptInvitation']);
 $router->add('GET', '/group-settings', [GroupController::class, 'settings']);
 $router->add('POST', '/group-settings', [GroupController::class, 'updateSettings']);
+$router->add('GET', '/profile', [ProfileController::class, 'show']);
 $router->add('GET', '/members', [MemberController::class, 'index']);
 $router->add('POST', '/make-admin', [MemberController::class, 'makeAdmin']);
 $router->add('POST', '/remove-member', [MemberController::class, 'removeMember']);

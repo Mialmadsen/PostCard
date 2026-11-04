@@ -69,4 +69,15 @@ class GroupRepository extends Repository
             ]
         );
     }
+    //info for the profile, what groups the user is in, how many members are there and the role of user
+    public function findByUser(int $userId): array
+    {
+        return $this->fetchAll(
+            'SELECT group_id, name, member_role, member_count
+         FROM v_user_groups
+         WHERE user_id = :user_id
+         ORDER BY name',
+            ['user_id' => $userId]
+        );
+    }
 }

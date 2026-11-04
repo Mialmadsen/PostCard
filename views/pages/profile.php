@@ -1,12 +1,15 @@
 <?php
 // The controller shows this page with:
 // View::render('profile', ['pageTitle' => 'Min profil', 'isLoggedIn' => true, 'pageStyle' => 'profile']);
+
+/** @var array $user */
+/** @var array $groups */
 ?>
 
 <main id="main" class="site-main">
     <div class="container">
         <p class="eyebrow">Min profil</p>
-        <h1>Mia Nielsen</h1>
+        <h1><?= e($user['first_name']) ?> <?= e($user['last_name']) ?></h1>
         <p>Dit eget album i tal. Tallene viser kun dine egne oplevelser – vi sammenligner dig aldrig med andre.</p>
 
         <div class="sidebar-layout">
@@ -15,8 +18,9 @@
             <section class="card flow profile-card" aria-labelledby="about-heading">
                 <h2 class="visually-hidden" id="about-heading">Om mig</h2>
                 <!-- IF users.profile_image: <img class="avatar avatar--large" src="…" alt=""> ELSE initials -->
-                <span class="avatar avatar--large" aria-hidden="true">MN</span>
-                <p class="meta">@mianielsen</p>
+                <span class="avatar avatar--large"
+                    aria-hidden="true"><?= e(initials($user['first_name'], $user['last_name'])) ?></span>
+                <p class="meta">@<?= e($user['username']) ?></p>
                 <p><a class="button button--secondary" href="<?= url('/settings') ?>">Rediger profil</a></p>
             </section>
 
@@ -30,7 +34,8 @@
                     <dl class="stat-list">
                         <div class="stat-list__item">
                             <dt>Grupper</dt>
-                            <dd class="stat-list__number">3</dd>
+                            <dd class="stat-list__number"><?= count($groups) ?></dd>
+
                         </div>
                         <div class="stat-list__item">
                             <dt>Oplevelser</dt>
@@ -147,34 +152,20 @@
                 <section class="card" aria-labelledby="my-groups-heading">
                     <h2 class="section-title" id="my-groups-heading">Mine grupper og oplevelser</h2>
 
-                    <!-- LOOP: my groups (group_members), each with my experiences in it (experiences.user_id = me) -->
+                    <!-- One row per group from v_user_groups. My experiences per group come in step 4 -->
                     <ul class="divided-list">
-                        <li class="flow">
-                            <h3><a href="<?= url('/group?id=1') ?>">Familien Nielsen</a></h3>
-                            <p class="meta">Admin · 3 oplevelser · 31 opslag</p>
-                            <ul class="profile-experiences">
-                                <li><a href="<?= url('/experience?id=1') ?>">Sommer i Norge</a> <span class="meta">· I gang · 6 opslag</span></li>
-                                <li><a href="<?= url('/experience?id=5') ?>">Jul hos mormor</a> <span class="meta">· Afsluttet · 5 opslag</span></li>
-                                <li><a href="<?= url('/experience?id=4') ?>">Nationalparker i USA</a> <span class="meta">· Afsluttet · 20 opslag</span></li>
-                            </ul>
-                        </li>
-                        <li class="flow">
-                            <h3><a href="<?= url('/group?id=2') ?>">Klasse 3.B</a></h3>
-                            <p class="meta">Medlem · 2 oplevelser · 4 opslag</p>
-                            <ul class="profile-experiences">
-                                <li>Studietur til Berlin <span class="meta">· Venter på godkendelse</span></li>
-                                <li><a href="<?= url('/experience?id=6') ?>">Lejrskole på Bornholm</a> <span class="meta">· Afsluttet · 4 opslag</span></li>
-                            </ul>
-                        </li>
-                        <li class="flow">
-                            <h3><a href="<?= url('/group?id=3') ?>">Løbeklubben</a></h3>
-                            <p class="meta">Medlem · 1 oplevelse · 3 opslag</p>
-                            <ul class="profile-experiences">
-                                <li><a href="<?= url('/experience?id=7') ?>">Halvmaraton i Aarhus</a> <span class="meta">· Afsluttet · 3 opslag</span></li>
-                            </ul>
-                        </li>
+                        <?php foreach ($groups as $group): ?>
+                            <li class="flow">
+                                <h3><a href="<?= url('/group?id=' . $group['group_id']) ?>"><?= e($group['name']) ?></a>
+                                </h3>
+                                <p class="meta">
+                                    <?= $group['member_role'] === 'group_admin' ? 'Admin' : 'Medlem' ?>
+                                    · <?= (int) $group['member_count'] ?>
+                                    <?= (int) $group['member_count'] === 1 ? 'medlem' : 'medlemmer' ?>
+                                </p>
+                            </li>
+                        <?php endforeach; ?>
                     </ul>
-                    <!-- /LOOP -->
                 </section>
 
             </div>

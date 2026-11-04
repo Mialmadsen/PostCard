@@ -241,3 +241,19 @@ BEGIN
 END//
 
 DELIMITER ;
+
+-- Views
+-- it is a saved SELECT with a name as if it were a table.
+CREATE VIEW v_user_groups AS
+SELECT
+    gm.user_id,
+    g.group_id,
+    g.name,
+    gm.member_role,
+    (SELECT COUNT(*)
+       FROM group_members AS m
+      WHERE m.group_id = gm.group_id
+        AND m.member_status = 'active') AS member_count
+FROM group_members AS gm
+JOIN user_groups AS g ON g.group_id =gm.group_id
+WHERE gm.member_status = 'active';
