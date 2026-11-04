@@ -23,7 +23,10 @@
             <h1>Gruppens indstillinger</h1>
         </header>
         <?php if ($settingsMessage !== null): ?>
-            <p class="alert" role="status"><?= e($settingsMessage) ?></p>
+            <p class="alert" role="status">
+                <?= e($settingsMessage) ?>
+                <a href="<?= url('/group?id=' . $group['group_id']) ?>">Gå til gruppen</a>
+            </p>
         <?php endif; ?>
 
         <div class="card-stack">
