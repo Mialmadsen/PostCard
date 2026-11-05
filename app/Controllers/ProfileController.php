@@ -7,6 +7,7 @@ namespace PostCard\Controllers;
 use PostCard\Core\Auth;
 use PostCard\Core\View;
 use PostCard\Repositories\GroupRepository;
+use PostCard\Repositories\UserRepository;
 
 // User can manage the profile
 class ProfileController
@@ -22,6 +23,8 @@ class ProfileController
 
         $groups = new GroupRepository();
         $userGroups = $groups->findByUser(Auth::userId());
+        $users = new UserRepository();
+        $stats = $users->findAlbumStats(Auth::userId());
 
 
         View::render('profile', [
@@ -29,7 +32,8 @@ class ProfileController
             'isLoggedIn' => true,
             'pageStyle' => 'profile',
             'user' => $user,
-            'groups' => $userGroups
+            'groups' => $userGroups,
+            'stats' => $stats
         ]);
     }
 }

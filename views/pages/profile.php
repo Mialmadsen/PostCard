@@ -4,6 +4,7 @@
 
 /** @var array $user */
 /** @var array $groups */
+/** @var array $stats */
 ?>
 
 <main id="main" class="site-main">
@@ -39,15 +40,15 @@
                         </div>
                         <div class="stat-list__item">
                             <dt>Oplevelser</dt>
-                            <dd class="stat-list__number">6</dd>
+                            <dd class="stat-list__number"><?= (int) $stats['experience_count'] ?></dd>
                         </div>
                         <div class="stat-list__item">
                             <dt>Opslag</dt>
-                            <dd class="stat-list__number">38</dd>
+                            <dd class="stat-list__number"><?= (int) $stats['post_count'] ?></dd>
                         </div>
                         <div class="stat-list__item">
                             <dt>Billeder</dt>
-                            <dd class="stat-list__number">124</dd>
+                            <dd class="stat-list__number"><?= (int) $stats['image_count'] ?></dd>
                         </div>
                     </dl>
 
@@ -56,11 +57,11 @@
                     <dl class="stat-list">
                         <div class="stat-list__item">
                             <dt>Synes godt om</dt>
-                            <dd class="stat-list__number">186</dd>
+                            <dd class="stat-list__number"><?= (int) $stats['like_count'] ?></dd>
                         </div>
                         <div class="stat-list__item">
                             <dt>Kommentarer</dt>
-                            <dd class="stat-list__number">54</dd>
+                            <dd class="stat-list__number"><?= (int) $stats['comment_count'] ?></dd>
                         </div>
                     </dl>
                 </section>
