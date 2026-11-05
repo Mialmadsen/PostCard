@@ -20,6 +20,8 @@ CREATE TABLE users (
   username VARCHAR(50) NOT NULL UNIQUE,
   password_hash VARCHAR(255) NOT NULL,
   profile_image VARCHAR(255) NULL,
+  profile_image_version INT NULL,
+  profile_image_format VARCHAR(20) NULL,
   bio TEXT NULL,
   email VARCHAR(255) NOT NULL UNIQUE,
   birthdate DATE NOT NULL,

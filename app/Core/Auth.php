@@ -15,7 +15,7 @@ class Auth
         return isset($_SESSION['user_id']) ? (int) $_SESSION['user_id'] : null;
     }
 
-    // The logged-in user's name (first, last, username), or null if nobody is logged in.
+    // The logged-in user's name, username and picture, or null if nobody is logged in.
     public static function user(): ?array
     {
         $userId = self::userId();

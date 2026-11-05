@@ -7,6 +7,27 @@ namespace PostCard\Repositories;
 // All SQL for the group_members table.
 class GroupMemberRepository extends Repository
 {
+    // True if the other user is, or was, in one of my active groups.
+    // "Was" too: their old comments and posts stay in the group, so their picture must still load.
+    public function sharesGroup(int $userId, int $otherUserId): bool
+    {
+        $value = $this->fetchValue(
+            "SELECT 1
+            FROM group_members AS mine
+            JOIN group_members AS theirs ON theirs.group_id = mine.group_id
+            WHERE mine.user_id = :user_id
+            AND mine.member_status = 'active'
+            AND theirs.user_id = :other_user_id
+            LIMIT 1",
+            [
+                'user_id' => $userId,
+                'other_user_id' => $otherUserId
+            ]
+        );
+
+        return $value !== null;
+    }
+
     public function findActiveRole(int $userId, int $groupId): ?string
     {
         return $this->fetchValue(
@@ -94,7 +115,9 @@ class GroupMemberRepository extends Repository
             "SELECT
                 u.user_id,
                 u.first_name,
-                u.last_name
+                u.last_name,
+                u.profile_image,
+                u.profile_image_version
             FROM group_members AS gm
             INNER JOIN users AS u
                 ON gm.user_id = u.user_id
@@ -110,7 +133,7 @@ class GroupMemberRepository extends Repository
     public function findActiveByGroup(int $groupId): array
     {
         return $this->fetchAll(
-            "SELECT u.first_name, u.last_name, u.user_id, gm.member_role, gm.joined_at
+            "SELECT u.first_name, u.last_name, u.user_id, u.profile_image, u.profile_image_version, gm.member_role, gm.joined_at
             FROM group_members AS gm
             JOIN users AS u ON u.user_id = gm.user_id
             WHERE gm.group_id = :group_id

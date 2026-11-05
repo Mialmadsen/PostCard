@@ -22,7 +22,9 @@ class CommentRepository extends Repository
                 p.location,
                 g.name AS group_name,
                 u.first_name,
-                u.last_name
+                u.last_name,
+                u.profile_image,
+                u.profile_image_version
             FROM comments AS c
             INNER JOIN posts AS p ON c.post_id = p.post_id
             INNER JOIN experiences AS e ON p.experience_id = e.experience_id

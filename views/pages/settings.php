@@ -1,6 +1,11 @@
 <?php
-// The controller shows this page with:
-// View::render('settings', ['pageTitle' => 'Indstillinger', 'isLoggedIn' => true, 'pageScripts' => ['avatar-preview', 'confirm']]);
+
+/** @var array $user   what is saved: avatar */
+/** @var array $old    what the fields show: the saved values, or what was typed */
+/** @var array $errors one message per field that failed the check */
+/** @var string|null $pictureError why the picture was not saved, or null */
+/** @var string|null $settingsMessage the "saved" message after a redirect, or null */
+
 ?>
 
 <main id="main" class="site-main">
@@ -19,9 +24,9 @@
             <p>Ret dine oplysninger. Hver boks gemmes for sig.</p>
         </header>
 
-        <!-- IF a form was saved: show the message from that form here
-        <p class="alert" role="status">Dine oplysninger er gemt.</p>
-        -->
+        <?php if ($settingsMessage !== null): ?>
+            <p class="alert" role="status"><?= e($settingsMessage) ?></p>
+        <?php endif; ?>
 
         <!-- Three separate forms: each one changes one thing, so an error in one
              does not throw away what was typed in another -->
@@ -31,18 +36,22 @@
                 <h2 class="section-title" id="picture-heading">Profilbillede</h2>
 
                 <!-- enctype is needed to send a file. -->
-                <form class="form" action="<?= url('/settings') ?>" method="post" enctype="multipart/form-data">
+                <form class="form" action="<?= url('/settings/picture') ?>" method="post" enctype="multipart/form-data">
                     <?= \PostCard\Core\Csrf::field() ?>
-                    <input type="hidden" name="form" value="picture">
 
-                    <!-- IF users.profile_image: <img class="avatar avatar--large js-avatar-preview" src="…" alt=""> ELSE initials.
-                         avatar-preview.js shows the chosen picture here before it is saved. -->
-                    <span class="avatar avatar--large js-avatar-preview" aria-hidden="true">MN</span>
+                    <!-- avatar-preview.js shows the chosen picture here before it is saved -->
+                    <?php
+                    $avatarUser = $user;
+                    $avatarClass = 'avatar--large js-avatar-preview';
+                    require __DIR__ . '/../partials/avatar.php';
+                    ?>
 
                     <div class="field">
                         <input class="visually-hidden file-picker__input js-avatar-input" id="profile-image" name="profile_image" type="file"
                             accept="image/jpeg,image/png,image/webp" required
-                            aria-describedby="profile-image-hint">
+                            <?php if ($pictureError !== null): ?>aria-invalid="true"
+                            aria-describedby="profile-image-hint profile-image-error"
+                            <?php else: ?>aria-describedby="profile-image-hint" <?php endif; ?>>
                         <label class="file-picker__button" for="profile-image">
                             <svg class="file-picker__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                                 <circle class="file-picker__circle" cx="12" cy="12" r="10" />
@@ -53,67 +62,105 @@
                         <!-- The empty span is filled by avatar-preview.js, e.g. "Du har valgt ferie.jpg. Tryk Gem billede." -->
                         <p class="meta" id="profile-image-hint">JPG, PNG eller WebP, højst 5 MB. Uden billede viser vi dine initialer.
                             <span class="js-avatar-status" role="status"></span></p>
+                        <?php if ($pictureError !== null): ?>
+                            <p class="field__error" id="profile-image-error"><?= e($pictureError) ?></p>
+                        <?php endif; ?>
                     </div>
 
                     <div class="button-row">
                         <button class="button button--primary" type="submit">Gem billede</button>
-                        <!-- IF users.profile_image is set.
-                             form="remove-picture" sends the small form below instead of this one
+                        <!-- form="remove-picture" sends the small form below instead of this one
                              (forms cannot be inside each other). -->
-                        <button class="button button--secondary" type="submit" form="remove-picture">Fjern billede</button>
-                        <!-- /IF -->
+                        <?php if ($user['profile_image'] !== null): ?>
+                            <button class="button button--secondary" type="submit" form="remove-picture">Fjern billede</button>
+                        <?php endif; ?>
                     </div>
                 </form>
 
-                <!-- "Fjern billede": users.profile_image = NULL, the initials are shown again -->
-                <form id="remove-picture" action="<?= url('/settings') ?>" method="post">
-                    <?= \PostCard\Core\Csrf::field() ?>
-                    <input type="hidden" name="form" value="remove-picture">
-                </form>
+                <!-- "Fjern billede": the three picture columns become NULL, the initials are shown again -->
+                <?php if ($user['profile_image'] !== null): ?>
+                    <form id="remove-picture" action="<?= url('/settings/remove-picture') ?>" method="post">
+                        <?= \PostCard\Core\Csrf::field() ?>
+                    </form>
+                <?php endif; ?>
             </section>
 
             <section class="card" aria-labelledby="details-heading">
                 <h2 class="section-title" id="details-heading">Mine oplysninger</h2>
 
+                <?php if ($errors !== []): ?>
+                    <p class="alert alert--error" role="alert">Noget mangler eller er forkert. Se de markerede felter
+                        nedenfor.</p>
+                <?php endif; ?>
+
                 <!-- The values come from the users table. -->
-                <form class="form" action="<?= url('/settings') ?>" method="post">
+                <form class="form" action="<?= url('/settings/details') ?>" method="post">
                     <?= \PostCard\Core\Csrf::field() ?>
-                    <input type="hidden" name="form" value="details">
 
                     <div class="field-row">
                         <div class="field">
                             <label class="field__label" for="first-name">Fornavn</label>
                             <input class="field__input" id="first-name" name="first_name" type="text"
-                                autocomplete="given-name" maxlength="100" required value="Mia">
+                                autocomplete="given-name" maxlength="100" required
+                                value="<?= e($old['first_name'] ?? '') ?>"
+                                <?php if (isset($errors['first_name'])): ?>aria-invalid="true" aria-describedby="first-name-error"
+                                <?php endif; ?>>
+                            <?php if (isset($errors['first_name'])): ?>
+                                <p class="field__error" id="first-name-error"><?= e($errors['first_name']) ?></p>
+                            <?php endif; ?>
                         </div>
                         <div class="field">
                             <label class="field__label" for="last-name">Efternavn</label>
                             <input class="field__input" id="last-name" name="last_name" type="text"
-                                autocomplete="family-name" maxlength="100" required value="Nielsen">
+                                autocomplete="family-name" maxlength="100" required
+                                value="<?= e($old['last_name'] ?? '') ?>"
+                                <?php if (isset($errors['last_name'])): ?>aria-invalid="true" aria-describedby="last-name-error"
+                                <?php endif; ?>>
+                            <?php if (isset($errors['last_name'])): ?>
+                                <p class="field__error" id="last-name-error"><?= e($errors['last_name']) ?></p>
+                            <?php endif; ?>
                         </div>
                     </div>
 
                     <div class="field">
                         <label class="field__label" for="username">Brugernavn</label>
                         <input class="field__input" id="username" name="username" type="text"
-                            autocomplete="username" maxlength="50" required value="mianielsen"
-                            aria-describedby="username-hint">
+                            autocomplete="username" maxlength="50" required
+                            value="<?= e($old['username'] ?? '') ?>"
+                            <?php if (isset($errors['username'])): ?>aria-invalid="true"
+                            aria-describedby="username-hint username-error"
+                            <?php else: ?>aria-describedby="username-hint" <?php endif; ?>>
                         <p class="meta" id="username-hint">Vises på din profil.</p>
+                        <?php if (isset($errors['username'])): ?>
+                            <p class="field__error" id="username-error"><?= e($errors['username']) ?></p>
+                        <?php endif; ?>
                     </div>
 
                     <div class="field">
                         <label class="field__label" for="email">E-mail</label>
                         <input class="field__input" id="email" name="email" type="email"
-                            autocomplete="email" maxlength="255" required value="mia@example.com"
-                            aria-describedby="email-hint">
+                            autocomplete="email" maxlength="255" required
+                            value="<?= e($old['email'] ?? '') ?>"
+                            <?php if (isset($errors['email'])): ?>aria-invalid="true"
+                            aria-describedby="email-hint email-error"
+                            <?php else: ?>aria-describedby="email-hint" <?php endif; ?>>
                         <!-- On a new e-mail: email_verified_at = NULL and a verify_email link (user_tokens) is sent -->
                         <p class="meta" id="email-hint">Skifter du e-mail, sender vi et link til den nye adresse, som du skal bekræfte.</p>
+                        <?php if (isset($errors['email'])): ?>
+                            <p class="field__error" id="email-error"><?= e($errors['email']) ?></p>
+                        <?php endif; ?>
                     </div>
 
                     <div class="field">
                         <label class="field__label" for="birthdate">Fødselsdato</label>
                         <input class="field__input" id="birthdate" name="birthdate" type="date"
-                            autocomplete="bday" required value="1990-04-18">
+                            autocomplete="bday" required
+                            value="<?= e($old['birthdate'] ?? '') ?>"
+                            <?php if (isset($errors['birthdate'])): ?>aria-invalid="true" aria-describedby="birthdate-error"
+                            <?php endif; ?>>
+                        <?php if (isset($errors['birthdate'])): ?>
+                            <p class="field__error" id="birthdate-error"><?= e($errors['birthdate']) ?></p>
+                        <?php endif; ?>
                     </div>
 
                     <div class="button-row">

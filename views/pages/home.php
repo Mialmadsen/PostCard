@@ -235,7 +235,11 @@
                                     $fullName = trim($comment['first_name'] . ' ' . $comment['last_name']);
                                 ?>
                                 <li class="comment-item">
-                                    <span class="avatar" aria-hidden="true"><?= e(initials($comment['first_name'], $comment['last_name'])) ?></span>
+                                    <?php
+                                    $avatarUser = $comment;
+                                    $avatarClass = '';
+                                    require __DIR__ . '/../partials/avatar.php';
+                                    ?>
                                     <div>
                                         <p class="meta">
                                             <strong><?= e($fullName) ?></strong> på

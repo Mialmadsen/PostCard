@@ -52,7 +52,11 @@
                     <!-- Viser de første fire aktive medlemmer fra databasen -->
                     <div class="avatar-stack" aria-hidden="true">
                         <?php foreach ($members as $member): ?>
-                            <span class="avatar"><?= e(initials($member['first_name'], $member['last_name'])) ?></span>
+                            <?php
+                            $avatarUser = $member;
+                            $avatarClass = '';
+                            require __DIR__ . '/../partials/avatar.php';
+                            ?>
                         <?php endforeach; ?>
 
                         <!-- Viser antallet af resterende medlemmer -->

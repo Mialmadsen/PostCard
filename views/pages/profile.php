@@ -19,9 +19,11 @@
             <!-- Left column: who I am (users table) -->
             <section class="card flow profile-card" aria-labelledby="about-heading">
                 <h2 class="visually-hidden" id="about-heading">Om mig</h2>
-                <!-- IF users.profile_image: <img class="avatar avatar--large" src="…" alt=""> ELSE initials -->
-                <span class="avatar avatar--large"
-                    aria-hidden="true"><?= e(initials($user['first_name'], $user['last_name'])) ?></span>
+                <?php
+                $avatarUser = $user;
+                $avatarClass = 'avatar--large';
+                require __DIR__ . '/../partials/avatar.php';
+                ?>
                 <p class="meta">@<?= e($user['username']) ?></p>
                 <?php if ($user['bio'] !== null && $user['bio'] !== ''): ?>
                     <p><?= e($user['bio']) ?></p>

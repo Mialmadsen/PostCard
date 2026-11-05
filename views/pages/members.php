@@ -46,8 +46,11 @@
                     <?php foreach ($members as $member): ?>
                         <?php $fullName = $member['first_name'] . ' ' . $member['last_name']; ?>
                         <li class="member">
-                            <span class="avatar"
-                                aria-hidden="true"><?= e(initials($member['first_name'], $member['last_name'])) ?></span>
+                            <?php
+                            $avatarUser = $member;
+                            $avatarClass = '';
+                            require __DIR__ . '/../partials/avatar.php';
+                            ?>
                             <div>
                                 <p class="member__name">
                                     <?= e($fullName) ?>
