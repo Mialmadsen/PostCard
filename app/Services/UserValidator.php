@@ -71,4 +71,26 @@ class UserValidator
 
         return $errors;
     }
+
+    // we validate password
+    public function validatePassword(string $password, string $passwordConfirm): array
+    {
+        $errors = [];
+
+
+        // Minimum in characters (what the user sees), maximum in bytes (bcrypt ignores everything after 72 bytes).
+        if (mb_strlen($password) < 12) {
+            $errors['password'] = 'Adgangskoden skal være mindst 12 tegn.';
+        } elseif (strlen($password) > 72) {
+            $errors['password'] = 'Adgangskoden må højst være 72 tegn.';
+        }
+
+        if ($passwordConfirm !== $password) {
+            $errors['password_confirm'] = 'De to adgangskoder er ikke ens.';
+        }
+
+
+
+        return $errors;
+    }
 }

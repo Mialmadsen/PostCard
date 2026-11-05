@@ -33,6 +33,7 @@ class SettingsController
             'errors' => [],
             'pictureError' => null,
             'settingsMessage' => $settingsMessage,
+            'passwordErrors' => []
 
         ]);
     }
@@ -73,7 +74,8 @@ class SettingsController
                 ],
                 'errors' => $errors,
                 'pictureError' => null,
-                'settingsMessage' => null
+                'settingsMessage' => null,
+                'passwordErrors' => []
             ]);
             return;
         }
@@ -114,6 +116,7 @@ class SettingsController
                 'errors' => [],
                 'pictureError' => $e->getMessage(),
                 'settingsMessage' => null,
+                'passwordErrors' => []
             ]);
             return;
         }
@@ -158,6 +161,55 @@ class SettingsController
         }
 
         Session::flash('settings_message', 'Dit profilbillede er fjernet.');
+        redirect('/settings');
+    }
+
+    //We change password in profile 
+    public function updatePassword(): void
+    {
+        Auth::requireLogin();
+        $userId = Auth::userId();
+
+        // false = do not trim: a space is a real part of a password
+        $currentPassword = input('current_password', false);
+        $newPassword = input('password', false);
+        $newPasswordConfirm = input('password_confirm', false);
+
+        // The rules for the new password, the same as on register: keys 'password' and 'password_confirm'
+        $validator = new UserValidator();
+        $passwordErrors = $validator->validatePassword($newPassword, $newPasswordConfirm);
+
+        // The current password proves it is really you
+        $users = new UserRepository();
+        $hash = $users->findPasswordHash($userId) ?? '';
+        if (!password_verify($currentPassword, $hash)) {
+            $passwordErrors['current_password'] = 'Den nuværende adgangskode er forkert.';
+        }
+
+        if ($passwordErrors !== []) {
+            $user = $users->findForSettings($userId);
+            http_response_code(422);
+            View::render('settings', [
+                'pageTitle' => 'Indstillinger',
+                'isLoggedIn' => true,
+                'passwordErrors' => $passwordErrors,
+                'pageScripts' => ['avatar-preview', 'confirm'],
+                'user' => $user,
+                'old' => $user,
+                'errors' => [],
+                'pictureError' => null,
+                'settingsMessage' => null,
+
+            ]);
+            return;
+        }
+
+        $users->updatePassword($userId, password_hash($newPassword, PASSWORD_DEFAULT));
+
+        //We need a new session
+        Session::regenerate();
+
+        Session::flash('settings_message', 'Din adgangskode er ændret.');
         redirect('/settings');
     }
 }

@@ -97,6 +97,7 @@ $router->add('GET', '/profile', [ProfileController::class, 'show']);
 $router->add('GET', '/profile-image', [ProfileImageController::class, 'show']);
 $router->add('GET', '/settings', [SettingsController::class, 'show']);
 $router->add('POST', '/settings/details', [SettingsController::class, 'updateDetails']);
+$router->add('POST', '/settings/password', [SettingsController::class, 'updatePassword']);
 $router->add('POST', '/settings/picture', [SettingsController::class, 'updatePicture']);
 $router->add('POST', '/settings/remove-picture', [SettingsController::class, 'removePicture']);
 $router->add('GET', '/members', [MemberController::class, 'index']);

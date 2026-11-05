@@ -4,6 +4,7 @@
 /** @var array $old    what the fields show: the saved values, or what was typed */
 /** @var array $errors one message per field that failed the check */
 /** @var string|null $pictureError why the picture was not saved, or null */
+/** @var array $passwordErrors one message per password field that failed the check */
 /** @var string|null $settingsMessage the "saved" message after a redirect, or null */
 
 ?>
@@ -173,28 +174,43 @@
                 <h2 class="section-title" id="password-heading">Skift adgangskode</h2>
 
                 <!-- The current password proves it is really you. -->
-                <form class="form" action="<?= url('/settings') ?>" method="post">
+                <!-- The password fields never get a value="": a password is never printed into the page -->
+                <form class="form" action="<?= url('/settings/password') ?>" method="post">
                     <?= \PostCard\Core\Csrf::field() ?>
-                    <input type="hidden" name="form" value="password">
 
                     <div class="field">
                         <label class="field__label" for="current-password">Nuværende adgangskode</label>
                         <input class="field__input" id="current-password" name="current_password" type="password"
-                            autocomplete="current-password" required>
+                            autocomplete="current-password" required
+                            <?php if (isset($passwordErrors['current_password'])): ?>aria-invalid="true" aria-describedby="current-password-error"
+                            <?php endif; ?>>
+                        <?php if (isset($passwordErrors['current_password'])): ?>
+                            <p class="field__error" id="current-password-error"><?= e($passwordErrors['current_password']) ?></p>
+                        <?php endif; ?>
                     </div>
 
                     <div class="field">
                         <label class="field__label" for="new-password">Ny adgangskode</label>
-                        <input class="field__input" id="new-password" name="new_password" type="password"
+                        <input class="field__input" id="new-password" name="password" type="password"
                             autocomplete="new-password" minlength="12" required
-                            aria-describedby="new-password-hint">
+                            <?php if (isset($passwordErrors['password'])): ?>aria-invalid="true"
+                            aria-describedby="new-password-hint new-password-error"
+                            <?php else: ?>aria-describedby="new-password-hint" <?php endif; ?>>
                         <p class="meta" id="new-password-hint">Mindst 12 tegn. En sætning er nem at huske.</p>
+                        <?php if (isset($passwordErrors['password'])): ?>
+                            <p class="field__error" id="new-password-error"><?= e($passwordErrors['password']) ?></p>
+                        <?php endif; ?>
                     </div>
 
                     <div class="field">
                         <label class="field__label" for="new-password-confirm">Gentag ny adgangskode</label>
-                        <input class="field__input" id="new-password-confirm" name="new_password_confirm" type="password"
-                            autocomplete="new-password" minlength="12" required>
+                        <input class="field__input" id="new-password-confirm" name="password_confirm" type="password"
+                            autocomplete="new-password" minlength="12" required
+                            <?php if (isset($passwordErrors['password_confirm'])): ?>aria-invalid="true" aria-describedby="new-password-confirm-error"
+                            <?php endif; ?>>
+                        <?php if (isset($passwordErrors['password_confirm'])): ?>
+                            <p class="field__error" id="new-password-confirm-error"><?= e($passwordErrors['password_confirm']) ?></p>
+                        <?php endif; ?>
                     </div>
 
                     <div class="button-row">

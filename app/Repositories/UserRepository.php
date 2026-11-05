@@ -207,4 +207,25 @@ WHERE me.user_id = :user_id",
             ['user_id' => $userId]
         );
     }
+
+    // We look for the stored hash
+    public function findPasswordHash(int $userId): ?string
+    {
+        return $this->fetchValue(
+            'SELECT password_hash FROM users WHERE user_id = :user_id',
+            ['user_id' => $userId]
+        );
+    }
+
+    // We store new password
+    public function updatePassword(int $userId, string $passwordHash): void
+    {
+        $this->execute(
+            'UPDATE users SET password_hash = :password_hash WHERE user_id = :user_id',
+            [
+                'user_id' => $userId,
+                'password_hash' => $passwordHash,
+            ]
+        );
+    }
 }
