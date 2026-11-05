@@ -85,7 +85,7 @@ class UserRepository extends Repository
     public function findById(int $userId): ?array
     {
         return $this->fetchOne(
-            'SELECT first_name, last_name, username
+            'SELECT first_name, last_name, username, bio
          FROM users
          WHERE user_id = :user_id',
             ['user_id' => $userId]

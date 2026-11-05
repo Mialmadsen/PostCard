@@ -5,6 +5,7 @@
 /** @var array $user */
 /** @var array $groups */
 /** @var array $stats */
+/** @var array $experiencesByGroup  my experiences per group_id, each with statusText */
 ?>
 
 <main id="main" class="site-main">
@@ -22,6 +23,9 @@
                 <span class="avatar avatar--large"
                     aria-hidden="true"><?= e(initials($user['first_name'], $user['last_name'])) ?></span>
                 <p class="meta">@<?= e($user['username']) ?></p>
+                <?php if ($user['bio'] !== null && $user['bio'] !== ''): ?>
+                    <p><?= e($user['bio']) ?></p>
+                <?php endif; ?>
                 <p><a class="button button--secondary" href="<?= url('/settings') ?>">Rediger profil</a></p>
             </section>
 
@@ -66,96 +70,21 @@
                     </dl>
                 </section>
 
-                <section class="card" aria-labelledby="timeline-heading">
-                    <h2 class="section-title" id="timeline-heading">Opslag pr. måned</h2>
-                    <p class="meta">De seneste 12 måneder.</p>
-
-                    <!-- LOOP: the last 12 months, oldest first.
-                         --posts = posts that month, --max (on the list) = the highest month,
-                         so the tallest bar always fills the chart. -->
-                    <ol class="month-chart" style="--max: 5">
-                        <li class="month-chart__month" style="--posts: 0">
-                            <span class="month-chart__count" aria-hidden="true">0</span>
-                            <span class="month-chart__bar" aria-hidden="true"></span>
-                            <span class="month-chart__label" aria-hidden="true">nov</span>
-                            <span class="visually-hidden">November 2025: 0 opslag</span>
-                        </li>
-                        <li class="month-chart__month" style="--posts: 5">
-                            <span class="month-chart__count" aria-hidden="true">5</span>
-                            <span class="month-chart__bar" aria-hidden="true"></span>
-                            <span class="month-chart__label" aria-hidden="true">dec</span>
-                            <span class="visually-hidden">December 2025: 5 opslag</span>
-                        </li>
-                        <li class="month-chart__month" style="--posts: 0">
-                            <span class="month-chart__count" aria-hidden="true">0</span>
-                            <span class="month-chart__bar" aria-hidden="true"></span>
-                            <span class="month-chart__label" aria-hidden="true">jan</span>
-                            <span class="visually-hidden">Januar 2026: 0 opslag</span>
-                        </li>
-                        <li class="month-chart__month" style="--posts: 0">
-                            <span class="month-chart__count" aria-hidden="true">0</span>
-                            <span class="month-chart__bar" aria-hidden="true"></span>
-                            <span class="month-chart__label" aria-hidden="true">feb</span>
-                            <span class="visually-hidden">Februar 2026: 0 opslag</span>
-                        </li>
-                        <li class="month-chart__month" style="--posts: 4">
-                            <span class="month-chart__count" aria-hidden="true">4</span>
-                            <span class="month-chart__bar" aria-hidden="true"></span>
-                            <span class="month-chart__label" aria-hidden="true">mar</span>
-                            <span class="visually-hidden">Marts 2026: 4 opslag</span>
-                        </li>
-                        <li class="month-chart__month" style="--posts: 0">
-                            <span class="month-chart__count" aria-hidden="true">0</span>
-                            <span class="month-chart__bar" aria-hidden="true"></span>
-                            <span class="month-chart__label" aria-hidden="true">apr</span>
-                            <span class="visually-hidden">April 2026: 0 opslag</span>
-                        </li>
-                        <li class="month-chart__month" style="--posts: 3">
-                            <span class="month-chart__count" aria-hidden="true">3</span>
-                            <span class="month-chart__bar" aria-hidden="true"></span>
-                            <span class="month-chart__label" aria-hidden="true">maj</span>
-                            <span class="visually-hidden">Maj 2026: 3 opslag</span>
-                        </li>
-                        <li class="month-chart__month" style="--posts: 0">
-                            <span class="month-chart__count" aria-hidden="true">0</span>
-                            <span class="month-chart__bar" aria-hidden="true"></span>
-                            <span class="month-chart__label" aria-hidden="true">jun</span>
-                            <span class="visually-hidden">Juni 2026: 0 opslag</span>
-                        </li>
-                        <li class="month-chart__month" style="--posts: 0">
-                            <span class="month-chart__count" aria-hidden="true">0</span>
-                            <span class="month-chart__bar" aria-hidden="true"></span>
-                            <span class="month-chart__label" aria-hidden="true">jul</span>
-                            <span class="visually-hidden">Juli 2026: 0 opslag</span>
-                        </li>
-                        <li class="month-chart__month" style="--posts: 0">
-                            <span class="month-chart__count" aria-hidden="true">0</span>
-                            <span class="month-chart__bar" aria-hidden="true"></span>
-                            <span class="month-chart__label" aria-hidden="true">aug</span>
-                            <span class="visually-hidden">August 2026: 0 opslag</span>
-                        </li>
-                        <li class="month-chart__month" style="--posts: 4">
-                            <span class="month-chart__count" aria-hidden="true">4</span>
-                            <span class="month-chart__bar" aria-hidden="true"></span>
-                            <span class="month-chart__label" aria-hidden="true">sep</span>
-                            <span class="visually-hidden">September 2026: 4 opslag</span>
-                        </li>
-                        <li class="month-chart__month" style="--posts: 2">
-                            <span class="month-chart__count" aria-hidden="true">2</span>
-                            <span class="month-chart__bar" aria-hidden="true"></span>
-                            <span class="month-chart__label" aria-hidden="true">okt</span>
-                            <span class="visually-hidden">Oktober 2026: 2 opslag</span>
-                        </li>
-                    </ol>
-                    <!-- /LOOP -->
-                </section>
-
                 <section class="card" aria-labelledby="my-groups-heading">
                     <h2 class="section-title" id="my-groups-heading">Mine grupper og oplevelser</h2>
 
-                    <!-- One row per group from v_user_groups. My experiences per group come in step 4 -->
+                    <?php if ($groups === []): ?>
+                        <p class="meta">Du er ikke medlem af nogen grupper endnu.</p>
+                        <p><a class="button button--secondary" href="<?= url('/create-group') ?>">Opret en gruppe</a></p>
+                    <?php else: ?>
+
+                    <!-- One row per group from v_user_groups, with my experiences in that group under it -->
                     <ul class="divided-list">
                         <?php foreach ($groups as $group): ?>
+                            <?php
+                            // My experiences in this group, or none
+                            $groupExperiences = $experiencesByGroup[$group['group_id']] ?? [];
+                            ?>
                             <li class="flow">
                                 <h3><a href="<?= url('/group?id=' . $group['group_id']) ?>"><?= e($group['name']) ?></a>
                                 </h3>
@@ -164,9 +93,34 @@
                                     · <?= (int) $group['member_count'] ?>
                                     <?= (int) $group['member_count'] === 1 ? 'medlem' : 'medlemmer' ?>
                                 </p>
+
+                                <?php if ($groupExperiences !== []): ?>
+                                    <ul class="profile-experiences">
+                                        <?php foreach ($groupExperiences as $experience): ?>
+                                            <?php
+                                            // Only approved and closed experiences have a page with posts
+                                            $isInAlbum = in_array($experience['experience_status'], ['approved', 'closed'], true);
+                                            ?>
+                                            <li>
+                                                <?php if ($isInAlbum): ?>
+                                                    <a href="<?= url('/experience?id=' . $experience['experience_id']) ?>"><?= e($experience['name']) ?></a>
+                                                <?php else: ?>
+                                                    <?= e($experience['name']) ?>
+                                                <?php endif; ?>
+                                                <span class="meta">
+                                                    · <?= e($experience['statusText']) ?>
+                                                    <?php if ($isInAlbum): ?>
+                                                        · <?= (int) $experience['post_count'] ?> opslag
+                                                    <?php endif; ?>
+                                                </span>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                <?php endif; ?>
                             </li>
                         <?php endforeach; ?>
                     </ul>
+                    <?php endif; ?>
                 </section>
 
             </div>

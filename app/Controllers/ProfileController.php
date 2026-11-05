@@ -8,6 +8,8 @@ use PostCard\Core\Auth;
 use PostCard\Core\View;
 use PostCard\Repositories\GroupRepository;
 use PostCard\Repositories\UserRepository;
+use PostCard\Repositories\ExperienceRepository;
+use PostCard\Services\ExperienceService;
 
 // User can manage the profile
 class ProfileController
@@ -26,6 +28,17 @@ class ProfileController
         $users = new UserRepository();
         $stats = $users->findAlbumStats(Auth::userId());
 
+        $experiences = new ExperienceRepository();
+        $experienceService = new ExperienceService();
+
+        // My experiences sorted into one list per group, each with its Danish status text
+        $experiencesByGroup = [];
+        foreach ($experiences->findByUser(Auth::userId()) as $experience) {
+            $status = $experienceService->getStatus($experience);
+            $experience['statusText'] = $status['statusText'];
+            $experiencesByGroup[$experience['group_id']][] = $experience;
+        }
+
 
         View::render('profile', [
             'pageTitle' => 'Min profil',
@@ -33,7 +46,8 @@ class ProfileController
             'pageStyle' => 'profile',
             'user' => $user,
             'groups' => $userGroups,
-            'stats' => $stats
+            'stats' => $stats,
+            'experiencesByGroup' => $experiencesByGroup,
         ]);
     }
 }
