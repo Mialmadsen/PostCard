@@ -183,3 +183,9 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* Honeypot on register: moved off-screen so people never see it; bots fill it in */
+.form__trap {
+  position: absolute;
+  left: -9999px;
+}

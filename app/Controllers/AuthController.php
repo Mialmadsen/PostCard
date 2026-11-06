@@ -111,6 +111,11 @@ class AuthController
     // Handle the sent register form
     public function register(): void
     {
+        // A filled honeypot means a bot: stop quietly, before any database query, without saying why
+        if (input('website') !== '') {
+            redirect('/login');
+        }
+
         $firstName = input('first_name');
         $lastName = input('last_name');
         $username = input('username');

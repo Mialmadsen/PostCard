@@ -114,6 +114,13 @@
                         <?php endif; ?>
                     </div>
 
+                    <!-- Honeypot: hidden from people (off-screen, skipped by screen readers and Tab).
+                         Bots fill in every field, so a filled "website" means a bot. -->
+                    <div class="form__trap" aria-hidden="true">
+                        <label for="website">Lad dette felt være tomt</label>
+                        <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
+                    </div>
+
                     <div class="form__actions">
                         <button class="button button--primary" type="submit">Opret bruger</button>
                         <p>Har du allerede en bruger? <a href="<?= url($invite !== '' ? '/login?invite=' . urlencode($invite) : '/login') ?>">Log ind</a></p>
