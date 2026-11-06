@@ -8,10 +8,15 @@ use PostCard\Core\Auth;
 use PostCard\Core\View;
 use PostCard\Repositories\UserRepository;
 use PostCard\Services\UserValidator;
+use PostCard\Repositories\LoginAttemptRepository;
 
 // Login, register, logout and password reset.
+
 class AuthController
 {
+    // After this many failed attempts in 15 minutes, login is paused for that e-mail
+    private const MAX_LOGIN_ATTEMPTS = 5;
+
     public function showLogin(): void
     {
         $invite = filter_input(INPUT_GET, 'invite');
@@ -30,12 +35,26 @@ class AuthController
         $email = mb_strtolower(input('email'));
         $password = input('password', false);
         $invite = input('invite');
+        $attempts = new LoginAttemptRepository();
+
+        if ($attempts->countRecent($email) >= self::MAX_LOGIN_ATTEMPTS) {
+            http_response_code(429);
+            View::render('login', [
+                'pageTitle' => 'Log ind',
+                'isLoggedIn' => false,
+                'error' => 'For mange forsøg. Prøv igen om 15 minutter.',
+                'email' => $email,
+                'invite' => $invite,
+            ]);
+            return;
+        }
         $users = new UserRepository();
         $user = $users->findByEmail($email);
 
         $isPasswordCorrect = $user !== null && password_verify($password, $user['password_hash']);
 
         if (!$isPasswordCorrect) {
+            $attempts->add($email);
             View::render('login', [
                 'pageTitle' => 'Log ind',
                 'isLoggedIn' => false,
@@ -57,7 +76,7 @@ class AuthController
             ]);
             return;
         }
-
+        $attempts->clear($email);
         Auth::login($user['user_id']);
 
         if ($invite !== '') {
@@ -101,6 +120,7 @@ class AuthController
         $passwordConfirm = input('password_confirm', false);
         $acceptsRules = input('accept_rules') === '1';
         $invite = input('invite');
+
         $users = new UserRepository();
         $validator = new UserValidator();
 

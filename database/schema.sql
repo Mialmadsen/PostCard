@@ -182,10 +182,20 @@ CREATE TABLE site_settings (
   PRIMARY KEY (setting_key)
 );
 
+-- Login attempts table
+-- Counts failed attempts for this email, no foreign key (failed attempts for e-mails that don't exist count too)
+CREATE TABLE login_attempts (
+  attempt_id INT NOT NULL AUTO_INCREMENT,
+  email VARCHAR(255) NOT NULL,             -- the same length as users.email
+  attempted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (attempt_id)
+);
+
 -- Indexes
 CREATE INDEX idx_group_members_group_status ON group_members (group_id, member_status);
 CREATE INDEX idx_posts_experience_created ON posts (experience_id, created_at);
 CREATE INDEX idx_likes_post_created ON likes (post_id, created_at);
+CREATE INDEX idx_login_attempts_email_time ON login_attempts (email, attempted_at);
 
 -- Triggers
 DELIMITER //
