@@ -14,7 +14,7 @@
             <section class="card flow" aria-labelledby="users-heading">
                 <h2 class="visually-hidden" id="users-heading">Alle brugere</h2>
 
-                <!-- GET, not POST: searching changes nothing, and the result can be bookmarked -->
+                <?php /* GET, not POST: searching changes nothing, and the result can be bookmarked */ ?>
                 <form class="filter-bar" action="<?= url('/admin/users') ?>" method="get" role="search">
                     <div class="field">
                         <label class="field__label" for="search">Søg efter navn eller e-mail</label>
@@ -47,9 +47,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- LOOP: users matching the search, newest first (users.created_at), 50 per page.
+                            <?php /* LOOP: users matching the search, newest first (users.created_at), 50 per page.
                                  Blokér: user_status = 'blocked' (cannot log in). Fjern blokering: back to 'active'.
-                                 The operator's own row has no button. -->
+                                 The operator's own row has no button. */ ?>
                             <tr>
                                 <td><a href="<?= url('/admin/user?id=214') ?>">Morten Holm</a></td>
                                 <td>morten@example.com</td>
@@ -120,8 +120,8 @@
                     </table>
                 </div>
 
-                <!-- IF more than 50 results: simple page links, no infinite scroll
-                <nav aria-label="Sider"><a href="<?= url('/admin/users?page=2') ?>">Næste side</a></nav> -->
+                <?php /* IF more than 50 results: simple page links, no infinite scroll
+                <nav aria-label="Sider"><a href="<?= url('/admin/users?page=2') ?>">Næste side</a></nav> */ ?>
             </section>
         </div>
     </div>

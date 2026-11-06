@@ -11,9 +11,9 @@
                 <p class="eyebrow">Ny adgangskode</p>
                 <h1>Vælg en ny adgangskode</h1>
 
-                <!-- IF the link is expired or used: <p class="alert alert--error" role="alert">Linket er udløbet. <a href="<?= url('/forgot-password') ?>">Bed om et nyt link</a>.</p> -->
+                <?php /* IF the link is expired or used: <p class="alert alert--error" role="alert">Linket er udløbet. <a href="<?= url('/forgot-password') ?>">Bed om et nyt link</a>.</p> */ ?>
 
-                <!-- The reset token from the link goes in a hidden field -->
+                <?php /* The reset token from the link goes in a hidden field */ ?>
                 <form class="form" action="<?= url('/reset-password') ?>" method="post">
                     <?= \PostCard\Core\Csrf::field() ?>
                     <div class="field">

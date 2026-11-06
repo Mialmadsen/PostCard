@@ -1,8 +1,6 @@
 <?php
-$pageTitle = 'Style guide';
-$isLoggedIn = false;
-$pageStyle = 'styleguide';
-require __DIR__ . '/../views/partials/header.php';
+// The controller shows this page with:
+// View::render('styleguide', ['pageTitle' => 'Style guide', 'isLoggedIn' => false, 'pageStyle' => 'styleguide']);
 ?>
 
 <main id="main" class="site-main">
@@ -10,7 +8,7 @@ require __DIR__ . '/../views/partials/header.php';
         <h1>Style guide</h1>
         <p>Design tokens and components for <span class="brand">PostCard</span>. Developer page, not linked from the site.</p>
 
-        <!-- Colours -->
+        <?php /* Colours */ ?>
         <section class="card flow" aria-labelledby="colours-heading">
             <h2 id="colours-heading">Farver</h2>
             <ul class="swatch-list">
@@ -61,7 +59,7 @@ require __DIR__ . '/../views/partials/header.php';
             </ul>
         </section>
 
-        <!-- Typography -->
+        <?php /* Typography */ ?>
         <section class="card flow" aria-labelledby="type-heading">
             <h2 id="type-heading">Typografi</h2>
 
@@ -104,7 +102,7 @@ require __DIR__ . '/../views/partials/header.php';
             </div>
         </section>
 
-        <!-- Buttons -->
+        <?php /* Buttons */ ?>
         <section class="card flow" aria-labelledby="buttons-heading">
             <h2 id="buttons-heading">Knapper</h2>
             <p class="meta">One primary button per screen. Links that look like buttons use &lt;a&gt;,
@@ -115,7 +113,7 @@ require __DIR__ . '/../views/partials/header.php';
             </div>
         </section>
 
-        <!-- Forms -->
+        <?php /* Forms */ ?>
         <section class="card flow" aria-labelledby="forms-heading">
             <h2 id="forms-heading">Formularer</h2>
             <p class="alert alert--error" role="alert">Forkert e-mail eller adgangskode.</p>
@@ -138,7 +136,7 @@ require __DIR__ . '/../views/partials/header.php';
             </form>
         </section>
 
-        <!-- Spacing -->
+        <?php /* Spacing */ ?>
         <section class="card flow" aria-labelledby="space-heading">
             <h2 id="space-heading">Afstande</h2>
             <ul class="space-list">
@@ -162,4 +160,3 @@ require __DIR__ . '/../views/partials/header.php';
     </div>
 </main>
 
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>

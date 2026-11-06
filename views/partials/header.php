@@ -16,20 +16,6 @@ $isOperator = $isOperator ?? false;
 $pageStyle = $pageStyle ?? null;
 $pageScripts = $pageScripts ?? [];
 
-require_once __DIR__ . '/../../app/Helpers/asset.php';
-
-// TEMPORARY: old pages in public/ open this header directly, without index.php,
-// so they need the autoloader, e(), url(), BASE_PATH and the session set up here.
-// Remove when every page has moved to views/pages/.
-require_once __DIR__ . '/../../app/autoload.php';
-require_once __DIR__ . '/../../app/Helpers/escape.php';
-require_once __DIR__ . '/../../app/Helpers/url.php';
-if (!defined('BASE_PATH')) {
-    define('BASE_PATH', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\'));
-}
-if (session_status() === PHP_SESSION_NONE) {
-    \PostCard\Core\Session::start();
-}
 ?>
 <!DOCTYPE html>
 <html lang="da">
@@ -88,7 +74,7 @@ if (session_status() === PHP_SESSION_NONE) {
             <a class="logo" href="<?= url('/') ?>" aria-label="PostCard">
                 <svg class="logo__stamp" viewBox="0 0 36 44" aria-hidden="true" focusable="false">
                     <defs>
-                        <!-- Perforation: a grid of holes, used only along the four edges -->
+                        <?php /* Perforation: a grid of holes, used only along the four edges */ ?>
                         <pattern id="stamp-holes" x="-2" y="-2" width="4" height="4" patternUnits="userSpaceOnUse">
                             <circle cx="2" cy="2" r="1.5" fill="black" />
                         </pattern>
@@ -100,9 +86,9 @@ if (session_status() === PHP_SESSION_NONE) {
                             <rect x="34" y="0" width="4" height="44" fill="url(#stamp-holes)" />
                         </mask>
                     </defs>
-                    <!-- Stamp paper with perforated edge -->
+                    <?php /* Stamp paper with perforated edge */ ?>
                     <rect class="logo__stamp-paper" width="36" height="44" mask="url(#logo-perforation)" />
-                    <!-- Picture: sky, sun and sea -->
+                    <?php /* Picture: sky, sun and sea */ ?>
                     <rect class="logo__stamp-sky" x="5" y="5" width="26" height="34" />
                     <circle class="logo__stamp-sun" cx="23" cy="15" r="5" />
                     <path class="logo__stamp-wave" d="M5 27c3-3 5-3 8 0s5 3 8 0 5-3 8 0 2 1 2 1" />
@@ -114,7 +100,7 @@ if (session_status() === PHP_SESSION_NONE) {
             <nav aria-label="Hovedmenu">
                 <?php if ($isOperator): ?>
 
-                    <!-- NAV: operator. The sections are in the admin menu on each page (views/partials/admin-nav.php) -->
+                    <?php /* NAV: operator. The sections are in the admin menu on each page (views/partials/admin-nav.php) */ ?>
                     <ul class="site-nav__list">
                         <li>
                             <form action="<?= url('/logout') ?>" method="post">
@@ -126,7 +112,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
                 <?php elseif ($isLoggedIn): ?>
 
-                    <!-- NAV: logged in -->
+                    <?php /* NAV: logged in */ ?>
                     <ul class="site-nav__list">
                         <li><a class="site-nav__link" href="<?= url('/home') ?>">Mine grupper</a></li>
                         <li class="user-menu">
@@ -147,7 +133,7 @@ if (session_status() === PHP_SESSION_NONE) {
                                 <li><a class="user-menu__item" href="<?= url('/profile') ?>">Min profil</a></li>
                                 <li><a class="user-menu__item" href="<?= url('/settings') ?>">Indstillinger</a></li>
                                 <li>
-                                    <!-- Log out is a POST form, protected by the CSRF token -->
+                                    <?php /* Log out is a POST form, protected by the CSRF token */ ?>
                                     <form action="<?= url('/logout') ?>" method="post">
                                         <?= \PostCard\Core\Csrf::field() ?>
                                         <button class="user-menu__item" type="submit">Log ud</button>
@@ -159,7 +145,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
                 <?php else: ?>
 
-                    <!-- NAV: logged out. "Opret bruger" is the main action on the page itself, not here -->
+                    <?php /* NAV: logged out. "Opret bruger" is the main action on the page itself, not here */ ?>
                     <ul class="site-nav__list">
                         <li><a class="site-nav__link" href="<?= url('/login') ?>">Log ind</a></li>
                     </ul>

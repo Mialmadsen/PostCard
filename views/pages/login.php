@@ -21,7 +21,7 @@
                 <form class="form" action="<?= url('/login') ?>" method="post">
                     <?= \PostCard\Core\Csrf::field() ?>
                     <?php if ($invite !== ''): ?>
-                        <!-- Carries the invitation token through the form, so the user can be sent back to it -->
+                        <?php /* Carries the invitation token through the form, so the user can be sent back to it */ ?>
                         <input type="hidden" name="invite" value="<?= e($invite) ?>">
                     <?php endif; ?>
                     <div class="field">

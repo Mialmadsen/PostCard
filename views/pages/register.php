@@ -23,7 +23,7 @@
                 <form class="form" action="<?= url('/register') ?>" method="post">
                     <?= \PostCard\Core\Csrf::field() ?>
                     <?php if ($invite !== ''): ?>
-                        <!-- Carries the invitation token through the form, so the user can be sent back to it -->
+                        <?php /* Carries the invitation token through the form, so the user can be sent back to it */ ?>
                         <input type="hidden" name="invite" value="<?= e($invite) ?>">
                     <?php endif; ?>
                     <div class="field-row">
@@ -114,8 +114,8 @@
                         <?php endif; ?>
                     </div>
 
-                    <!-- Honeypot: hidden from people (off-screen, skipped by screen readers and Tab).
-                         Bots fill in every field, so a filled "website" means a bot. -->
+                    <?php /* Honeypot: hidden from people (off-screen, skipped by screen readers and Tab).
+                         Bots fill in every field, so a filled "website" means a bot. */ ?>
                     <div class="form__trap" aria-hidden="true">
                         <label for="website">Lad dette felt være tomt</label>
                         <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">

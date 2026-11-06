@@ -22,7 +22,7 @@ $breadcrumbs = [
         </header>
 
         <div class="sidebar-layout">
-            <!-- Viser hvilken gruppe og oplevelse opslaget tilhører. -->
+            <?php /* Viser hvilken gruppe og oplevelse opslaget tilhører. */ ?>
             <aside class="card flow" aria-labelledby="audience-heading">
                 <h2 id="audience-heading">Til</h2>
                 <dl class="address">
@@ -40,21 +40,21 @@ $breadcrumbs = [
             <section class="card" aria-labelledby="form-heading">
                 <h2 class="section-title" id="form-heading">Dit opslag</h2>
 
-                <!-- Formularen sender ændringerne til PostController::update(). -->
+                <?php /* Formularen sender ændringerne til PostController::update(). */ ?>
                 <form class="form" action="<?= e(url('/edit-post')) ?>" method="post" enctype="multipart/form-data">
                     <?= \PostCard\Core\Csrf::field() ?>
                     <input type="hidden" name="post_id" value="<?= (int) $post['id'] ?>">
 
-                    <!-- Billeder: eksisterende og nye billeder kan redigeres. -->
+                    <?php /* Billeder: eksisterende og nye billeder kan redigeres. */ ?>
                     <div class="field">
                         <label class="field__label" for="photos">Billeder</label>
                         <input class="field__input js-photo-input"
                             type="file" id="photos" name="photos[]"
                             accept="image/jpeg,image/png,image/webp" multiple>
                         <p class="meta">Du kan have mellem 1 og 5 billeder. JPG, PNG eller WebP, maks. 5 MB pr. billede.</p>
-                        <!-- JavaScript bruger listen til at vise alle billeder. -->
+                        <?php /* JavaScript bruger listen til at vise alle billeder. */ ?>
                         <ul class="photo-preview js-photo-preview">
-                            <!-- Eksisterende billeder fra databasen. -->
+                            <?php /* Eksisterende billeder fra databasen. */ ?>
                             <?php foreach ($images as $image): ?>
                                 <li class="polaroid photo-preview__item" data-image-id="<?= (int) $image['image_id'] ?>">
                                     <img class="polaroid__photo"
@@ -81,9 +81,9 @@ $breadcrumbs = [
                                 </li>
                             <?php endforeach; ?>
                         </ul>
-                        <!-- Viser antal valgte billeder og eventuelle fejl. -->
+                        <?php /* Viser antal valgte billeder og eventuelle fejl. */ ?>
                         <p class="meta js-photo-status" aria-live="polite"></p>
-                        <!-- Skabelon til nye og eksisterende billeder. -->
+                        <?php /* Skabelon til nye og eksisterende billeder. */ ?>
                         <template class="js-photo-template">
                             <li class="polaroid photo-preview__item">
                                 <img class="polaroid__photo" alt="">
@@ -105,7 +105,7 @@ $breadcrumbs = [
                         </template>
                     </div>
 
-                    <!-- Brugeren kan ændre opslagets lokation. -->
+                    <?php /* Brugeren kan ændre opslagets lokation. */ ?>
                     <div class="field">
                         <label class="field__label" for="location">Sted</label>
                         <input class="field__input" id="location" name="location"
@@ -115,7 +115,7 @@ $breadcrumbs = [
                         <p class="meta" id="location-hint">Fx Prækestolen, Norge eller hjemme i haven</p>
                     </div>
 
-                    <!-- Brugeren kan ændre opslagets tekst. -->
+                    <?php /* Brugeren kan ændre opslagets tekst. */ ?>
                     <div class="field">
                         <label class="field__label" for="caption">Fortæl om det</label>
                         <textarea class="field__input" id="caption" name="caption"

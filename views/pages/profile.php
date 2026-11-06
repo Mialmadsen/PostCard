@@ -16,7 +16,7 @@
 
         <div class="sidebar-layout">
 
-            <!-- Left column: who I am (users table) -->
+            <?php /* Left column: who I am (users table) */ ?>
             <section class="card flow profile-card" aria-labelledby="about-heading">
                 <h2 class="visually-hidden" id="about-heading">Om mig</h2>
                 <?php
@@ -31,13 +31,13 @@
                 <p><a class="button button--secondary" href="<?= url('/settings') ?>">Rediger profil</a></p>
             </section>
 
-            <!-- Right column: the infographic -->
+            <?php /* Right column: the infographic */ ?>
             <div class="flow">
 
                 <section class="card" aria-labelledby="numbers-heading">
                     <h2 class="section-title" id="numbers-heading">Mit album i tal</h2>
 
-                    <!-- Counts for the logged-in user only -->
+                    <?php /* Counts for the logged-in user only */ ?>
                     <dl class="stat-list">
                         <div class="stat-list__item">
                             <dt>Grupper</dt>
@@ -59,7 +59,7 @@
                     </dl>
 
                     <h3 class="profile-subheading">Modtagne reaktioner</h3>
-                    <!-- Likes and comments other members gave on my posts -->
+                    <?php /* Likes and comments other members gave on my posts */ ?>
                     <dl class="stat-list">
                         <div class="stat-list__item">
                             <dt>Synes godt om</dt>
@@ -80,7 +80,7 @@
                         <p><a class="button button--secondary" href="<?= url('/create-group') ?>">Opret en gruppe</a></p>
                     <?php else: ?>
 
-                    <!-- One row per group from v_user_groups, with my experiences in that group under it -->
+                    <?php /* One row per group from v_user_groups, with my experiences in that group under it */ ?>
                     <ul class="divided-list">
                         <?php foreach ($groups as $group): ?>
                             <?php

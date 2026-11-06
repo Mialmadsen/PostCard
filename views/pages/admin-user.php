@@ -19,7 +19,7 @@
             <p class="meta">Oprettet <time datetime="2026-09-01">1. sep. 2026</time> · e-mail bekræftet · 3 grupper · 38 opslag</p>
         </header>
 
-        <!-- IF saved: <p class="alert" role="status">Ændringerne er gemt.</p> -->
+        <?php /* IF saved: <p class="alert" role="status">Ændringerne er gemt.</p> */ ?>
 
         <div class="sidebar-layout">
             <?php require __DIR__ . '/../partials/admin-nav.php'; ?>
@@ -28,7 +28,7 @@
                 <section class="card" aria-labelledby="profile-heading">
                     <h2 class="section-title" id="profile-heading">Profil</h2>
 
-                    <!-- The same fields the user has on settings.php -->
+                    <?php /* The same fields the user has on settings.php */ ?>
                     <form class="form" action="<?= url('/admin/user') ?>" method="post">
                         <?= \PostCard\Core\Csrf::field() ?>
                         <input type="hidden" name="user_id" value="1">
@@ -59,11 +59,11 @@
                                 maxlength="255" required value="mia@example.com">
                         </div>
 
-                        <!-- IF users.profile_image is set: the operator can remove an unsuitable picture
+                        <?php /* IF users.profile_image is set: the operator can remove an unsuitable picture
                         <div class="field field--checkbox">
                             <input class="field__checkbox" id="remove-picture" name="remove_picture" type="checkbox" value="1">
                             <label for="remove-picture">Fjern profilbilledet</label>
-                        </div> -->
+                        </div> */ ?>
 
                         <div class="button-row">
                             <button class="button button--primary" type="submit">Gem profil</button>
@@ -74,7 +74,7 @@
                 <section class="card" aria-labelledby="status-heading">
                     <h2 class="section-title" id="status-heading">Status</h2>
 
-                    <!-- users.user_status. Not shown on the operator's own page, so nobody can lock themselves out. -->
+                    <?php /* users.user_status. Not shown on the operator's own page, so nobody can lock themselves out. */ ?>
                     <form class="form" action="<?= url('/admin/user') ?>" method="post">
                         <?= \PostCard\Core\Csrf::field() ?>
                         <input type="hidden" name="user_id" value="1">
@@ -118,7 +118,7 @@
                     <h2 id="password-heading">Adgangskode</h2>
                     <p>Operatører kan ikke se eller vælge en brugers adgangskode. Send i stedet et link, så brugeren selv kan vælge en ny.</p>
 
-                    <!-- Makes a reset_password token (user_tokens) and e-mails the link. -->
+                    <?php /* Makes a reset_password token (user_tokens) and e-mails the link. */ ?>
                     <form action="<?= url('/admin/user') ?>" method="post">
                         <?= \PostCard\Core\Csrf::field() ?>
                         <input type="hidden" name="user_id" value="1">
@@ -130,7 +130,7 @@
                 <section class="card" aria-labelledby="groups-heading">
                     <h2 class="section-title" id="groups-heading">Grupper</h2>
 
-                    <!-- LOOP: group_members for this user, with member_status -->
+                    <?php /* LOOP: group_members for this user, with member_status */ ?>
                     <ul class="divided-list">
                         <li>
                             <p>Familien Nielsen</p>
@@ -145,7 +145,7 @@
                             <p class="meta">Medlem · medlem siden <time datetime="2026-09-04">4. sep. 2026</time> · 3 opslag</p>
                         </li>
                     </ul>
-                    <!-- /LOOP -->
+                    <?php /* /LOOP */ ?>
 
                     <p><a href="<?= url('/admin/posts?user_id=1') ?>">Se brugerens opslag</a></p>
                 </section>

@@ -27,7 +27,7 @@
             <p><?= count($members) === 1 ? '1 medlem' : count($members) . ' medlemmer' ?>. Kun de kan se gruppens
                 oplevelser
                 og opslag.</p>
-            <!-- IF member_role = 'group_admin' -->
+            <?php /* IF member_role = 'group_admin' */ ?>
             <?php if ($isAdmin): ?>
                 <p><a class="button button--secondary" href="<?= url('/invite?group_id=' . $group['group_id']) ?>">Inviter
                         nye medlemmer</a></p>
@@ -69,7 +69,7 @@
                                 </p>
                             </div>
 
-                            <!-- Buttons only for admins, and never on an admin's row. The server checks this again. -->
+                            <?php /* Buttons only for admins, and never on an admin's row. The server checks this again. */ ?>
                             <?php if ($isAdmin && $member['member_role'] !== 'group_admin'): ?>
                                 <div class="button-row member__actions">
                                     <form class="js-confirm" action="<?= url('/make-admin') ?>" method="post"

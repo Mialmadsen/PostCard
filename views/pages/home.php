@@ -11,15 +11,15 @@
 
         <div class="sidebar-layout">
 
-            <!-- Left column: upload + my groups -->
+            <?php /* Left column: upload + my groups */ ?>
             <div class="flow">
 
-                <!-- Viser oplevelser, som den indloggede bruger har oprettet -->
+                <?php /* Viser oplevelser, som den indloggede bruger har oprettet */ ?>
                 <section class="card flow" aria-labelledby="upload-heading">
                     <h2 id="upload-heading">Mine oplevelser</h2>
 
                     <?php if (empty($experiences)): ?>
-                        <!-- Vises hvis brugeren ikke har oprettet nogen oplevelser -->
+                        <?php /* Vises hvis brugeren ikke har oprettet nogen oplevelser */ ?>
                         <p class="meta">Du har ikke oprettet nogen oplevelser endnu.</p>
                     <?php else: ?>
                         <ul class="experience-list">
@@ -42,7 +42,7 @@
                                             </a>
                                         </h3>
 
-                                        <!-- Viser antal opslag og slutdato -->
+                                        <?php /* Viser antal opslag og slutdato */ ?>
                                         <p class="meta">
                                             <?php if ($experience['posting_mode'] === 'open'): ?>
                                                 <?= (int) $experience['post_count'] ?> opslag
@@ -52,7 +52,7 @@
                                             · slutter <?= danishDate($experience['end_date'], 'd. MMM') ?>
                                         </p>
 
-                                        <!-- Knappen vises kun i oplevelsens aktive periode -->
+                                        <?php /* Knappen vises kun i oplevelsens aktive periode */ ?>
                                         <?php if (
                                             $experience['experience_status'] === 'approved' &&
                                             date('Y-m-d') >= $experience['start_date'] &&
@@ -66,20 +66,20 @@
                         </ul>
                     <?php endif; ?>
 
-                    <!-- Link til at oprette en ny oplevelse -->
+                    <?php /* Link til at oprette en ny oplevelse */ ?>
                     <p><a href="<?= url('/create-experience') ?>">+ Start en ny oplevelse</a></p>
                     <p class="meta">En oplevelse har en periode og et antal opslag (normalt 20, op til 5 billeder pr. opslag). I nogle grupper skal gruppens admin godkende den først.</p>
                 </section>
 
-                <!-- Viser den indloggede brugers grupper -->
+                <?php /* Viser den indloggede brugers grupper */ ?>
                 <section class="card" aria-labelledby="groups-heading">
                     <h2 class="section-title" id="groups-heading">Mine grupper</h2>
 
                     <?php if (empty($groups)): ?>
-                        <!-- Vises hvis brugeren ikke er medlem af nogen grupper -->
+                        <?php /* Vises hvis brugeren ikke er medlem af nogen grupper */ ?>
                         <p class="meta">Du er ikke medlem af nogen grupper endnu.</p>
                     <?php else: ?>
-                        <!-- Gennemgår brugerens aktive grupper -->
+                        <?php /* Gennemgår brugerens aktive grupper */ ?>
                         <ul class="group-list">
                             <?php foreach ($groups as $group): ?>
                                 <li>
@@ -94,18 +94,18 @@
                         </ul>
                     <?php endif; ?>
 
-                    <!-- Link til at oprette en ny gruppe -->
+                    <?php /* Link til at oprette en ny gruppe */ ?>
                     <p><a href="<?= url('/create-group') ?>">+ Opret en ny gruppe</a></p>
                 </section>
 
 
             </div>
 
-            <!-- Right column: posts + comments -->
+            <?php /* Right column: posts + comments */ ?>
             <div class="flow">
 
                 
-                <!-- Viser fastgjorte opslag fra brugerens grupper -->
+                <?php /* Viser fastgjorte opslag fra brugerens grupper */ ?>
                 <section aria-labelledby="sticky-heading">
                     <h2 class="section-title" id="sticky-heading">Fastgjort</h2>
 
@@ -163,7 +163,7 @@
                     <?php endif; ?>
                 </section>
 
-                <!-- Viser populære opslag fra brugerens grupper -->
+                <?php /* Viser populære opslag fra brugerens grupper */ ?>
                 <section aria-labelledby="trending-heading">
                     <h2 class="section-title" id="trending-heading">Populært i dine grupper</h2>
 
@@ -221,7 +221,7 @@
                     <?php endif; ?>
                 </section>
 
-                <!-- Viser de nyeste kommentarer fra brugerens grupper -->
+                <?php /* Viser de nyeste kommentarer fra brugerens grupper */ ?>
                 <section class="card" aria-labelledby="comments-heading">
                     <h2 class="section-title" id="comments-heading">Nyeste kommentarer</h2>
 

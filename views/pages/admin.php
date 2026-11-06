@@ -3,8 +3,8 @@
 // View::render('admin', ['pageTitle' => 'Administration · Oversigt', 'isOperator' => true, 'pageStyle' => 'admin', 'adminPage' => 'overview']);
 ?>
 
-<!-- Every /admin page (except /admin/login) is only for a logged-in operator.
-     Anyone else is sent to /admin/login. The server checks this on every request. -->
+<?php /* Every /admin page (except /admin/login) is only for a logged-in operator.
+     Anyone else is sent to /admin/login. The server checks this on every request. */ ?>
 
 <main id="main" class="site-main">
     <div class="container">
@@ -40,7 +40,7 @@
                 <section class="card" aria-labelledby="new-users-heading">
                     <h2 class="section-title" id="new-users-heading">Nyeste brugere</h2>
 
-                    <!-- LOOP: the 5 newest users (users.created_at) -->
+                    <?php /* LOOP: the 5 newest users (users.created_at) */ ?>
                     <ul class="divided-list">
                         <li>
                             <p><a href="<?= url('/admin/user?id=214') ?>">Morten Holm</a></p>
@@ -63,7 +63,7 @@
                             <p class="meta">Oprettet <time datetime="2026-10-06">6. okt. 2026</time> · Aktiv</p>
                         </li>
                     </ul>
-                    <!-- /LOOP -->
+                    <?php /* /LOOP */ ?>
 
                     <p><a href="<?= url('/admin/users') ?>">Se alle brugere</a></p>
                 </section>

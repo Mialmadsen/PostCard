@@ -1,7 +1,7 @@
 <main id="main" class="site-main">
     <div class="container">
 
-        <!-- Hero -->
+        <?php /* Hero */ ?>
         <div class="envelope">
             <div class="envelope__back" aria-hidden="true"></div>
             <div class="envelope__letter flow">
@@ -14,11 +14,11 @@
             <div class="envelope__lid" aria-hidden="true"></div>
         </div>
 
-        <!-- CONTENT: site description — managed by the operator in /admin/content (Epic 2) -->
+        <?php /* CONTENT: site description — managed by the operator in /admin/content (Epic 2) */ ?>
         <section class="landing-section card" aria-labelledby="why-heading">
             <h2 class="landing-section__title" id="why-heading">Hvorfor <span class="brand">PostCard</span>?</h2>
 
-            <!-- LOOP: features -->
+            <?php /* LOOP: features */ ?>
             <ul class="feature-list">
                 <li class="feature flow">
                     <img class="feature__illustration" src="<?= asset('assets/images/illustrations/private.svg') ?>" alt="" width="145"
@@ -45,7 +45,7 @@
                     <p>Jeres minder bliver gemt, så I kan se tilbage på dem senere.</p>
                 </li>
             </ul>
-            <!-- /LOOP -->
+            <?php /* /LOOP */ ?>
         </section>
 
         <section class="landing-section card" aria-labelledby="how-heading">

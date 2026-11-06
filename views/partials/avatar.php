@@ -10,7 +10,7 @@
 
 ?>
 <?php if ($avatarUser['profile_image'] !== null): ?>
-    <!-- ?v= changes with every new picture, so the browser fetches the new one instead of its saved copy -->
+    <?php /* ?v= changes with every new picture, so the browser fetches the new one instead of its saved copy */ ?>
     <img class="avatar <?= e($avatarClass) ?>"
         src="<?= url('/profile-image?user_id=' . $avatarUser['user_id'] . '&v=' . $avatarUser['profile_image_version']) ?>"
         alt="">

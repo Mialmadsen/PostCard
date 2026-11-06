@@ -28,7 +28,7 @@
 
         <div class="sidebar-layout">
 
-            <!-- Left column: about the group -->
+            <?php /* Left column: about the group */ ?>
             <div class="flow">
             
                 <section class="card flow" aria-labelledby="share-heading">
@@ -49,7 +49,7 @@
 
                 <section class="card flow" aria-labelledby="members-heading">
                     <h2 id="members-heading">Medlemmer</h2>
-                    <!-- Viser de første fire aktive medlemmer fra databasen -->
+                    <?php /* Viser de første fire aktive medlemmer fra databasen */ ?>
                     <div class="avatar-stack" aria-hidden="true">
                         <?php foreach ($members as $member): ?>
                             <?php
@@ -59,7 +59,7 @@
                             ?>
                         <?php endforeach; ?>
 
-                        <!-- Viser antallet af resterende medlemmer -->
+                        <?php /* Viser antallet af resterende medlemmer */ ?>
                         <?php if ($memberCount > count($members)): ?>
                             <span class="avatar">+<?= $memberCount - count($members) ?></span>
                         <?php endif; ?>
@@ -68,9 +68,9 @@
                     <p class="meta"><?= (int) $memberCount ?> medlemmer i gruppen</p>
                     <p><a href="<?= url('/members?group_id=' . (int) $group['group_id']) ?>">Se alle <?= (int) $memberCount ?> medlemmer</a></p>
 
-                    <!-- Sets group_members.member_status = 'left'. The user id comes from the session, not the form.
+                    <?php /* Sets group_members.member_status = 'left'. The user id comes from the session, not the form.
                          IF the user is the only admin: no button, instead
-                         <p class="meta">Du er den eneste admin. Gør et andet medlem til admin, før du forlader gruppen.</p> -->
+                         <p class="meta">Du er den eneste admin. Gør et andet medlem til admin, før du forlader gruppen.</p> */ ?>
                          
                     <form class="js-confirm" action="<?= url('/leave-group') ?>" method="post"
                         data-confirm="Vil du forlade <?= e($group['name']) ?>? Det, du har delt, bliver i gruppens album. Du skal have en ny invitation for at komme tilbage.">
@@ -81,7 +81,7 @@
                 </section>
 
                 <?php if ($memberRole === 'group_admin'): ?>
-                    <!-- Vises kun for gruppens administratorer -->
+                    <?php /* Vises kun for gruppens administratorer */ ?>
                     <section class="card flow admin-box" aria-labelledby="admin-heading">
                         <h2 id="admin-heading">Gruppeadmin</h2>
                         <p class="meta">Kun du som admin kan se denne boks.</p>
@@ -107,19 +107,19 @@
             </div>
 
             
-            <!-- Højre kolonne: Gruppens oplevelser -->
+            <?php /* Højre kolonne: Gruppens oplevelser */ ?>
             <section aria-labelledby="experiences-heading">
                 <h2 class="section-title" id="experiences-heading">Oplevelser</h2>
 
                 <div class="experience-grid">
 
                     <?php if (empty($experiences)): ?>
-                        <!-- Vises, hvis gruppen endnu ikke har nogen godkendte oplevelser -->
+                        <?php /* Vises, hvis gruppen endnu ikke har nogen godkendte oplevelser */ ?>
                         <p class="meta">Der er endnu ingen oplevelser i denne gruppe.</p>
 
                     <?php else: ?>
 
-                        <!-- Gennemgår alle gruppens oplevelser fra databasen -->
+                        <?php /* Gennemgår alle gruppens oplevelser fra databasen */ ?>
                         <?php foreach ($experiences as $experience): ?>
 
                             <?php
@@ -158,7 +158,7 @@
                             <article class="polaroid experience-card">
 
                                 
-                            <!-- Viser et billede fra oplevelsens opslag eller eksempelbilledet, hvis der ikke er nogen -->
+                            <?php /* Viser et billede fra oplevelsens opslag eller eksempelbilledet, hvis der ikke er nogen */ ?>
                             <a href="<?= e($experienceUrl) ?>" tabindex="-1" aria-hidden="true">
                                 <img
                                     class="polaroid__photo"
@@ -172,19 +172,19 @@
 
                                 <div class="polaroid__body experience-card__body">
 
-                                    <!-- Oplevelsens status -->
+                                    <?php /* Oplevelsens status */ ?>
                                     <p class="postmark postmark--status polaroid__postmark experience-card__postmark <?= e($statusClass) ?>">
                                         <?= e($statusText) ?>
                                     </p>
 
-                                    <!-- Oplevelsens navn og link -->
+                                    <?php /* Oplevelsens navn og link */ ?>
                                     <h3 class="polaroid__title">
                                         <a class="polaroid__link stretched-link" href="<?= e($experienceUrl) ?>">
                                             <?= e($experience['name']) ?>
                                         </a>
                                     </h3>
 
-                                    <!-- Opretterens navn og oplevelsens periode -->
+                                    <?php /* Opretterens navn og oplevelsens periode */ ?>
                                     <p class="meta">
                                         <?= e($experience['first_name'] . ' ' . $experience['last_name']) ?>
                                         ·
@@ -197,7 +197,7 @@
                                         </time>
                                     </p>
 
-                                    <!-- Antal opslag i oplevelsen -->
+                                    <?php /* Antal opslag i oplevelsen */ ?>
                                     <p class="meta">
                                         <?= (int)$experience['post_count'] ?> opslag
                                     </p>

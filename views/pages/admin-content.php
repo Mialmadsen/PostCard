@@ -1,14 +1,11 @@
 <?php
-$pageTitle = 'Administration · Indhold';
-$isOperator = true;
-$pageStyle = 'admin';
-$adminPage = 'content';
-require __DIR__ . '/../views/partials/header.php';
+// The controller shows this page with:
+// View::render('admin-content', ['pageTitle' => 'Administration · Indhold', 'isOperator' => true, 'pageStyle' => 'admin', 'adminPage' => 'content']);
 ?>
 
-<!-- The texts on the public pages (site_content). One form per text, so saving one
+<?php /* The texts on the public pages (site_content). One form per text, so saving one
      does not touch the others. PHP escapes the text when it shows it, and turns
-     an empty line into a new paragraph. -->
+     an empty line into a new paragraph. */ ?>
 
 <main id="main" class="site-main">
     <div class="container">
@@ -16,18 +13,18 @@ require __DIR__ . '/../views/partials/header.php';
         <h1>Indhold</h1>
         <p>Teksterne på de offentlige sider. En tom linje giver et nyt afsnit.</p>
 
-        <!-- IF saved: <p class="alert" role="status">Teksten er gemt.</p> -->
+        <?php /* IF saved: <p class="alert" role="status">Teksten er gemt.</p> */ ?>
 
         <div class="sidebar-layout">
             <?php require __DIR__ . '/../views/partials/admin-nav.php'; ?>
 
             <div class="flow">
 
-                <!-- LOOP: site_content rows -->
+                <?php /* LOOP: site_content rows */ ?>
                 <section class="card" aria-labelledby="welcome-heading">
                     <h2 class="section-title" id="welcome-heading">Forsiden: velkomst</h2>
 
-                    <!-- A CSRF token is added in Epic 2 -->
+                    <?php /* A CSRF token is added in Epic 2 */ ?>
                     <form class="form" action="admin-content.php" method="post">
                         <input type="hidden" name="content_key" value="welcome">
 
@@ -136,11 +133,10 @@ Adresse: PostCard, Eksempelvej 1, 6700 Esbjerg</textarea>
                         </div>
                     </form>
                 </section>
-                <!-- /LOOP -->
+                <?php /* /LOOP */ ?>
 
             </div>
         </div>
     </div>
 </main>
 
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>

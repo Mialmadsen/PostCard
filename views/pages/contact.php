@@ -5,7 +5,7 @@
             <p class="eyebrow">PostCard</p>
             <h1>Kontakt</h1>
 
-            <!-- CONTENT: contact information — managed by the operator in /admin/content (Epic 2) -->
+            <?php /* CONTENT: contact information — managed by the operator in /admin/content (Epic 2) */ ?>
             <p>Har du spørgsmål, eller vil du anmelde indhold, der bryder reglerne? Skriv til os, så svarer vi inden for to hverdage.</p>
 
             <address class="flow">

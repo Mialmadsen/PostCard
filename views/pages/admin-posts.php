@@ -1,14 +1,10 @@
 <?php
-$pageTitle = 'Administration · Opslag';
-$isOperator = true;
-$pageStyle = 'admin';
-$pageScripts = ['confirm'];
-$adminPage = 'posts';
-require __DIR__ . '/../views/partials/header.php';
+// The controller shows this page with:
+// View::render('admin-posts', ['pageTitle' => 'Administration · Opslag', 'isOperator' => true, 'pageStyle' => 'admin', 'pageScripts' => ['confirm'], 'adminPage' => 'posts']);
 ?>
 
-<!-- The operator can see posts from every group, only to remove posts that break the rules.
-     Every page view here should be needed for moderation, not for browsing. -->
+<?php /* The operator can see posts from every group, only to remove posts that break the rules.
+     Every page view here should be needed for moderation, not for browsing. */ ?>
 
 <main id="main" class="site-main">
     <div class="container">
@@ -21,7 +17,7 @@ require __DIR__ . '/../views/partials/header.php';
             <section class="card flow" aria-labelledby="posts-heading">
                 <h2 class="visually-hidden" id="posts-heading">Alle opslag</h2>
 
-                <!-- GET: searching changes nothing. admin-posts.php?user=1 (from admin-user.php) shows one user's posts. -->
+                <?php /* GET: searching changes nothing. admin-posts.php?user=1 (from admin-user.php) shows one user's posts. */ ?>
                 <form class="filter-bar" action="admin-posts.php" method="get" role="search">
                     <div class="field">
                         <label class="field__label" for="search">Søg i sted og tekst</label>
@@ -31,7 +27,7 @@ require __DIR__ . '/../views/partials/header.php';
                         <label class="field__label" for="group">Gruppe</label>
                         <select class="field__input" id="group" name="group">
                             <option value="">Alle grupper</option>
-                            <!-- LOOP: user_groups by name -->
+                            <?php /* LOOP: user_groups by name */ ?>
                             <option value="1">Familien Nielsen</option>
                             <option value="2">Klasse 3.B</option>
                             <option value="3">Løbeklubben</option>
@@ -56,9 +52,9 @@ require __DIR__ . '/../views/partials/header.php';
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- LOOP: posts matching the search, newest first (posts.created_at), 50 per page.
+                            <?php /* LOOP: posts matching the search, newest first (posts.created_at), 50 per page.
                                  Author = experiences.user_id. Slet removes the post, its images, likes, comments and views.
-                                 A CSRF token is added in Epic 2. -->
+                                 A CSRF token is added in Epic 2. */ ?>
                             <tr>
                                 <td><a href="post.php?id=6">Prækestolen, Norge</a></td>
                                 <td>Familien Nielsen</td>
@@ -119,11 +115,10 @@ require __DIR__ . '/../views/partials/header.php';
                     </table>
                 </div>
 
-                <!-- IF more than 50 results:
-                <nav aria-label="Sider"><a href="admin-posts.php?page=2">Næste side</a></nav> -->
+                <?php /* IF more than 50 results:
+                <nav aria-label="Sider"><a href="admin-posts.php?page=2">Næste side</a></nav> */ ?>
             </section>
         </div>
     </div>
 </main>
 
-<?php require __DIR__ . '/../views/partials/footer.php'; ?>

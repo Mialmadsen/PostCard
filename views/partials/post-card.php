@@ -1,11 +1,11 @@
-<!-- filen bruges til at vise hvert opslag i vores experience. 
+<?php /* filen bruges til at vise hvert opslag i vores experience. 
  der bruges en foreach-loop, som indlæser partial for hvert opslag. 
- Infoen kommer fra databasen gennem PostRepository og controlleren -->
+ Infoen kommer fra databasen gennem PostRepository og controlleren */ ?>
 
  <article class="polaroid post-card">
 
-<!-- (int) sikrer, at opslagets ID bruges som et integer -->
- <!-- ENT_QUOTES – Sørger for, at både enkelte og dobbelte anførselstegn bliver omdannet. -->
+<?php /* (int) sikrer, at opslagets ID bruges som et integer */ ?>
+ <?php /* ENT_QUOTES – Sørger for, at både enkelte og dobbelte anførselstegn bliver omdannet. */ ?>
 <a href="<?= url('/post') ?>?id=<?= (int) $post['id'] ?>" tabindex="-1" aria-hidden="true">
     <img
         class="polaroid__photo"
@@ -54,7 +54,7 @@
 
         
         <li class="post-stats__item">
-            <!-- Formular til at like eller unlike opslaget -->
+            <?php /* Formular til at like eller unlike opslaget */ ?>
             <form action="<?= e(url('/post-like')) ?>" method="post">
                 <?= \PostCard\Core\Csrf::field() ?>
                 <input type="hidden" name="post_id" value="<?= (int) $post['id'] ?>">

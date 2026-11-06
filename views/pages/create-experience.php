@@ -41,7 +41,7 @@ if ($selectedGroup === null && $selectedGroupId === null) {
         </header>
 
         <div class="sidebar-layout">
-            <!-- Viser hvilken gruppe oplevelsen oprettes i -->
+            <?php /* Viser hvilken gruppe oplevelsen oprettes i */ ?>
             <aside class="card flow" aria-labelledby="address-heading">
                 <h2 id="address-heading">Til</h2>
                 <dl class="address">
@@ -49,7 +49,7 @@ if ($selectedGroup === null && $selectedGroupId === null) {
                         <dt class="group-label">Gruppe</dt>
                         <dd class="address__value" id="address-group"><?= e($selectedGroup['name'] ?? 'Vælg gruppe') ?></dd>
                     </div>
-                    <!-- Vises kun hvis gruppen kræver godkendelse -->
+                    <?php /* Vises kun hvis gruppen kræver godkendelse */ ?>
                     <div id="approval-info">
                         <dt class="group-label">Godkendes af</dt>
                         <dd class="address__value">Gruppeadministrator</dd>
@@ -59,12 +59,12 @@ if ($selectedGroup === null && $selectedGroupId === null) {
 
             <section class="card" aria-labelledby="form-heading">
                 <h2 class="section-title" id="form-heading">Din oplevelse</h2>
-                <!-- Formularen sender senere data til vores store()-metode -->
+                <?php /* Formularen sender data til ExperienceController::store() */ ?>
                 <form method="POST" action="<?= url('/create-experience') ?>">
-                    <!-- Tilføjer CSRF-token gennem den fælles hjælpeklasse -->
+                    <?php /* Tilføjer CSRF-token gennem den fælles hjælpeklasse */ ?>
                     <?= \PostCard\Core\Csrf::field() ?>
 
-                    <!-- Vælg mellem brugerens aktive grupper -->
+                    <?php /* Vælg mellem brugerens aktive grupper */ ?>
                     <div class="field">
                         <label class="field__label" for="group">Gruppe</label>
                         <select class="field__input" id="group" name="group_id" required>
@@ -113,7 +113,7 @@ if ($selectedGroup === null && $selectedGroupId === null) {
                         </p>
                     </div>
 
-                    <!-- Serveren skal senere kontrollere datoerne -->
+                    <?php /* Serveren kontrollerer datoerne igen */ ?>
                     <fieldset class="fieldset" aria-describedby="period-hint">
                         <legend class="field__label fieldset__legend">Periode</legend>
                         <div class="field-row">
@@ -141,7 +141,7 @@ if ($selectedGroup === null && $selectedGroupId === null) {
                         <p class="meta" id="period-hint">Du kan dele opslag fra den første til den sidste dag.</p>
                     </fieldset>
 
-                    <!-- Teksten ændres afhængigt af gruppens posting_mode -->
+                    <?php /* Teksten ændres afhængigt af gruppens posting_mode */ ?>
                     <p class="alert" id="experience-alert"></p>
 
                     <div class="button-row">

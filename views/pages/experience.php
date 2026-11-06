@@ -1,5 +1,5 @@
-<!-- Filen er HTML'en til den visuelle side, så den er adskilt fra SQL og controlleren.
-Viewet bruger de variabler, som controlleren sender videre, til at vise oplevelsens titel, datoer, beskrivelse og status. -->
+<?php /* Filen er HTML'en til den visuelle side, så den er adskilt fra SQL og controlleren.
+Viewet bruger de variabler, som controlleren sender videre, til at vise oplevelsens titel, datoer, beskrivelse og status. */ ?>
 
 <main id="main" class="site-main">
     <div class="container">

@@ -4,7 +4,7 @@
             <p class="eyebrow">PostCard</p>
             <h1>Regler og retningslinjer</h1>
 
-            <!-- CONTENT: rules — managed by the operator in /admin/content (Epic 2) -->
+            <?php /* CONTENT: rules — managed by the operator in /admin/content (Epic 2) */ ?>
             <p><span class="brand">PostCard</span> er et privat sted for grupper, der kender hinanden. For at det skal føles trygt for alle, gælder disse regler:</p>
 
             <ol class="flow">

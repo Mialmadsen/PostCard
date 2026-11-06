@@ -7,12 +7,12 @@
 /** @var string|null $token */
 ?>
 
-<!-- The page an invitation link opens: /join?token=…
+<?php /* The page an invitation link opens: /join?token=…
      Four states (decided in GroupController::join):
      invalid: the link is unknown, used or expired: only a message, nothing about the group.
      guest:   not logged in: create a user or log in first; the token is passed on.
      member:  already a member: a link to the group.
-     join:    logged in: one button that makes the user a member. -->
+     join:    logged in: one button that makes the user a member. */ ?>
 
 <main id="main" class="site-main">
     <div class="container">
@@ -45,7 +45,7 @@
                     <?php endif; ?>
                     <p class="meta"><?= $memberCount === 1 ? '1 medlem' : $memberCount . ' medlemmer' ?></p>
 
-                    <!-- Answers "Who can see this?" before the user joins -->
+                    <?php /* Answers "Who can see this?" before the user joins */ ?>
                     <p class="alert">Det, du deler i gruppen, kan kun gruppens medlemmer se. Andre grupper ser det aldrig.
                     </p>
 

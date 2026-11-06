@@ -18,8 +18,8 @@
             <section class="card" aria-labelledby="form-heading">
                 <h2 class="section-title" id="form-heading">Om gruppen</h2>
 
-                <!-- 
-                     The same fields are on group-settings.php; later both pages share one form partial. -->
+                <?php /* 
+                     The same fields are on group-settings.php; later both pages share one form partial. */ ?>
                 <?php if ($errors !== []): ?>
                     <p class="alert alert--error" role="alert">Noget mangler eller er forkert. Se de markerede felter nedenfor.</p>
                 <?php endif; ?>
@@ -48,7 +48,7 @@
                         <?php endif; ?>
                     </div>
 
-                    <!-- user_groups.posting_mode -->
+                    <?php /* user_groups.posting_mode */ ?>
                     <?php $postingMode = $old['posting_mode'] ?? 'open'; ?>
                     <fieldset class="fieldset">
                         <legend class="field__label fieldset__legend">Hvem må dele oplevelser?</legend>
@@ -78,7 +78,7 @@
                         <?php endif; ?>
                     </fieldset>
 
-                    <!-- user_groups.default_post_limit -->
+                    <?php /* user_groups.default_post_limit */ ?>
                     <div class="field">
                         <label class="field__label" for="post-limit">Antal opslag pr. oplevelse</label>
                         <input class="field__input field__input--short" id="post-limit" name="default_post_limit"
@@ -92,9 +92,9 @@
                         <?php endif; ?>
                     </div>
 
-                    <!-- user_groups.style is not in the form: no page uses it yet, so PHP saves 'postcard' -->
+                    <?php /* user_groups.style is not in the form: no page uses it yet, so PHP saves 'postcard' */ ?>
 
-                    <!-- Answers "What happens when I create this?" before the button -->
+                    <?php /* Answers "What happens when I create this?" before the button */ ?>
                     <p class="alert">Du bliver <strong>admin</strong> i den nye gruppe. Bagefter kan du invitere
                         medlemmer med et link.</p>
 

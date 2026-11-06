@@ -12,8 +12,8 @@
                 <h1>Nulstil adgangskode</h1>
                 <p>Skriv din e-mail, så sender vi dig et link til at vælge en ny adgangskode.</p>
 
-                <!-- AFTER submit, always the same message (never reveal if the e-mail exists):
-                <p class="alert" role="status">Hvis e-mailen findes hos os, har vi sendt et link. Linket virker i 1 time.</p> -->
+                <?php /* AFTER submit, always the same message (never reveal if the e-mail exists):
+                <p class="alert" role="status">Hvis e-mailen findes hos os, har vi sendt et link. Linket virker i 1 time.</p> */ ?>
 
                 <form class="form" action="<?= url('/forgot-password') ?>" method="post">
                     <?= \PostCard\Core\Csrf::field() ?>

@@ -66,7 +66,7 @@
                         <?php endif; ?>
                     </div>
 
-                    <!-- user_groups.posting_mode -->
+                    <?php /* user_groups.posting_mode */ ?>
                     <?php $postingMode = $old['posting_mode'] ?? 'open'; ?>
                     <fieldset class="fieldset">
                         <legend class="field__label fieldset__legend">Hvem må dele oplevelser?</legend>
@@ -99,7 +99,7 @@
                         <?php endif; ?>
                     </fieldset>
 
-                    <!-- user_groups.default_post_limit -->
+                    <?php /* user_groups.default_post_limit */ ?>
                     <div class="field">
                         <label class="field__label" for="post-limit">Antal opslag pr. oplevelse</label>
                         <input class="field__input field__input--short" id="post-limit" name="default_post_limit"
@@ -115,7 +115,7 @@
                         <?php endif; ?>
                     </div>
 
-                    <!-- user_groups.style is not in the form: no page uses it yet -->
+                    <?php /* user_groups.style is not in the form: no page uses it yet */ ?>
 
                     <div class="button-row">
                         <button class="button button--primary" type="submit">Gem indstillinger</button>

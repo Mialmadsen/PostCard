@@ -22,10 +22,10 @@ $breadcrumbs = [
         <?php require __DIR__ . '/../partials/breadcrumbs.php'; ?>
 
         <div class="post-layout">
-            <!-- Left: the photos (post_images, ordered by sort_order) -->
+            <?php /* Left: the photos (post_images, ordered by sort_order) */ ?>
             <div class="flow">
                 <article class="polaroid post-polaroid">
-                    <!-- LOOP: post_images — alt text comes from post_images.alt_text -->
+                    <?php /* LOOP: post_images — alt text comes from post_images.alt_text */ ?>
                     <ul class="post-photos js-lightbox-gallery">
                         <?php foreach ($images as $image): ?>
                             <?php
@@ -41,16 +41,16 @@ $breadcrumbs = [
                             </li>
                         <?php endforeach; ?>
                     </ul>
-                    <!-- /LOOP -->
+                    <?php /* /LOOP */ ?>
 
                     <div class="polaroid__body">
                         <h1 class="polaroid__title"><?= e($post['location'] ?: 'Opslag') ?></h1>
                     </div>
                 </article>
-                <!-- Previous / next post in the same experience (kommer senere) -->
+                <?php /* Previous / next post in the same experience (kommer senere) */ ?>
             </div>
 
-            <!-- Right: text, likes and comments -->
+            <?php /* Right: text, likes and comments */ ?>
             <div class="flow">
                 <section class="card flow" aria-label="Opslaget">
                     <p class="group-label">
@@ -68,13 +68,13 @@ $breadcrumbs = [
 
                     <ul class="post-stats">
                         <li class="post-stats__item">
-                            <!-- Formular til at like eller unlike opslaget. -->
+                            <?php /* Formular til at like eller unlike opslaget. */ ?>
                             <form action="<?= e(url('/post-like')) ?>" method="post">
-                                <!-- Beskytter formularen mod CSRF. -->
+                                <?php /* Beskytter formularen mod CSRF. */ ?>
                                 <?= \PostCard\Core\Csrf::field() ?>
-                                <!-- Sender opslagets ID med formularen. -->
+                                <?php /* Sender opslagets ID med formularen. */ ?>
                                 <input type="hidden" name="post_id" value="<?= e((string) $post['id']) ?>">
-                                <!-- Hjertet fungerer som en like-knap. -->
+                                <?php /* Hjertet fungerer som en like-knap. */ ?>
                                 <button type="submit" class="like-button"
                                         aria-pressed="<?= $hasLiked ? 'true' : 'false' ?>"
                                         aria-label="<?= $hasLiked ? 'Fjern like' : 'Synes godt om' ?>">
@@ -102,17 +102,17 @@ $breadcrumbs = [
                     </ul>
 
                     
-                    <!-- SLET OG REDIGER OPSLAG Kun opslagets ejer kan se knapperne til redigering og sletning. -->
+                    <?php /* SLET OG REDIGER OPSLAG Kun opslagets ejer kan se knapperne til redigering og sletning. */ ?>
                     <?php if ((int) $post['author_id'] === \PostCard\Core\Auth::userId()): ?>
                         <div class="button-row">
 
-                            <!-- Sender brugeren til redigeringssiden. -->
+                            <?php /* Sender brugeren til redigeringssiden. */ ?>
                             <a class="button button--secondary"
                             href="<?= e(url('/edit-post?id=' . $post['id'])) ?>">
                                 Rediger opslag
                             </a>
 
-                            <!-- Sender en POST-anmodning for at slette opslaget. -->
+                            <?php /* Sender en POST-anmodning for at slette opslaget. */ ?>
                             <form action="<?= e(url('/delete-post')) ?>" method="post"
                                 onsubmit="return confirm('Er du sikker på, at du vil slette opslaget? Alle billeder, kommentarer og likes bliver også slettet.');">
                                 <?= \PostCard\Core\Csrf::field() ?>
@@ -127,30 +127,30 @@ $breadcrumbs = [
 
                 </section>
 
-                <!-- Kommentarer til opslaget -->
+                <?php /* Kommentarer til opslaget */ ?>
                 <section class="card flow" id="comments" aria-labelledby="comments-heading">
                     <h2 class="section-title" id="comments-heading">Kommentarer</h2>
 
-                    <!-- Viser en besked, hvis opslaget ikke har nogen kommentarer. -->
+                    <?php /* Viser en besked, hvis opslaget ikke har nogen kommentarer. */ ?>
                     <?php if (empty($comments)): ?>
                         <p class="meta">Der er ingen kommentarer endnu.</p>
                     <?php else: ?>
-                        <!-- Gennemgår alle kommentarer til opslaget. -->
+                        <?php /* Gennemgår alle kommentarer til opslaget. */ ?>
                         <div class="comments-list flow">
                             
-                        <!-- LOOP: comments — viser hver kommentar med forfatter, tekst og tidspunkt -->
+                        <?php /* LOOP: comments — viser hver kommentar med forfatter, tekst og tidspunkt */ ?>
                         <?php foreach ($comments as $comment): ?>
                             <article class="comment">
-                                <!-- Viser navnet på brugeren, der har skrevet kommentaren. -->
+                                <?php /* Viser navnet på brugeren, der har skrevet kommentaren. */ ?>
                                 <p class="comment__author">
                                     <strong><?= e(trim($comment['first_name'] . ' ' . $comment['last_name'])) ?></strong>
                                 </p>
 
-                                <!-- Viser kommentarens tekst. -->
+                                <?php /* Viser kommentarens tekst. */ ?>
                                 <p class="comment__body"><?= nl2br(e($comment['body'])) ?></p>
 
                                 
-                                <!-- Dato og handlinger vises på samme linje. -->
+                                <?php /* Dato og handlinger vises på samme linje. */ ?>
                                 <div class="comment__footer">
                                     <p class="meta">
                                         <time datetime="<?= e($comment['created_at']) ?>">
@@ -194,11 +194,11 @@ $breadcrumbs = [
                         </div>
                     <?php endif; ?>
 
-                    <!-- Formular til at skrive en ny kommentar. -->
+                    <?php /* Formular til at skrive en ny kommentar. */ ?>
                     <form class="form" action="<?= e(url('/post-comment')) ?>" method="post">
-                        <!-- Beskytter formularen mod CSRF. -->
+                        <?php /* Beskytter formularen mod CSRF. */ ?>
                         <?= \PostCard\Core\Csrf::field() ?>
-                        <!-- Sender opslagets ID med formularen. -->
+                        <?php /* Sender opslagets ID med formularen. */ ?>
                         <input type="hidden" name="post_id" value="<?= e((string) $post['id']) ?>">
 
                         <div class="field">

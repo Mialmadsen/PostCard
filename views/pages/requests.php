@@ -23,8 +23,8 @@
             <p>Medlemmer, der vil dele en oplevelse. Du kan godkende den, ændre perioden eller antallet af opslag først, eller afvise den.</p>
         </header>
 
-        <!-- Viser en bekræftelse efter godkendelse eller afvisning -->
-        <!-- Beskeden kommer fra controlleren via Session::takeFlash() -->
+        <?php /* Viser en bekræftelse efter godkendelse eller afvisning */ ?>
+        <?php /* Beskeden kommer fra controlleren via Session::takeFlash() */ ?>
         <?php if ($success !== null): ?>
 
             <p class="alert" role="status">
@@ -34,7 +34,7 @@
         <?php endif; ?>
 
 
-        <!-- Dropdown til at vælge hvilken gruppes anmodninger der skal vises -->
+        <?php /* Dropdown til at vælge hvilken gruppes anmodninger der skal vises */ ?>
         <form class="form" action="<?= url('/requests') ?>" method="get">
             <div class="field">
                 <label class="field__label" for="group_id">Vælg gruppe</label>
@@ -64,12 +64,12 @@
 
         <?php if (empty($requests)): ?>
 
-            <!-- Vises hvis gruppen ikke har nogen oplevelser der afventer godkendelse -->
+            <?php /* Vises hvis gruppen ikke har nogen oplevelser der afventer godkendelse */ ?>
             <p class="alert">Der er ingen anmodninger lige nu.</p>
 
         <?php else: ?>
 
-            <!-- Viser de oplevelser der afventer godkendelse -->
+            <?php /* Viser de oplevelser der afventer godkendelse */ ?>
             <div class="card-stack">
 
                 <?php foreach ($requests as $request): ?>
@@ -82,7 +82,7 @@
 
                     <article class="card flow" aria-labelledby="request-<?= $experienceId ?>-heading">
 
-                        <!-- Viser hvem der har oprettet oplevelsen og hvornår -->
+                        <?php /* Viser hvem der har oprettet oplevelsen og hvornår */ ?>
                         <p class="group-label">
                             Fra <?= e($authorName) ?> · sendt
                             <time datetime="<?= e($request['created_at']) ?>">
@@ -96,7 +96,7 @@
 
                         <p><?= e($request['description']) ?></p>
 
-                        <!-- Formular til at godkende oplevelsen og eventuelt ændre datoer og post limit -->
+                        <?php /* Formular til at godkende oplevelsen og eventuelt ændre datoer og post limit */ ?>
                         <form
                             class="form"
                             id="approve-<?= $experienceId ?>"
@@ -162,7 +162,7 @@
 
                         <div class="button-row">
 
-                            <!-- Godkend-knappen sender formularen ovenfor -->
+                            <?php /* Godkend-knappen sender formularen ovenfor */ ?>
                             <button
                                 class="button button--primary"
                                 type="submit"
@@ -171,7 +171,7 @@
                                 Godkend
                             </button>
 
-                            <!-- Separat formular til at afvise oplevelsen -->
+                            <?php /* Separat formular til at afvise oplevelsen */ ?>
                             <form
                                 class="js-confirm"
                                 action="<?= url('/requests') ?>"

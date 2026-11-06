@@ -29,18 +29,18 @@
             <p class="alert" role="status"><?= e($settingsMessage) ?></p>
         <?php endif; ?>
 
-        <!-- Three separate forms: each one changes one thing, so an error in one
-             does not throw away what was typed in another -->
+        <?php /* Three separate forms: each one changes one thing, so an error in one
+             does not throw away what was typed in another */ ?>
         <div class="card-stack">
 
             <section class="card" aria-labelledby="picture-heading">
                 <h2 class="section-title" id="picture-heading">Profilbillede</h2>
 
-                <!-- enctype is needed to send a file. -->
+                <?php /* enctype is needed to send a file. */ ?>
                 <form class="form" action="<?= url('/settings/picture') ?>" method="post" enctype="multipart/form-data">
                     <?= \PostCard\Core\Csrf::field() ?>
 
-                    <!-- avatar-preview.js shows the chosen picture here before it is saved -->
+                    <?php /* avatar-preview.js shows the chosen picture here before it is saved */ ?>
                     <?php
                     $avatarUser = $user;
                     $avatarClass = 'avatar--large js-avatar-preview';
@@ -60,7 +60,7 @@
                             </svg>
                             Vælg et nyt billede
                         </label>
-                        <!-- The empty span is filled by avatar-preview.js, e.g. "Du har valgt ferie.jpg. Tryk Gem billede." -->
+                        <?php /* The empty span is filled by avatar-preview.js, e.g. "Du har valgt ferie.jpg. Tryk Gem billede." */ ?>
                         <p class="meta" id="profile-image-hint">JPG, PNG eller WebP, højst 5 MB. Uden billede viser vi dine initialer.
                             <span class="js-avatar-status" role="status"></span></p>
                         <?php if ($pictureError !== null): ?>
@@ -70,15 +70,15 @@
 
                     <div class="button-row">
                         <button class="button button--primary" type="submit">Gem billede</button>
-                        <!-- form="remove-picture" sends the small form below instead of this one
-                             (forms cannot be inside each other). -->
+                        <?php /* form="remove-picture" sends the small form below instead of this one
+                             (forms cannot be inside each other). */ ?>
                         <?php if ($user['profile_image'] !== null): ?>
                             <button class="button button--secondary" type="submit" form="remove-picture">Fjern billede</button>
                         <?php endif; ?>
                     </div>
                 </form>
 
-                <!-- "Fjern billede": the three picture columns become NULL, the initials are shown again -->
+                <?php /* "Fjern billede": the three picture columns become NULL, the initials are shown again */ ?>
                 <?php if ($user['profile_image'] !== null): ?>
                     <form id="remove-picture" action="<?= url('/settings/remove-picture') ?>" method="post">
                         <?= \PostCard\Core\Csrf::field() ?>
@@ -94,7 +94,7 @@
                         nedenfor.</p>
                 <?php endif; ?>
 
-                <!-- The values come from the users table. -->
+                <?php /* The values come from the users table. */ ?>
                 <form class="form" action="<?= url('/settings/details') ?>" method="post">
                     <?= \PostCard\Core\Csrf::field() ?>
 
@@ -145,7 +145,7 @@
                             <?php if (isset($errors['email'])): ?>aria-invalid="true"
                             aria-describedby="email-hint email-error"
                             <?php else: ?>aria-describedby="email-hint" <?php endif; ?>>
-                        <!-- On a new e-mail: email_verified_at = NULL and a verify_email link (user_tokens) is sent -->
+                        <?php /* On a new e-mail: email_verified_at becomes NULL (the address is not confirmed yet) */ ?>
                         <p class="meta" id="email-hint">Skifter du e-mail, sender vi et link til den nye adresse, som du skal bekræfte.</p>
                         <?php if (isset($errors['email'])): ?>
                             <p class="field__error" id="email-error"><?= e($errors['email']) ?></p>
@@ -173,8 +173,8 @@
             <section class="card" aria-labelledby="password-heading">
                 <h2 class="section-title" id="password-heading">Skift adgangskode</h2>
 
-                <!-- The current password proves it is really you. -->
-                <!-- The password fields never get a value="": a password is never printed into the page -->
+                <?php /* The current password proves it is really you. */ ?>
+                <?php /* The password fields never get a value="": a password is never printed into the page */ ?>
                 <form class="form" action="<?= url('/settings/password') ?>" method="post">
                     <?= \PostCard\Core\Csrf::field() ?>
 
@@ -222,9 +222,8 @@
             <section class="card" aria-labelledby="delete-heading">
                 <h2 class="section-title" id="delete-heading">Slet bruger</h2>
 
-                <!-- The rules page promises this ("Du kan altid slette din bruger").
-                     Sets users.user_status = 'deleted', deletes the user's posts
-                     and logs out. The password proves it is really you; confirm.js asks once more. -->
+                <?php /* The rules page promises this ("Du kan altid slette din bruger").
+                     The password proves it is really you; confirm.js asks once more. */ ?>
                 <form class="form js-confirm" action="<?= url('/settings') ?>" method="post"
                     data-confirm="Vil du slette din bruger? Dine oplysninger og dine opslag bliver slettet. Det kan ikke fortrydes.">
                     <?= \PostCard\Core\Csrf::field() ?>

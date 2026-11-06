@@ -20,9 +20,9 @@
             <section class="card flow" aria-labelledby="new-heading">
                 <h2 id="new-heading">Nyt invitationslink</h2>
 
-                <!--
+                <?php /*
                      The server makes a random token, saves only its hash (invitations.token_hash)
-                     and shows the full link once, right after this form is sent. -->
+                     and shows the full link once, right after this form is sent. */ ?>
                 <form action="<?= url('/invite') ?>" method="post">
                     <?= \PostCard\Core\Csrf::field() ?>
                     <input type="hidden" name="group_id" value="<?= e($group['group_id']) ?>">
@@ -38,7 +38,7 @@
                                 value="<?= e($inviteLink) ?>">
                             <button class="button button--secondary js-copy-button" type="button">Kopiér link</button>
                         </div>
-                        <!-- Filled by copy-link.js: "Linket er kopieret." -->
+                        <?php /* Filled by copy-link.js: "Linket er kopieret." */ ?>
                         <p class="meta js-copy-status" role="status"></p>
                     </div>
                 <?php endif; ?>
@@ -51,9 +51,9 @@
                     <p class="alert" role="status"><?= e($inviteMessage) ?></p>
                 <?php endif; ?>
 
-                <!-- Invitations for this group, newest first.
+                <?php /* Invitations for this group, newest first.
                      Status: used_at set = "Brugt", expires_at passed = "Udløbet", else "Venter".
-                     Only a waiting link has "Annuller". -->
+                     Only a waiting link has "Annuller". */ ?>
                 <?php if ($invitations === []): ?>
                     <p>Du har ikke lavet nogen links endnu.</p>
                 <?php else: ?>
@@ -64,8 +64,8 @@
 
                                 <?php if ($invitation['status'] === 'waiting'): ?>
                                     <p class="meta">Venter · udløber <time datetime="<?= e($invitation['expires_at']) ?>"><?= danishDate($invitation['expires_at'], 'd. MMM') ?></time></p>
-                                    <!-- Sets expires_at to now, so the link stops working
-                                         (it is then shown as "Udløbet"). For a link sent to the wrong person. -->
+                                    <?php /* Sets expires_at to now, so the link stops working
+                                         (it is then shown as "Udløbet"). For a link sent to the wrong person. */ ?>
                                     <form class="js-confirm" action="<?= url('/cancel-invitation') ?>" method="post"
                                         data-confirm="Vil du annullere linket? Det kan ikke bruges bagefter.">
                                         <?= \PostCard\Core\Csrf::field() ?>
