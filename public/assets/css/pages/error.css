@@ -1,0 +1,44 @@
+/* ============================================================
+   ERROR — the seagull postman with a postcard he could not deliver (error.php)
+   ============================================================ */
+
+/* Phones: the postman above the card. Wider screens: side by side. */
+.error-page {
+  display: grid;
+  gap: var(--space-lg);
+  align-items: center;
+  max-width: 56rem;
+  margin-inline: auto;
+}
+
+@media (min-width: 48rem) {
+  .error-page {
+    grid-template-columns: 2fr 3fr;
+  }
+}
+
+.error-page__illustration {
+  width: 100%;
+  max-width: 16rem;
+  height: auto;
+  margin-inline: auto;
+}
+
+@media (min-width: 48rem) {
+  .error-page__illustration {
+    max-width: 22rem;
+  }
+}
+
+/* A rubber stamp on the postcard, slightly crooked like a real one */
+.error-page__stamp {
+  display: inline-block;
+  padding: var(--space-2xs) var(--space-sm);
+  border: 3px solid var(--color-link);   /* terracotta: 5.0:1 on cream */
+  border-radius: var(--radius-sm);
+  color: var(--color-link);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  transform: rotate(-4deg);
+}

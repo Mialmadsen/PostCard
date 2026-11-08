@@ -61,6 +61,10 @@ define('BASE_PATH', $basePath);
 // Start the session, so $_SESSION remember who is logged in between pages
 Session::start();
 
+// From here on, a crash nobody catches shows the error page (and is logged) instead of an empty page.
+// Set after BASE_PATH and the session, because the error page needs both.
+set_exception_handler('handleUncaughtException');
+
 // Every POST must carry the session's CSRF token, or it stops here with 403.
 if ($requestMethod === 'POST') {
     Csrf::verify();
