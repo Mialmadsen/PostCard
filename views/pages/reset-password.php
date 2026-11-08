@@ -18,16 +18,30 @@
                     <?= \PostCard\Core\Csrf::field() ?>
                     <div class="field">
                         <label class="field__label" for="password">Ny adgangskode</label>
-                        <input class="field__input" id="password" name="password" type="password"
-                            autocomplete="new-password" minlength="12" required
-                            aria-describedby="password-hint">
+                        <div class="password-field">
+                            <input class="field__input" id="password" name="password" type="password"
+                                autocomplete="new-password" minlength="12" required
+                                aria-describedby="password-hint">
+                            <button class="password-field__toggle js-password-toggle" type="button" aria-controls="password" hidden>
+                                <img class="password-field__icon password-field__eye-closed" src="<?= asset('assets/images/icons/hide-password.svg') ?>" alt="">
+                                <img class="password-field__icon password-field__eye-open" src="<?= asset('assets/images/icons/show-password.svg') ?>" alt="">
+                                <span class="js-password-toggle-text">Vis</span><span class="visually-hidden"> adgangskode</span>
+                            </button>
+                        </div>
                         <p class="meta" id="password-hint">Mindst 12 tegn.</p>
                     </div>
 
                     <div class="field">
                         <label class="field__label" for="password-confirm">Gentag ny adgangskode</label>
-                        <input class="field__input" id="password-confirm" name="password_confirm" type="password"
-                            autocomplete="new-password" minlength="12" required>
+                        <div class="password-field">
+                            <input class="field__input" id="password-confirm" name="password_confirm" type="password"
+                                autocomplete="new-password" minlength="12" required>
+                            <button class="password-field__toggle js-password-toggle" type="button" aria-controls="password-confirm" hidden>
+                                <img class="password-field__icon password-field__eye-closed" src="<?= asset('assets/images/icons/hide-password.svg') ?>" alt="">
+                                <img class="password-field__icon password-field__eye-open" src="<?= asset('assets/images/icons/show-password.svg') ?>" alt="">
+                                <span class="js-password-toggle-text">Vis</span><span class="visually-hidden"> adgangskode</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="form__actions">

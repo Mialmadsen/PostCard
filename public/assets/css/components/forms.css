@@ -189,3 +189,60 @@
   position: absolute;
   left: -9999px;
 }
+
+/* Password field with a "Vis" / "Skjul" button inside it, on the right (password-toggle.js) */
+.password-field {
+  position: relative;
+}
+
+.password-field .field__input {
+  padding-right: 7rem;                    /* room for the button, so the text never runs under it */
+}
+
+/* Edge shows its own eye in password fields: hide it, ours is the one that works everywhere */
+.password-field .field__input::-ms-reveal {
+  display: none;
+}
+
+.password-field__toggle {
+  position: absolute;
+  top: 50%;
+  right: var(--space-2xs);
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2.75rem;                    /* 44px touch target */
+  padding: 0 var(--space-xs);
+  background: none;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--color-secondary);
+  font: inherit;
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+}
+
+.password-field__toggle[hidden] {
+  display: none;                          /* "hidden" must win over display: inline-flex above */
+}
+
+.password-field__icon {
+  width: auto;
+  height: 2.25rem;                        /* the seagulls are taller than wide, so the height decides */
+}
+
+/* The icon shows the state: the seagull covers its eyes while the password is hidden,
+   and looks while it is shown. It follows the field's own type (password-toggle.js switches it), so no extra class is needed. */
+.password-field__eye-open {
+  display: none;
+}
+
+.field__input[type="text"] + .password-field__toggle .password-field__eye-open {
+  display: inline;
+}
+
+.field__input[type="text"] + .password-field__toggle .password-field__eye-closed {
+  display: none;
+}

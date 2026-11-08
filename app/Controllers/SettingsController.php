@@ -27,7 +27,7 @@ class SettingsController
         View::render('settings', [
             'pageTitle' => 'Indstillinger',
             'isLoggedIn' => true,
-            'pageScripts' => ['avatar-preview', 'confirm'],
+            'pageScripts' => ['avatar-preview', 'confirm', 'password-toggle'],
             'user' => $user,
             'old' => $user,
             'errors' => [],
@@ -62,7 +62,7 @@ class SettingsController
             View::render('settings', [
                 'pageTitle' => 'Indstillinger',
                 'isLoggedIn' => true,
-                'pageScripts' => ['avatar-preview', 'confirm'],
+                'pageScripts' => ['avatar-preview', 'confirm', 'password-toggle'],
                 'user' => $user,
                 'old' => [
                     'first_name' => $firstName,
@@ -110,7 +110,7 @@ class SettingsController
             View::render('settings', [
                 'pageTitle' => 'Indstillinger',
                 'isLoggedIn' => true,
-                'pageScripts' => ['avatar-preview', 'confirm'],
+                'pageScripts' => ['avatar-preview', 'confirm', 'password-toggle'],
                 'user' => $user,
                 'old' => $user,
                 'errors' => [],
@@ -193,7 +193,7 @@ class SettingsController
                 'pageTitle' => 'Indstillinger',
                 'isLoggedIn' => true,
                 'passwordErrors' => $passwordErrors,
-                'pageScripts' => ['avatar-preview', 'confirm'],
+                'pageScripts' => ['avatar-preview', 'confirm', 'password-toggle'],
                 'user' => $user,
                 'old' => $user,
                 'errors' => [],

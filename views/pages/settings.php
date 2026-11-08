@@ -180,10 +180,17 @@
 
                     <div class="field">
                         <label class="field__label" for="current-password">Nuværende adgangskode</label>
-                        <input class="field__input" id="current-password" name="current_password" type="password"
-                            autocomplete="current-password" required
-                            <?php if (isset($passwordErrors['current_password'])): ?>aria-invalid="true" aria-describedby="current-password-error"
-                            <?php endif; ?>>
+                        <div class="password-field">
+                            <input class="field__input" id="current-password" name="current_password" type="password"
+                                autocomplete="current-password" required
+                                <?php if (isset($passwordErrors['current_password'])): ?>aria-invalid="true" aria-describedby="current-password-error"
+                                <?php endif; ?>>
+                            <button class="password-field__toggle js-password-toggle" type="button" aria-controls="current-password" hidden>
+                                <img class="password-field__icon password-field__eye-closed" src="<?= asset('assets/images/icons/hide-password.svg') ?>" alt="">
+                                <img class="password-field__icon password-field__eye-open" src="<?= asset('assets/images/icons/show-password.svg') ?>" alt="">
+                                <span class="js-password-toggle-text">Vis</span><span class="visually-hidden"> adgangskode</span>
+                            </button>
+                        </div>
                         <?php if (isset($passwordErrors['current_password'])): ?>
                             <p class="field__error" id="current-password-error"><?= e($passwordErrors['current_password']) ?></p>
                         <?php endif; ?>
@@ -191,11 +198,18 @@
 
                     <div class="field">
                         <label class="field__label" for="new-password">Ny adgangskode</label>
-                        <input class="field__input" id="new-password" name="password" type="password"
-                            autocomplete="new-password" minlength="12" required
-                            <?php if (isset($passwordErrors['password'])): ?>aria-invalid="true"
-                            aria-describedby="new-password-hint new-password-error"
-                            <?php else: ?>aria-describedby="new-password-hint" <?php endif; ?>>
+                        <div class="password-field">
+                            <input class="field__input" id="new-password" name="password" type="password"
+                                autocomplete="new-password" minlength="12" required
+                                <?php if (isset($passwordErrors['password'])): ?>aria-invalid="true"
+                                aria-describedby="new-password-hint new-password-error"
+                                <?php else: ?>aria-describedby="new-password-hint" <?php endif; ?>>
+                            <button class="password-field__toggle js-password-toggle" type="button" aria-controls="new-password" hidden>
+                                <img class="password-field__icon password-field__eye-closed" src="<?= asset('assets/images/icons/hide-password.svg') ?>" alt="">
+                                <img class="password-field__icon password-field__eye-open" src="<?= asset('assets/images/icons/show-password.svg') ?>" alt="">
+                                <span class="js-password-toggle-text">Vis</span><span class="visually-hidden"> adgangskode</span>
+                            </button>
+                        </div>
                         <p class="meta" id="new-password-hint">Mindst 12 tegn. En sætning er nem at huske.</p>
                         <?php if (isset($passwordErrors['password'])): ?>
                             <p class="field__error" id="new-password-error"><?= e($passwordErrors['password']) ?></p>
@@ -204,10 +218,17 @@
 
                     <div class="field">
                         <label class="field__label" for="new-password-confirm">Gentag ny adgangskode</label>
-                        <input class="field__input" id="new-password-confirm" name="password_confirm" type="password"
-                            autocomplete="new-password" minlength="12" required
-                            <?php if (isset($passwordErrors['password_confirm'])): ?>aria-invalid="true" aria-describedby="new-password-confirm-error"
-                            <?php endif; ?>>
+                        <div class="password-field">
+                            <input class="field__input" id="new-password-confirm" name="password_confirm" type="password"
+                                autocomplete="new-password" minlength="12" required
+                                <?php if (isset($passwordErrors['password_confirm'])): ?>aria-invalid="true" aria-describedby="new-password-confirm-error"
+                                <?php endif; ?>>
+                            <button class="password-field__toggle js-password-toggle" type="button" aria-controls="new-password-confirm" hidden>
+                                <img class="password-field__icon password-field__eye-closed" src="<?= asset('assets/images/icons/hide-password.svg') ?>" alt="">
+                                <img class="password-field__icon password-field__eye-open" src="<?= asset('assets/images/icons/show-password.svg') ?>" alt="">
+                                <span class="js-password-toggle-text">Vis</span><span class="visually-hidden"> adgangskode</span>
+                            </button>
+                        </div>
                         <?php if (isset($passwordErrors['password_confirm'])): ?>
                             <p class="field__error" id="new-password-confirm-error"><?= e($passwordErrors['password_confirm']) ?></p>
                         <?php endif; ?>
@@ -233,8 +254,15 @@
 
                     <div class="field">
                         <label class="field__label" for="delete-password">Din adgangskode</label>
-                        <input class="field__input" id="delete-password" name="password" type="password"
-                            autocomplete="current-password" required>
+                        <div class="password-field">
+                            <input class="field__input" id="delete-password" name="password" type="password"
+                                autocomplete="current-password" required>
+                            <button class="password-field__toggle js-password-toggle" type="button" aria-controls="delete-password" hidden>
+                                <img class="password-field__icon password-field__eye-closed" src="<?= asset('assets/images/icons/hide-password.svg') ?>" alt="">
+                                <img class="password-field__icon password-field__eye-open" src="<?= asset('assets/images/icons/show-password.svg') ?>" alt="">
+                                <span class="js-password-toggle-text">Vis</span><span class="visually-hidden"> adgangskode</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="button-row">

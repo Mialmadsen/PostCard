@@ -32,8 +32,15 @@
 
                     <div class="field">
                         <label class="field__label" for="password">Adgangskode</label>
-                        <input class="field__input" id="password" name="password" type="password"
-                            autocomplete="current-password" required>
+                        <div class="password-field">
+                            <input class="field__input" id="password" name="password" type="password"
+                                autocomplete="current-password" required>
+                            <button class="password-field__toggle js-password-toggle" type="button" aria-controls="password" hidden>
+                                <img class="password-field__icon password-field__eye-closed" src="<?= asset('assets/images/icons/hide-password.svg') ?>" alt="">
+                                <img class="password-field__icon password-field__eye-open" src="<?= asset('assets/images/icons/show-password.svg') ?>" alt="">
+                                <span class="js-password-toggle-text">Vis</span><span class="visually-hidden"> adgangskode</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="form__actions">

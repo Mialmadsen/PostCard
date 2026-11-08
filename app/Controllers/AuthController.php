@@ -24,6 +24,7 @@ class AuthController
 
         View::render('login', [
             'pageTitle' => 'Log ind',
+            'pageScripts' => ['password-toggle'],
             'isLoggedIn' => false,
             'invite' => $invite,
         ]);
@@ -41,6 +42,7 @@ class AuthController
             http_response_code(429);
             View::render('login', [
                 'pageTitle' => 'Log ind',
+                'pageScripts' => ['password-toggle'],
                 'isLoggedIn' => false,
                 'error' => 'For mange forsøg. Prøv igen om 15 minutter.',
                 'email' => $email,
@@ -57,6 +59,7 @@ class AuthController
             $attempts->add($email);
             View::render('login', [
                 'pageTitle' => 'Log ind',
+                'pageScripts' => ['password-toggle'],
                 'isLoggedIn' => false,
                 'error' => 'Forkert e-mail eller adgangskode.',
                 'email' => $email,
@@ -69,6 +72,7 @@ class AuthController
         if ($user['user_status'] !== 'active') {
             View::render('login', [
                 'pageTitle' => 'Log ind',
+                'pageScripts' => ['password-toggle'],
                 'isLoggedIn' => false,
                 'error' => 'Din bruger er spærret. Kontakt os, hvis du mener, det er en fejl.',
                 'email' => $email,
@@ -101,6 +105,7 @@ class AuthController
 
         View::render('register', [
             'pageTitle' => 'Opret bruger',
+            'pageScripts' => ['password-toggle'],
             'isLoggedIn' => false,
             'errors' => [],
             'invite' => $invite,
@@ -144,6 +149,7 @@ class AuthController
             http_response_code(422);
             View::render('register', [
                 'pageTitle' => 'Opret bruger',
+                'pageScripts' => ['password-toggle'],
                 'isLoggedIn' => false,
                 'errors' => $errors,
                 'invite' => $invite,
