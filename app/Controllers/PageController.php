@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PostCard\Controllers;
 
 use PostCard\Core\View;
+use PostCard\Core\Auth;
 
 // Simple public page: landing, rules, contact
 class PageController
@@ -13,7 +14,7 @@ class PageController
     {
         View::render('landing', [
             'pageTitle' => 'Velkommen',
-            'isLoggedIn' => false,
+            'isLoggedIn' => Auth::userId() !== null,
             'pageStyle' => 'landing',
         ]);
     }
@@ -22,7 +23,7 @@ class PageController
     {
         View::render('rules', [
             'pageTitle' => 'Regler',
-            'isLoggedIn' => false,
+            'isLoggedIn' => Auth::userId() !== null,
         ]);
     }
 
@@ -30,7 +31,7 @@ class PageController
     {
         View::render('contact', [
             'pageTitle' => 'Kontakt',
-            'isLoggedIn' => false,
+            'isLoggedIn' => Auth::userId() !== null,
         ]);
     }
 }

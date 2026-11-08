@@ -71,7 +71,7 @@ $pageScripts = $pageScripts ?? [];
     <header class="site-header">
         <div class="site-header__inner container">
 
-            <a class="logo" href="<?= url('/') ?>" aria-label="PostCard">
+            <a class="logo" href="<?= url($currentUser !== null ? '/home' : '/') ?>" aria-label="PostCard">
                 <svg class="logo__stamp" viewBox="0 0 36 44" aria-hidden="true" focusable="false">
                     <defs>
                         <?php /* Perforation: a grid of holes, used only along the four edges */ ?>
