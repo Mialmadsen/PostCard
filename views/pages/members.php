@@ -4,7 +4,8 @@
 /** @var array $members */
 /** @var int $currentUserId */
 /** @var bool $isAdmin */
-/** @var string|null $memberMessage */
+/** @var string|null $memberMessage the success message after a redirect, or null */
+/** @var string|null $memberError   the failure message after a redirect, or null */
 
 
 
@@ -35,7 +36,20 @@
 
         </header>
         <?php if ($memberMessage !== null): ?>
-            <p class="alert" role="status"><?= e($memberMessage) ?></p>
+            <?php
+            $flashMessage = $memberMessage;
+            $flashType = 'success';
+            $flashLink = null;
+            require __DIR__ . '/../partials/flash.php';
+            ?>
+        <?php endif; ?>
+        <?php if ($memberError !== null): ?>
+            <?php
+            $flashMessage = $memberError;
+            $flashType = 'error';
+            $flashLink = null;
+            require __DIR__ . '/../partials/flash.php';
+            ?>
         <?php endif; ?>
 
         <div class="card-stack">
@@ -73,7 +87,7 @@
                             <?php if ($isAdmin && $member['member_role'] !== 'group_admin'): ?>
                                 <div class="button-row member__actions">
                                     <form class="js-confirm" action="<?= url('/make-admin') ?>" method="post"
-                                        data-confirm="Vil du gøre <?= e($fullName) ?> til admin? Admins kan godkende oplevelser, invitere og fjerne medlemmer.">
+                                        data-confirm="Vil du gøre <?= e($fullName) ?> til admin? Admins kan godkende oplevelser, invitere og fjerne medlemmer." data-confirm-button="Ja, gør til admin">
                                         <?= \PostCard\Core\Csrf::field() ?>
                                         <input type="hidden" name="group_id" value="<?= $group['group_id'] ?>">
                                         <input type="hidden" name="user_id" value="<?= $member['user_id'] ?>">
@@ -81,7 +95,7 @@
                                                 class="visually-hidden"><?= e($fullName) ?></span> til admin</button>
                                     </form>
                                     <form class="js-confirm" action="<?= url('/remove-member') ?>" method="post"
-                                        data-confirm="Vil du fjerne <?= e($fullName) ?> fra <?= e($group['name']) ?>? Det, der er delt, bliver i gruppens album.">
+                                        data-confirm="Vil du fjerne <?= e($fullName) ?> fra <?= e($group['name']) ?>? Det, der er delt, bliver i gruppens album." data-confirm-button="Ja, fjern">
                                         <?= \PostCard\Core\Csrf::field() ?>
                                         <input type="hidden" name="group_id" value="<?= $group['group_id'] ?>">
                                         <input type="hidden" name="user_id" value="<?= $member['user_id'] ?>">

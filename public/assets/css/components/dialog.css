@@ -1,0 +1,48 @@
+/* ============================================================
+   DIALOG — our pop-up with a seagull postman: messages after a redirect (flash) and "are you sure?" questions
+   (views/partials/flash.php + flash-dialog.js, confirm.js)
+   ============================================================ */
+
+.dialog {
+  width: min(24rem, calc(100% - 2 * var(--space-sm)));   /* never wider than the phone, 16px air each side */
+  padding: var(--space-lg) var(--space-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 0;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-lifted);
+  text-align: center;
+}
+
+/* As a pop-up: back in the middle of the screen (main.css sets margin: 0 on every element) */
+.dialog:modal {
+  margin: auto;
+}
+
+/* Without JavaScript the dialog is open in the page (not a pop-up): keep it in the flow, above the content */
+.dialog:not(:modal) {
+  position: static;
+  margin: 0 auto var(--space-md);
+}
+
+/* The page behind the pop-up is dimmed, so the eye goes to the message */
+.dialog::backdrop {
+  background-color: rgba(30, 30, 28, 0.45);
+}
+
+.dialog__illustration {
+  width: auto;
+  height: 9rem;
+  margin-inline: auto;
+}
+
+.dialog__text {
+  margin-top: var(--space-sm);
+  font-size: 1.125rem;                    /* a bit larger than body text, still easy to read when long */
+  font-weight: var(--weight-semibold);
+}
+
+.dialog__actions {
+  justify-content: center;
+  margin-top: var(--space-md);
+}

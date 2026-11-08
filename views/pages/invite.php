@@ -48,7 +48,20 @@
                 <h2 class="section-title" id="sent-heading">Dine links</h2>
 
                 <?php if ($inviteMessage !== null): ?>
-                    <p class="alert" role="status"><?= e($inviteMessage) ?></p>
+                    <?php
+                    $flashMessage = $inviteMessage;
+                    $flashType = 'success';
+                    $flashLink = null;
+                    require __DIR__ . '/../partials/flash.php';
+                    ?>
+                <?php endif; ?>
+                <?php if ($inviteError !== null): ?>
+                    <?php
+                    $flashMessage = $inviteError;
+                    $flashType = 'error';
+                    $flashLink = null;
+                    require __DIR__ . '/../partials/flash.php';
+                    ?>
                 <?php endif; ?>
 
                 <?php /* Invitations for this group, newest first.
@@ -67,7 +80,7 @@
                                     <?php /* Sets expires_at to now, so the link stops working
                                          (it is then shown as "Udløbet"). For a link sent to the wrong person. */ ?>
                                     <form class="js-confirm" action="<?= url('/cancel-invitation') ?>" method="post"
-                                        data-confirm="Vil du annullere linket? Det kan ikke bruges bagefter.">
+                                        data-confirm="Vil du annullere linket? Det kan ikke bruges bagefter." data-confirm-button="Ja, annuller linket">
                                         <?= \PostCard\Core\Csrf::field() ?>
                                         <input type="hidden" name="invitation_id" value="<?= e($invitation['invitation_id']) ?>">
                                         <input type="hidden" name="group_id" value="<?= e($group['group_id']) ?>">

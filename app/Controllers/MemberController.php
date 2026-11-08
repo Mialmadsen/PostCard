@@ -32,6 +32,7 @@ class MemberController
         $memberList = $members->findActiveByGroup($groupId);
         $role = $members->findActiveRole(Auth::userId(), $groupId);
         $memberMessage = Session::takeFlash('member_message');
+        $memberError = Session::takeFlash('member_error');
 
         View::render(
             'members',
@@ -45,6 +46,7 @@ class MemberController
                 'pageStyle' => 'members',
                 'pageScripts' => ['confirm'],
                 'memberMessage' => $memberMessage,
+                'memberError' => $memberError,
             ]
         );
     }
@@ -62,7 +64,11 @@ class MemberController
         Auth::requireGroupAdmin($groupId);
         $members = new GroupMemberRepository();
         $isMadeAdmin = $members->makeAdmin($groupId, $userId);
-        Session::flash('member_message', $isMadeAdmin ? 'Medlemmet er nu admin.' : 'Medlemmet kunne ikke gøres til admin. Personen er måske allerede admin eller ikke længere medlem.');
+        if ($isMadeAdmin) {
+            Session::flash('member_message', 'Medlemmet er nu admin.');
+        } else {
+            Session::flash('member_error', 'Medlemmet kunne ikke gøres til admin. Personen er måske allerede admin eller ikke længere medlem.');
+        }
 
         redirect('/members?group_id=' . $groupId);
     }
@@ -80,7 +86,11 @@ class MemberController
         Auth::requireGroupAdmin($groupId);
         $members = new GroupMemberRepository();
         $isRemoved = $members->removeMember($groupId, $userId);
-        Session::flash('member_message', $isRemoved ? 'Medlemmet er fjernet fra gruppen.' : 'Medlemmet kunne ikke fjernes. Personen er måske admin eller ikke længere medlem.');
+        if ($isRemoved) {
+            Session::flash('member_message', 'Medlemmet er fjernet fra gruppen.');
+        } else {
+            Session::flash('member_error', 'Medlemmet kunne ikke fjernes. Personen er måske admin eller ikke længere medlem.');
+        }
 
         redirect('/members?group_id=' . $groupId);
     }
@@ -105,7 +115,7 @@ class MemberController
                 throw $exception;
             }
 
-            Session::flash('member_message', 'Du er den eneste admin. Gør et andet medlem til admin, før du forlader gruppen.');
+            Session::flash('member_error', 'Du er den eneste admin. Gør et andet medlem til admin, før du forlader gruppen.');
             redirect('/members?group_id=' . $groupId);
         }
 

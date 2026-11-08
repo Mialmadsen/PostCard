@@ -26,7 +26,12 @@
         </header>
 
         <?php if ($settingsMessage !== null): ?>
-            <p class="alert" role="status"><?= e($settingsMessage) ?></p>
+            <?php
+            $flashMessage = $settingsMessage;
+            $flashType = 'success';
+            $flashLink = null;
+            require __DIR__ . '/../partials/flash.php';
+            ?>
         <?php endif; ?>
 
         <?php /* Three separate forms: each one changes one thing, so an error in one
@@ -246,11 +251,11 @@
                 <?php /* The rules page promises this ("Du kan altid slette din bruger").
                      The password proves it is really you; confirm.js asks once more. */ ?>
                 <form class="form js-confirm" action="<?= url('/settings') ?>" method="post"
-                    data-confirm="Vil du slette din bruger? Dine oplysninger og dine opslag bliver slettet. Det kan ikke fortrydes.">
+                    data-confirm="Vil du slette din bruger? Du kan ikke logge ind igen, og det kan ikke fortrydes. Dine opslag og kommentarer bliver i grupperne." data-confirm-button="Ja, slet min bruger">
                     <?= \PostCard\Core\Csrf::field() ?>
                     <input type="hidden" name="form" value="delete">
 
-                    <p>Dine oplysninger og dine opslag bliver slettet, og du kan ikke logge ind igen.</p>
+                    <p>Din e-mail, dit brugernavn og dit profilbillede bliver slettet, og du kan ikke logge ind igen. Dine opslag og kommentarer bliver i grupperne.</p>
 
                     <div class="field">
                         <label class="field__label" for="delete-password">Din adgangskode</label>

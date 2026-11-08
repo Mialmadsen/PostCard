@@ -87,6 +87,7 @@ class GroupController
         $group = $groups->findById($groupId);
         $inviteLink = Session::takeFlash('invite_link');
         $inviteMessage = Session::takeFlash('invite_message');
+        $inviteError = Session::takeFlash('invite_error');
 
         // The group's links for "Dine links", with status waiting / used / expired
         $invitations = new InvitationRepository();
@@ -102,6 +103,7 @@ class GroupController
                 'inviteLink' => $inviteLink,
                 'invitations' => $groupInvitations,
                 'inviteMessage' => $inviteMessage,
+                'inviteError' => $inviteError,
                 'pageStyle' => 'invite',
                 'pageScripts' => ['copy-link', 'confirm'],
             ]
@@ -224,7 +226,11 @@ class GroupController
         $invitations = new InvitationRepository();
         $isCancelled = $invitations->cancel($invitationId, $groupId);
 
-        Session::flash('invite_message', $isCancelled ? 'Linket er annulleret.' : 'Linket kunne ikke annulleres. Det er allerede brugt eller udløbet.');
+        if ($isCancelled) {
+            Session::flash('invite_message', 'Linket er annulleret.');
+        } else {
+            Session::flash('invite_error', 'Linket kunne ikke annulleres. Det er allerede brugt eller udløbet.');
+        }
 
         redirect('/invite?group_id=' . $groupId);
     }

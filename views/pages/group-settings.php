@@ -23,10 +23,12 @@
             <h1>Gruppens indstillinger</h1>
         </header>
         <?php if ($settingsMessage !== null): ?>
-            <p class="alert" role="status">
-                <?= e($settingsMessage) ?>
-                <a href="<?= url('/group?id=' . $group['group_id']) ?>">Gå til gruppen</a>
-            </p>
+            <?php
+            $flashMessage = $settingsMessage;
+            $flashType = 'success';
+            $flashLink = ['label' => 'Gå til gruppen', 'path' => '/group?id=' . $group['group_id']];
+            require __DIR__ . '/../partials/flash.php';
+            ?>
         <?php endif; ?>
 
         <div class="card-stack">
