@@ -361,7 +361,7 @@ class PostController
         View::render('post', [
             'pageTitle' => 'Opslag',
             'pageStyle' => 'post',
-            'pageScripts' => ['lightbox'],
+            'pageScripts' => ['lightbox', 'likes'],
             'isLoggedIn' => true,
             'post' => $post,
             'images' => $images,

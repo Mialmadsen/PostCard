@@ -40,8 +40,9 @@ class ExperienceController
         $data = $this->getExperienceData($experienceId);
         View::render('experience', array_merge($data, [
             'pageTitle' => $data['experience']['name'],
+            'pageScripts' => ['likes'],
             'pageStyle' => 'experience',
-            'isLoggedIn' => true
+            'isLoggedIn' => true,
         ]));
     }
 

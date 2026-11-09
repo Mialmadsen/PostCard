@@ -218,6 +218,7 @@ BEGIN
     END IF;
 END//
 
+
 CREATE TRIGGER trg_posts_check_limits
 BEFORE INSERT ON posts
 FOR EACH ROW
@@ -226,31 +227,39 @@ BEGIN
     DECLARE experience_end DATE;
     DECLARE max_posts INT;
     DECLARE current_posts INT;
+    DECLARE group_posting_mode VARCHAR(20);
 
-    -- Henter datoer og post limit fra den tilhørende experience
-    SELECT start_date, end_date, post_limit
-    INTO experience_start, experience_end, max_posts
-    FROM experiences
-    WHERE experience_id = NEW.experience_id;
+    -- Henter datoer, post limit og gruppens posting mode
+    SELECT e.start_date, e.end_date, e.post_limit, g.posting_mode
+    INTO experience_start, experience_end, max_posts, group_posting_mode
+    FROM experiences AS e
+    JOIN user_groups AS g ON e.group_id = g.group_id
+    WHERE e.experience_id = NEW.experience_id;
 
-    -- Kontrollerer om experience er aktiv på dags dato
+    -- Kontrollerer om oplevelsen er aktiv på dags dato
     IF CURDATE() < experience_start OR CURDATE() > experience_end THEN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Du kan kun oprette opslag under din experience.';
     END IF;
 
-    -- Tæller hvor mange opslag der allerede findes
-    SELECT COUNT(*)
-    INTO current_posts
-    FROM posts
-    WHERE experience_id = NEW.experience_id;
+    -- Kun permission-grupper har en begrænsning på antal opslag
+    IF group_posting_mode = 'permission' THEN
 
-    -- Kontrollerer om post limit er nået
-    IF current_posts >= max_posts THEN
-        SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Du har nået grænsen for antal opslag.';
+        -- Tæller eksisterende opslag i oplevelsen
+        SELECT COUNT(*)
+        INTO current_posts
+        FROM posts
+        WHERE experience_id = NEW.experience_id;
+
+        -- Afviser opslag, hvis grænsen er nået
+        IF current_posts >= max_posts THEN
+            SIGNAL SQLSTATE '45000'
+                SET MESSAGE_TEXT = 'Du har nået grænsen for antal opslag.';
+        END IF;
+
     END IF;
 END//
+
 
 DELIMITER ;
 
@@ -269,3 +278,43 @@ SELECT
 FROM group_members AS gm
 JOIN user_groups AS g ON g.group_id =gm.group_id
 WHERE gm.member_status = 'active';
+
+
+-- View: Overview of posts with author, group and interaction counts
+CREATE VIEW v_post_overview AS
+SELECT
+    p.post_id,
+    p.experience_id,
+    p.caption,
+    p.location,
+    p.created_at,
+    e.name AS experience_name,
+    e.group_id,
+    e.experience_status,
+    g.name AS group_name,
+    u.user_id AS author_id,
+    u.first_name,
+    u.last_name,
+
+    -- Number of likes
+    (SELECT COUNT(*)
+        FROM likes AS l
+        WHERE l.post_id = p.post_id
+    ) AS likes,
+
+    -- Number of comments
+    (SELECT COUNT(*)
+        FROM comments AS c
+        WHERE c.post_id = p.post_id
+    ) AS comments,
+
+    -- Number of views
+    (SELECT COUNT(*)
+        FROM post_views AS pv
+        WHERE pv.post_id = p.post_id
+    ) AS views
+
+FROM posts AS p
+JOIN experiences AS e ON p.experience_id = e.experience_id
+JOIN user_groups AS g ON e.group_id = g.group_id
+JOIN users AS u ON e.user_id = u.user_id

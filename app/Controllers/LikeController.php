@@ -62,7 +62,21 @@ class LikeController
             $this->likeRepository->create($postId, Auth::userId());
         }
 
-        // Sender brugeren tilbage til opslaget.
+        // Hvis anmodningen kommer fra JavaScript,
+        // sender vi resultatet som JSON i stedet for at genindlæse siden.
+        if ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '' === 'XMLHttpRequest') {
+            header('Content-Type: application/json; charset=utf-8');
+
+            echo json_encode([
+                'success' => true,
+                'liked' => !$hasLiked,
+                'likes' => $this->likeRepository->countByPost($postId)
+            ]);
+
+            exit;
+        }
+
+        // Almindelig formular virker stadig uden JavaScript.
         header('Location: ' . url('/post?id=' . $postId));
         exit;
     }
