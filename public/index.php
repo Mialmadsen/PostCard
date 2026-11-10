@@ -122,6 +122,7 @@ $router->add('POST', '/post-comment', [CommentController::class, 'store']);
 $router->add('POST', '/update-comment', [CommentController::class, 'update']);
 $router->add('POST', '/delete-comment', [CommentController::class, 'delete']);
 $router->add('POST', '/post-like', [LikeController::class, 'toggle']);
+$router->add('GET', '/post-likes', [LikeController::class, 'users']);
 $router->add('GET', '/post-image', [PostImageController::class, 'show']);
 $router->add('GET', '/requests', [RequestController::class, 'index']);
 $router->add('POST', '/requests', [RequestController::class, 'update']);

@@ -64,9 +64,18 @@
                     <svg class="post-stats__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                         <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" />
                     </svg>
-                    <span data-like-count><?= (int) $post['likes'] ?></span>
                 </button>
             </form>
+                <?php /* Åbner en oversigt over brugere, der har liket opslaget. */ ?>
+                <button
+                    type="button"
+                    class="like-count-button"
+                    data-like-users
+                    data-post-id="<?= (int) $post['id'] ?>"
+                    data-url="<?= e(url('/post-likes?id=' . $post['id'])) ?>"
+                    aria-label="Se hvem der har liket opslaget">
+                    <span data-like-count><?= (int) $post['likes'] ?></span> likes
+                </button>
         </li>
 
 

@@ -80,4 +80,58 @@ class LikeController
         header('Location: ' . url('/post?id=' . $postId));
         exit;
     }
+
+
+    // Henter en oversigt over brugere, der har liket et opslag.
+    public function users(): void
+    {
+        // Brugeren skal være logget ind.
+        Auth::requireLogin();
+
+        // Henter opslagets ID fra URL'en.
+        $postId = queryId('id');
+
+        if ($postId === null) {
+            abort(400, 'Ugyldigt post-ID.');
+        }
+
+        // Kontrollerer, at brugeren har adgang til opslaget.
+        $post = $this->postRepository->findById(
+            $postId,
+            Auth::userId()
+        );
+
+        if ($post === null) {
+            abort(404, 'Opslaget blev ikke fundet.');
+        }
+
+        // Henter brugerne, der har liket opslaget.
+        $users = $this->likeRepository->findUsersByPost($postId);
+
+        // Tilføjer en URL til brugerens profilbillede,
+        // hvis brugeren har uploadet et.
+        foreach ($users as &$user) {
+            $user['avatar_url'] = null;
+
+            if (!empty($user['profile_image'])) {
+                $user['avatar_url'] = url(
+                    '/profile-image?user_id=' . (int) $user['user_id']
+                    . '&v=' . (int) $user['profile_image_version']
+                );
+            }
+        }
+        unset($user);
+
+
+        // Sender resultatet som JSON til JavaScript.
+        header('Content-Type: application/json; charset=utf-8');
+
+        echo json_encode([
+            'success' => true,
+            'users' => $users
+        ]);
+
+        exit;
+    }
+
 }

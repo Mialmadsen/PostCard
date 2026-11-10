@@ -64,4 +64,29 @@ class LikeRepository extends Repository
             'post_id' => $postId
         ]);
     }
+
+
+    // Henter brugerne, der har liket et bestemt opslag.
+    public function findUsersByPost(int $postId): array
+    {
+        $sql = "
+            SELECT
+                u.user_id,
+                u.first_name,
+                u.last_name,
+                u.profile_image,
+                u.profile_image_version
+            FROM likes AS l
+            JOIN users AS u
+                ON l.user_id = u.user_id
+            WHERE l.post_id = :post_id
+                AND u.user_status = 'active'
+            ORDER BY l.created_at DESC
+        ";
+
+        return $this->fetchAll($sql, [
+            'post_id' => $postId
+        ]);
+    }
+
 }

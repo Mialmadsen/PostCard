@@ -40,6 +40,7 @@ $pageScripts = $pageScripts ?? [];
     <link rel="stylesheet" href="<?= asset('assets/css/components/envelope.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/forms.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/dialog.css') ?>">
+    <link rel="stylesheet" href="<?= asset('assets/css/components/likes-dialog.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/lightbox.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/postmark.css') ?>">
     <link rel="stylesheet" href="<?= asset('assets/css/components/polaroid.css') ?>">
