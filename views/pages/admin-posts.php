@@ -96,7 +96,14 @@
                                             </a>
                                         </td>
 
-                                        <td><?= e($post['group_name']) ?></td>
+                                        
+                                        <td>
+                                            <!-- Link til gruppens side i operatorvisning -->
+                                            <a href="<?= e(url('/admin/groups/show?id=' . (int) $post['group_id'])) ?>">
+                                                <?= e($post['group_name']) ?>
+                                            </a>
+                                        </td>
+
 
                                         <td>
                                             <?= e($post['first_name'] . ' ' . $post['last_name']) ?>

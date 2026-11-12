@@ -47,9 +47,23 @@ $breadcrumbs = $operatorView
             <!-- Tekst, likes og kommentarer -->
             <div class="flow">
                 <section class="card flow" aria-label="Opslaget">
+                    
                     <p class="group-label">
-                        <?= e($post['group_name']) ?> · <?= e($post['experience_name']) ?>
+                        <!-- Gruppen åbnes med den adgang, der passer til visningen -->
+                        <a href="<?= e(url(($operatorView ? '/admin/groups/show?id=' : '/group?id=') . (int) $post['group_id'])) ?>">
+                            <?= e($post['group_name']) ?>
+                        </a> ·
+                        <?php if ($operatorView): ?>
+                            <a href="<?= e(url('/admin/experiences/show?id=' . (int) $post['experience_id'])) ?>">
+                                <?= e($post['experience_name']) ?>
+                            </a>
+                        <?php else: ?>
+                            <a href="<?= e(url('/experience?id=' . (int) $post['experience_id'])) ?>">
+                                <?= e($post['experience_name']) ?>
+                            </a>
+                        <?php endif; ?>
                     </p>
+
                     <p><?= nl2br(e($post['caption'] ?? '')) ?></p>
                     <p class="meta">
                         <?= e(trim($post['first_name'] . ' ' . $post['last_name'])) ?> ·
@@ -156,20 +170,30 @@ $breadcrumbs = $operatorView
                                                 <button class="comment__action comment__action--delete" type="submit">Slet</button>
                                             </form>
                                         <?php endif; ?>
-
+                  
                                         <?php if ($operatorView): ?>
-                                            <!-- Operatoren kan slette kommentarer fra alle opslag. -->
-                                            <form action="<?= e(url('/admin/posts/comments/delete')) ?>" method="post"
-                                                onsubmit="return confirm('Er du sikker på, at du vil slette denne kommentar?');">
+                                            <!-- Operatoren kan slette kommentarer fra alle opslag -->
+                                            <form
+                                                class="js-confirm"
+                                                action="<?= e(url('/admin/posts/comments/delete')) ?>"
+                                                method="post"
+                                                data-confirm="Er du sikker på, at du vil slette denne kommentar?"
+                                                data-confirm-button="Ja, slet kommentar"
+                                            >
                                                 <?= \PostCard\Core\Csrf::field() ?>
-                                                <input type="hidden" name="comment_id" value="<?= (int) $comment['comment_id'] ?>">
-                                                <input type="hidden" name="post_id" value="<?= (int) $post['id'] ?>">
+
+                                                <input type="hidden" name="comment_id"
+                                                    value="<?= (int) $comment['comment_id'] ?>">
+
+                                                <input type="hidden" name="post_id"
+                                                    value="<?= (int) $post['id'] ?>">
+
                                                 <button class="comment__action comment__action--delete" type="submit">
                                                     Slet kommentar
                                                 </button>
                                             </form>
                                         <?php endif; ?>
-
+                                        
                                     </div>
                                 </article>
                             <?php endforeach; ?>

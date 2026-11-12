@@ -5,23 +5,34 @@ Viewet bruger de variabler, som controlleren sender videre, til at vise oplevels
     <div class="container">
         
         <?php
-        // Opretter breadcrumbs, så brugeren kan navigere
-        // tilbage til sine grupper og den aktuelle gruppe.
-        $breadcrumbs = [
-            ['label' => 'Mine grupper', 'path' => '/home'],
-            ['label' => $experience['group_name'], 'path' => '/group?id=' . (int) $experience['group_id']],
-            ['label' => $experience['name'], 'path' => '/experience?id=' . (int) $experience['experience_id']],
-        ];
+        // Operatoren skal kunne gå tilbage til Admin Posts.
+        $operatorView = $operatorView ?? false;
 
-        // Indlæser den fælles breadcrumbs-fil.
+        $breadcrumbs = $operatorView
+            ? [
+                ['label' => 'Admin Posts', 'path' => '/admin/posts'],
+                ['label' => $experience['name'], 'path' => '/admin/experiences/show?id=' . (int) $experience['experience_id']]
+            ]
+            : [
+                ['label' => 'Mine grupper', 'path' => '/home'],
+                ['label' => $experience['group_name'], 'path' => '/group?id=' . (int) $experience['group_id']],
+                ['label' => $experience['name'], 'path' => '/experience?id=' . (int) $experience['experience_id']]
+            ];
+
         require __DIR__ . '/../partials/breadcrumbs.php';
         ?>
 
-
-        <header class="page-header experience-header">
+        <header class="page-header experience-header">   
             <p class="group-label">
-                <?= e($experience['group_name']) ?>
+                <!-- Link til gruppen afhængigt af brugerens adgang -->
+                <a href="<?= e(url(
+                    ($operatorView ? '/admin/groups/show?id=' : '/group?id=')
+                    . (int) $experience['group_id']
+                )) ?>">
+                    <?= e($experience['group_name']) ?>
+                </a>
             </p>
+
             <h1 class="experience-header__title">
                 <?= e($experience['name']) ?>
             </h1>
@@ -54,7 +65,8 @@ Viewet bruger de variabler, som controlleren sender videre, til at vise oplevels
         <section class="card experience-owner" aria-labelledby="owner-heading">
             <?php
             // Kontrollerer om den indloggede bruger har oprettet oplevelsen
-            $isOwner = (int) $experience['user_id'] === \PostCard\Core\Auth::userId();
+            // Operatorvisningen er skrivebeskyttet.
+            $isOwner = !$operatorView && (int) $experience['user_id'] === \PostCard\Core\Auth::userId();
             ?>
             <h2 id="owner-heading">
                 <?= $isOwner ? 'Din oplevelse' : 'Om oplevelsen' ?>

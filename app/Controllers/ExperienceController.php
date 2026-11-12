@@ -46,6 +46,30 @@ class ExperienceController
         ]));
     }
 
+
+    // Viser en experience for operatoren på tværs af alle grupper.
+    public function showAsOperator(): void
+    {
+        Auth::requireOperator();
+
+        $experienceId = queryId('id');
+        if ($experienceId === null) {
+            abort(400, 'Ugyldigt experience-ID.');
+        }
+
+        $data = $this->getExperienceData($experienceId, true);
+
+        View::render('experience', array_merge($data, [
+            'pageTitle' => 'Administration · ' . $data['experience']['name'],
+            'pageScripts' => ['likes'],
+            'pageStyle' => 'experience',
+            'isLoggedIn' => true,
+            'isOperator' => true,
+            'operatorView' => true
+        ]));
+    }
+
+
     // Viser formularen til at oprette en ny oplevelse.
     public function create(): void
     {
@@ -109,13 +133,17 @@ class ExperienceController
     }
 
     // Henter og samler oplysninger til experience-siden.
-    private function getExperienceData(int $experienceId): array
+    private function getExperienceData(int $experienceId, bool $operatorView = false): array
     {
         $experience = $this->experienceRepository->find($experienceId);
         if ($experience === null) {
             abort(404, 'Oplevelsen blev ikke fundet.');
         }
-        Auth::requireMember((int) $experience['group_id']);
+        // Almindelige brugere skal være medlemmer af gruppen.
+        // Operatorens adgang er allerede kontrolleret i showAsOperator().
+        if (!$operatorView) {
+            Auth::requireMember((int) $experience['group_id']);
+        }
         $posts = $this->postFeedRepository->findByExperience($experienceId);
         $userId = Auth::userId();
         foreach ($posts as &$post) {

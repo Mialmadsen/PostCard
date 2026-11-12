@@ -58,4 +58,50 @@ class GroupPageController
             'experiences' => $experiences,
         ]);
     }
+
+
+    // Viser en gruppe for operatoren, også selvom operatoren ikke er medlem
+    public function showAsOperator(): void
+    {
+        // Kontrollerer, at brugeren er operator
+        Auth::requireOperator();
+
+        // Henter gruppens ID fra URL'en
+        $groupId = queryId('id');
+
+        if ($groupId === null) {
+            abort(400, 'Ugyldigt gruppe-ID');
+        }
+
+        // Henter gruppens oplysninger
+        $groupRepository = new GroupRepository();
+        $group = $groupRepository->findById($groupId);
+
+        if (!$group) {
+            abort(404, 'Gruppen blev ikke fundet');
+        }
+
+        // Henter gruppens medlemmer og oplevelser
+        $memberRepository = new GroupMemberRepository();
+        $memberCount = $memberRepository->countActiveMembers($groupId);
+        $members = $memberRepository->findFirstMembersByGroup($groupId);
+
+        $experienceRepository = new ExperienceRepository();
+        $experiences = $experienceRepository->findVisibleByGroup($groupId);
+
+        // Genbruger gruppesiden i operator-visning
+        View::render('group', [
+            'pageTitle' => 'Administration · ' . $group['name'],
+            'pageStyle' => 'group',
+            'pageScripts' => ['confirm'],
+            'isLoggedIn' => true,
+            'group' => $group,
+            'memberCount' => $memberCount,
+            'memberRole' => null,
+            'members' => $members,
+            'experiences' => $experiences,
+            'operatorView' => true
+        ]);
+    }
+
 }

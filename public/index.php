@@ -110,7 +110,9 @@ $router->add('POST', '/make-admin', [MemberController::class, 'makeAdmin']);
 $router->add('POST', '/remove-member', [MemberController::class, 'removeMember']);
 $router->add('POST', '/leave-group', [MemberController::class, 'leaveGroup']);
 $router->add('GET', '/group', [GroupPageController::class, 'show']);
+$router->add('GET', '/admin/groups/show', [GroupPageController::class, 'showAsOperator']);
 $router->add('GET', '/experience', [ExperienceController::class, 'show']);
+$router->add('GET', '/admin/experiences/show', [ExperienceController::class, 'showAsOperator']);
 $router->add('GET', '/create-experience', [ExperienceController::class, 'create']);
 $router->add('POST', '/create-experience', [ExperienceController::class, 'store']);
 $router->add('GET', '/create-post', [PostController::class, 'create']);
@@ -131,6 +133,7 @@ $router->add('GET', '/admin/posts', [AdminPostController::class, 'index']);
 $router->add('GET', '/admin/posts/show', [AdminPostController::class, 'show']);
 $router->add('POST', '/admin/posts/delete', [AdminPostController::class, 'delete']);
 $router->add('POST', '/admin/posts/comments/delete', [AdminPostController::class, 'deleteComment']);
+
 
 // Find who handles this address, e.g. [PageController::class, 'landing'], or null if unknown.
 $handler = $router->find($requestMethod, $path);

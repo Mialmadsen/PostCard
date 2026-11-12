@@ -96,7 +96,7 @@ class AdminPostController
         View::render('post', [
             'pageTitle' => 'Administration · Vis opslag',
             'pageStyle' => 'post',
-            'pageScripts' => ['lightbox'],
+            'pageScripts' => ['lightbox', 'confirm'],
             'isLoggedIn' => true,
             'isOperator' => true,
             'operatorView' => true,

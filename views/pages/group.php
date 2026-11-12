@@ -1,5 +1,8 @@
 <?php
 // Header og footer indlæses automatisk gennem View::render()
+
+// Kontrollerer, om siden vises af en operator
+$operatorView = $operatorView ?? false;
 ?>
 
 <main id="main" class="site-main">
@@ -7,10 +10,10 @@
         <?php
         // Opretter breadcrumbs til den aktuelle gruppe
         $breadcrumbs = [
-            ['label' => 'Mine grupper', 'path' => '/home'],
+            ['label' => $operatorView ? 'Administration' : 'Mine grupper', 'path' => $operatorView ? '/admin' : '/home'],
             [
                 'label' => $group['name'],
-                'path' => '/group?id=' . (int) $group['group_id']
+                'path' => ($operatorView ? '/admin/groups/show?id=' : '/group?id=') . (int) $group['group_id']
             ],
         ];
 
@@ -23,7 +26,11 @@
         <p class="meta">
             <?= (int) $memberCount ?> medlemmer ·
             <?= $group['posting_mode'] === 'open' ? 'Åben for opslag' : 'Kræver godkendelse' ?>
-            · <?= $memberRole === 'group_admin' ? 'Du er admin' : 'Du er medlem' ?>
+            <?php if ($operatorView): ?>
+                · Operatorvisning
+            <?php else: ?>
+                · <?= $memberRole === 'group_admin' ? 'Du er admin' : 'Du er medlem' ?>
+            <?php endif; ?>
         </p>
 
         <div class="sidebar-layout">
@@ -31,6 +38,7 @@
             <?php /* Left column: about the group */ ?>
             <div class="flow">
             
+                <?php if (!$operatorView): ?>
                 <section class="card flow" aria-labelledby="share-heading">
                     <h2 id="share-heading">Del en oplevelse</h2>
                     <?php if ($group['posting_mode'] === 'open' || $memberRole === 'group_admin'): ?>
@@ -45,6 +53,7 @@
                         <p><a class="button button--primary" href="<?= url('/create-experience?group_id=' . (int) $group['group_id']) ?>">Anmod om at dele en oplevelse</a></p>
                     <?php endif; ?>
                 </section>
+                <?php endif; ?>
 
 
                 <section class="card flow" aria-labelledby="members-heading">
@@ -66,21 +75,25 @@
                     </div>
 
                     <p class="meta"><?= (int) $memberCount ?> medlemmer i gruppen</p>
+                    <?php if (!$operatorView): ?>
                     <p><a href="<?= url('/members?group_id=' . (int) $group['group_id']) ?>">Se alle <?= (int) $memberCount ?> medlemmer</a></p>
+                    <?php endif; ?>
 
                     <?php /* Sets group_members.member_status = 'left'. The user id comes from the session, not the form.
                          IF the user is the only admin: no button, instead
                          <p class="meta">Du er den eneste admin. Gør et andet medlem til admin, før du forlader gruppen.</p> */ ?>
                          
+                    <?php if (!$operatorView): ?>
                     <form class="js-confirm" action="<?= url('/leave-group') ?>" method="post"
                         data-confirm="Vil du forlade <?= e($group['name']) ?>? Det, du har delt, bliver i gruppens album. Du skal have en ny invitation for at komme tilbage.">
                         <?= \PostCard\Core\Csrf::field() ?>
                         <input type="hidden" name="group_id" value="<?= (int) $group['group_id'] ?>">
                         <button class="button button--secondary" type="submit">Forlad gruppen</button>
                     </form>
+                    <?php endif; ?>
                 </section>
 
-                <?php if ($memberRole === 'group_admin'): ?>
+                <?php if (!$operatorView && $memberRole === 'group_admin'): ?>
                     <?php /* Vises kun for gruppens administratorer */ ?>
                     <section class="card flow admin-box" aria-labelledby="admin-heading">
                         <h2 id="admin-heading">Gruppeadmin</h2>
@@ -141,7 +154,9 @@
                             }
 
                             // Opretter linket til den enkelte oplevelse
-                            $experienceUrl = url('/experience?id=' . (int)$experience['experience_id']);
+                            $experienceUrl = $operatorView
+                                ? url('/admin/experiences/show?id=' . (int) $experience['experience_id'])
+                                : url('/experience?id=' . (int) $experience['experience_id']);
 
                             // Finder oplevelsens billede fra databasen.
                             // Hvis oplevelsen ikke har billeder endnu, vises eksempelbilledet.

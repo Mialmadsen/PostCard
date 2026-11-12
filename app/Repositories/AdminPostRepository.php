@@ -18,6 +18,7 @@ class AdminPostRepository extends Repository
                 p.created_at,
                 e.user_id AS author_id,
                 e.name AS experience_name,
+                g.group_id,
                 g.name AS group_name,
                 u.first_name,
                 u.last_name,
