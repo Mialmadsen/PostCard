@@ -15,6 +15,10 @@ class PostImageController
 {
     public function show(): void
     {
+        // This request only reads the session. Release its lock at once,
+        // so the page's other photos can load at the same time.
+        session_write_close();
+
         // Kontrollerer, at brugeren er logget ind.
         Auth::requireLogin();
 
@@ -92,9 +96,11 @@ class PostImageController
                 );
             }
 
-            // Forhindrer, at private billeder gemmes i browserens cache.
-            header('Cache-Control: no-store, private');
-            header('Pragma: no-cache');
+            // Only this user's own browser may keep the photo (private), for a year.
+            // The picture behind an image_id never changes, so the copy never goes stale (immutable).
+            header('Cache-Control: private, max-age=31536000, immutable');
+            header_remove('Pragma');      // session_start() sent "don't cache" headers by default:
+            header_remove('Expires');     // remove them, so they don't contradict the line above
             header('X-Content-Type-Options: nosniff');
 
             // Sender billedet til browseren.

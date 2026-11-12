@@ -14,6 +14,10 @@ class ProfileImageController
 {
     public function show(): void
     {
+        // This request only reads the session. Release its lock at once,
+        // so the page's other photos can load at the same time.
+        session_write_close();
+
         Auth::requireLogin();
 
         $userId = queryId('user_id');
@@ -66,6 +70,8 @@ class ProfileImageController
             // Only this browser may keep it, for a day. A new picture has a new ?v= in the address,
             // so the browser never shows an old one.
             header('Cache-Control: private, max-age=86400');
+            header_remove('Pragma');      // session_start() sent "don't cache" headers by default:
+            header_remove('Expires');     // remove them, so they don't contradict the line above
             header('X-Content-Type-Options: nosniff');
             header('Content-Type: ' . $mimeTypes[$format]);
             header('Content-Length: ' . strlen($imageData));

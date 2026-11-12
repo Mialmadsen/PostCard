@@ -64,7 +64,7 @@ class LikeController
 
         // Hvis anmodningen kommer fra JavaScript,
         // sender vi resultatet som JSON i stedet for at genindlæse siden.
-        if ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '' === 'XMLHttpRequest') {
+        if (($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest') {
             header('Content-Type: application/json; charset=utf-8');
 
             echo json_encode([
