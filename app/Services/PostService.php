@@ -5,6 +5,8 @@ namespace PostCard\Services;
 
 use PostCard\Repositories\PostRepository;
 use PostCard\Repositories\PostImageRepository;
+use PostCard\Core\Auth;
+use PostCard\Repositories\AdminPostRepository;
 
 // Service til at håndtere oprettelse og sletning af opslag.
 // // Samler arbejdet mellem databasen og Cloudinary.
@@ -141,6 +143,51 @@ class PostService
             }
         }
     }
+
+
+    // Sletter et opslag som operator på tværs af hele PostCard.
+    public function deletePostAsOperator(int $postId): void
+    {
+        // Kontrollerer, at brugeren er operator for hele hjemmesiden.
+        Auth::requireOperator();
+
+        // Repository med adgang til opslag fra alle grupper.
+        $adminPostRepository = new AdminPostRepository();
+
+        // Kontrollerer, at opslaget findes.
+        $post = $adminPostRepository->findById($postId);
+
+        if ($post === null) {
+            throw new \RuntimeException('Opslaget blev ikke fundet.');
+        }
+
+        // Henter Cloudinary-oplysninger, inden opslaget slettes.
+        $images = $this->postImageRepository->findImagesByPost($postId);
+
+        // Sletter opslaget fra databasen.
+        // ON DELETE CASCADE rydder op i relaterede databaseposter.
+        $deleted = $adminPostRepository->delete($postId);
+
+        if ($deleted !== 1) {
+            throw new \RuntimeException('Opslaget kunne ikke slettes.');
+        }
+
+        // Sletter billederne fra Cloudinary efter databasesletningen.
+        foreach ($images as $image) {
+            try {
+                $this->cloudinaryService->delete($image['public_id']);
+            } catch (\Throwable $e) {
+                // Logger fejlen, hvis et billede ikke kunne slettes.
+                // Opslaget er allerede slettet fra databasen.
+                error_log(
+                    'Operator: Cloudinary-sletning mislykkedes for ' .
+                    $image['public_id'] . ': ' .
+                    $e->getMessage()
+                );
+            }
+        }
+    }
+
 
 
     // Forbereder billedændringer på et eksisterende opslag.

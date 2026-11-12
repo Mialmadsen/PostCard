@@ -58,9 +58,15 @@ class PostImageController
         if (!$image) {
             abort(404, 'Billedet blev ikke fundet.');
         }
+        
+        // Operatorer kan se billeder fra alle grupper.
+        // Almindelige brugere skal være aktive gruppemedlemmer.
+        $users = new \PostCard\Repositories\UserRepository();
+        $isOperator = $users->isOperator(Auth::userId());
 
-        // Kontrollerer, at brugeren er aktivt medlem af gruppen.
-        Auth::requireMember((int) $image['group_id']);
+        if (!$isOperator) {
+            Auth::requireMember((int) $image['group_id']);
+        }
 
         try {
             // Henter billedet fra Cloudinary på serveren.

@@ -137,5 +137,21 @@ class CommentRepository extends Repository
             'user_id' => $userId
         ]);
     }
+    
+    // Sletter en kommentar fra et bestemt opslag som operator.
+    public function deleteAsOperator(int $commentId, int $postId): int
+    {
+        $sql = "
+            DELETE FROM comments
+            WHERE comment_id = :comment_id
+            AND post_id = :post_id
+        ";
+
+        return $this->execute($sql, [
+            'comment_id' => $commentId,
+            'post_id' => $postId
+        ]);
+    }
+
 
 }
