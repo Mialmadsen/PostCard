@@ -79,6 +79,7 @@ class CloudinaryService
         // via en almindelig offentlig Cloudinary-URL.
         $params = [
             'timestamp' => $timestamp,
+            'transformation' => 'c_limit,w_2048',
             'type' => 'authenticated'
         ];
 
@@ -99,6 +100,7 @@ class CloudinaryService
         $postFields = [
             'file' => new \CURLFile($file['tmp_name']),
             'api_key' => $this->apiKey,
+            'transformation' => $params['transformation'],
             'timestamp' => $timestamp,
             'type' => 'authenticated',
             'signature' => $signature
@@ -228,11 +230,11 @@ class CloudinaryService
     public function downloadImage(
         string $publicId,
         int $version,
-        string $format
+        string $transformation
     ): string {
-        // Tillader kun de billedformater, vi bruger i PostCard.
-        if (!in_array($format, ['jpg', 'jpeg', 'png', 'webp'], true)) {
-            throw new \RuntimeException('Ugyldigt billedformat.');
+        // The transformation may only contain small letters, digits, _ and , (e.g. 'c_limit,w_1080,q_auto')
+        if (!preg_match('/^[a-z0-9_,]+$/', $transformation)) {
+            throw new \RuntimeException('Ugyldig billedstørrelse.');
         }
 
         // Kontrollerer, at Cloudinary-oplysningerne er gyldige.
@@ -245,10 +247,10 @@ class CloudinaryService
         }
 
         // Bygger stien til det private Cloudinary-billede.
-        $imagePath = 'v'
+        $imagePath = $transformation . '/v'
             . $version . '/'
             . $publicId . '.'
-            . $format;
+            . 'webp';
 
         // Opretter en signatur til Cloudinary-billedet.
         $signature = rtrim(
@@ -269,12 +271,8 @@ class CloudinaryService
             . $this->cloudName
             . '/image/authenticated/s--'
             . $signature
-            . '--/v'
-            . $version
-            . '/'
-            . $publicId
-            . '.'
-            . $format;
+            . '--/'
+            . $imagePath;
 
         // Henter billedet direkte fra Cloudinary til PHP.
         $curl = curl_init($url);

@@ -62,20 +62,6 @@ class PostImageController
         // Kontrollerer, at brugeren er aktivt medlem af gruppen.
         Auth::requireMember((int) $image['group_id']);
 
-        // Bestemmer billedets MIME-type.
-        $mimeTypes = [
-            'jpg' => 'image/jpeg',
-            'jpeg' => 'image/jpeg',
-            'png' => 'image/png',
-            'webp' => 'image/webp'
-        ];
-
-        $format = strtolower((string) $image['image_format']);
-
-        if (!isset($mimeTypes[$format])) {
-            abort(500, 'Ukendt billedformat.');
-        }
-
         try {
             // Henter billedet fra Cloudinary på serveren.
             $cloudinary = new CloudinaryService();
@@ -83,14 +69,14 @@ class PostImageController
             $imageData = $cloudinary->downloadImage(
                 $image['public_id'],
                 (int) $image['cloudinary_version'],
-                $format
+                'c_limit,w_1080,q_auto'    // max 1080 px wide, smart quality
             );
 
             // Kontrollerer, at svaret faktisk er et billede.
             $detectedMime = (new \finfo(FILEINFO_MIME_TYPE))
                 ->buffer($imageData);
 
-            if ($detectedMime !== $mimeTypes[$format]) {
+            if ($detectedMime !== 'image/webp') {
                 throw new \RuntimeException(
                     'Cloudinary returnerede ikke det forventede billede.'
                 );
@@ -104,7 +90,7 @@ class PostImageController
             header('X-Content-Type-Options: nosniff');
 
             // Sender billedet til browseren.
-            header('Content-Type: ' . $mimeTypes[$format]);
+            header('Content-Type: image/webp');
             header('Content-Length: ' . strlen($imageData));
 
             echo $imageData;

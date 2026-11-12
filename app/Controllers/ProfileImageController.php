@@ -39,31 +39,18 @@ class ProfileImageController
             abort(404, 'Billedet blev ikke fundet.');
         }
 
-        // The type the browser is told, for each format Cloudinary can return
-        $mimeTypes = [
-            'jpg' => 'image/jpeg',
-            'jpeg' => 'image/jpeg',
-            'png' => 'image/png',
-            'webp' => 'image/webp'
-        ];
-
-        $format = strtolower((string) $image['profile_image_format']);
-        if (!isset($mimeTypes[$format])) {
-            abort(500, 'Ukendt billedformat.');
-        }
-
         try {
             // The picture is private on Cloudinary, so the server fetches it
             $cloudinary = new CloudinaryService();
             $imageData = $cloudinary->downloadImage(
                 $image['profile_image'],
                 (int) $image['profile_image_version'],
-                $format
+                'c_limit,w_400,q_auto'
             );
 
             // Check that what came back really is a picture of that type
             $detectedMime = (new \finfo(FILEINFO_MIME_TYPE))->buffer($imageData);
-            if ($detectedMime !== $mimeTypes[$format]) {
+            if ($detectedMime !== 'image/webp') {
                 throw new \RuntimeException('Cloudinary did not return the expected image.');
             }
 
@@ -73,7 +60,7 @@ class ProfileImageController
             header_remove('Pragma');      // session_start() sent "don't cache" headers by default:
             header_remove('Expires');     // remove them, so they don't contradict the line above
             header('X-Content-Type-Options: nosniff');
-            header('Content-Type: ' . $mimeTypes[$format]);
+            header('Content-Type: image/webp');
             header('Content-Length: ' . strlen($imageData));
 
             echo $imageData;
