@@ -59,6 +59,10 @@ if ($selectedGroup === null && $selectedGroupId === null) {
 
             <section class="card" aria-labelledby="form-heading">
                 <h2 class="section-title" id="form-heading">Din oplevelse</h2>
+                <?php // Viser fejl, hvis brugeren forsøger at oprette oplevelser for hurtigt ?>
+                <?php if (!empty($createError)): ?>
+                    <p class="alert alert--error" role="alert"><?= e($createError) ?></p>
+                <?php endif; ?>
                 <?php /* Formularen sender data til ExperienceController::store() */ ?>
                 <form method="POST" action="<?= url('/create-experience') ?>">
                     <?php /* Tilføjer CSRF-token gennem den fælles hjælpeklasse */ ?>
@@ -91,6 +95,7 @@ if ($selectedGroup === null && $selectedGroupId === null) {
                             name="name"
                             type="text"
                             maxlength="100"
+                            value="<?= e($oldName ?? '') ?>"
                             required
                             aria-describedby="name-hint"
                         >
@@ -106,7 +111,7 @@ if ($selectedGroup === null && $selectedGroupId === null) {
                             rows="4"
                             maxlength="1000"
                             aria-describedby="description-hint"
-                        ></textarea>
+                        ><?= e($oldDescription ?? '') ?></textarea>
                         <p class="meta" id="description-hint">
                             Gruppen ser teksten øverst på oplevelsens side.
                             Du kan springe den over.
@@ -124,6 +129,7 @@ if ($selectedGroup === null && $selectedGroupId === null) {
                                     id="start-date"
                                     name="start_date"
                                     type="date"
+                                    value="<?= e($oldStartDate ?? '') ?>"
                                     required
                                 >
                             </div>
@@ -134,6 +140,7 @@ if ($selectedGroup === null && $selectedGroupId === null) {
                                     id="end-date"
                                     name="end_date"
                                     type="date"
+                                    value="<?= e($oldEndDate ?? '') ?>"
                                     required
                                 >
                             </div>

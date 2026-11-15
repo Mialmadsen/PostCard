@@ -135,8 +135,8 @@
                         ?>
                         <p class="meta" id="photos-hint">
                             1–5 billeder i JPG, PNG eller WebP.
-                            Højst 5 MB, 4000 pixels i bredde eller højde
-                            og 12 millioner pixels i alt pr. billede.
+                            Højst 5 MB, 8000 pixels i bredde eller højde
+                            og 30 millioner pixels i alt pr. billede.
                             Du vælger selv forsidebilledet.
                             <span class="js-photo-status" role="status"></span>
                         </p>

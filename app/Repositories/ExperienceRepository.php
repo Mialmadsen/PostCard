@@ -141,18 +141,76 @@ class ExperienceRepository extends Repository
         ";
 
         
-        // Indsætter oplevelsen gennem den fælles Repository-klasse
-        // insert() returnerer ID'et på den nye oplevelse
-        return $this->insert($sql, [
-            'user_id' => $userId,
-            'group_id' => $groupId,
-            'name' => $name,
-            'description' => $description,
-            'start_date' => $startDate,
-            'end_date' => $endDate,
-            'experience_status' => $status,
-            'post_limit' => $postLimit
-        ]);
+        // Låser oprettelse for denne bruger, så samtidige requests ikke
+        // kan oprette flere oplevelser på én gang.
+        $lockName = 'postcard_experience_' . $userId;
+        $lock = $this->fetchValue(
+            'SELECT GET_LOCK(:lock_name, 5)',
+            ['lock_name' => $lockName]
+        );
+
+        if ((int) $lock !== 1) {
+            throw new \RuntimeException(
+                'Der er allerede en oprettelse i gang. Prøv igen om lidt.',
+                429
+            );
+        }
+
+        try {
+            // Tillader højst én ny oplevelse hvert 60. sekund pr. bruger.
+            $recentExperience = $this->fetchValue(
+                "SELECT experience_id
+                 FROM experiences
+                 WHERE user_id = :user_id
+                   AND created_at >= NOW() - INTERVAL 60 SECOND
+                 ORDER BY created_at DESC
+                 LIMIT 1",
+                ['user_id' => $userId]
+            );
+
+            if ($recentExperience !== null) {
+                throw new \RuntimeException(
+                    'Vent venligst 60 sekunder, før du opretter en ny oplevelse.',
+                    429
+                );
+            }
+
+            // Tillader højst 10 oplevelser pr. bruger inden for de seneste 24 timer.
+            // Tæller på tværs af alle brugerens grupper.
+            $experienceCount = $this->fetchValue(
+                "SELECT COUNT(*)
+                 FROM experiences
+                 WHERE user_id = :user_id
+                   AND created_at >= NOW() - INTERVAL 24 HOUR",
+                ['user_id' => $userId]
+            );
+
+            if ((int) $experienceCount >= 10) {
+                throw new \RuntimeException(
+                    'Du kan højst oprette 10 oplevelser inden for 24 timer. Prøv igen senere.',
+                    429
+                );
+            }
+
+            // Indsætter oplevelsen gennem den fælles Repository-klasse.
+            // insert() returnerer ID'et på den nye oplevelse.
+            return $this->insert($sql, [
+                'user_id' => $userId,
+                'group_id' => $groupId,
+                'name' => $name,
+                'description' => $description,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'experience_status' => $status,
+                'post_limit' => $postLimit
+            ]);
+        } finally {
+            // Frigiver låsen, også hvis oprettelsen fejler.
+            $this->fetchValue(
+                'SELECT RELEASE_LOCK(:lock_name)',
+                ['lock_name' => $lockName]
+            );
+        }
 
     }
 

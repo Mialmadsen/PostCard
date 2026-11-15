@@ -46,7 +46,6 @@ class ExperienceController
         ]));
     }
 
-
     // Viser en experience for operatoren på tværs af alle grupper.
     public function showAsOperator(): void
     {
@@ -68,7 +67,6 @@ class ExperienceController
             'operatorView' => true
         ]));
     }
-
 
     // Viser formularen til at oprette en ny oplevelse.
     public function create(): void
@@ -101,16 +99,21 @@ class ExperienceController
         $description = input('description');
         $startDate = input('start_date');
         $endDate = input('end_date');
+
         if ($groupId === null) {
             abort(400, 'Du skal vælge en gyldig gruppe.');
         }
+
         Auth::requireMember($groupId);
+
         if ($name === '' || mb_strlen($name) > 100 || mb_strlen($description) > 1000) {
             http_response_code(400);
             exit('Kontroller oplevelsens navn og beskrivelse.');
         }
+
         $start = \DateTimeImmutable::createFromFormat('!Y-m-d', $startDate);
         $end = \DateTimeImmutable::createFromFormat('!Y-m-d', $endDate);
+
         if (
             $start === false ||
             $end === false ||
@@ -121,14 +124,50 @@ class ExperienceController
             http_response_code(400);
             exit('Vælg en gyldig periode. Slutdatoen må ikke være før startdatoen.');
         }
-        $experienceId = $this->experienceRepository->create(
-            $userId,
-            $groupId,
-            $name,
-            $description,
-            $startDate,
-            $endDate
-        );
+
+        // Forsøger at oprette oplevelsen.
+        // Repository kontrollerer, om brugeren opretter for hurtigt.
+        try {
+            $experienceId = $this->experienceRepository->create(
+                $userId,
+                $groupId,
+                $name,
+                $description,
+                $startDate,
+                $endDate
+            );
+
+        } catch (\RuntimeException $e) {
+
+            // Andre fejl skal stadig håndteres af den normale fejlhåndtering.
+            if ($e->getCode() !== 429) {
+                throw $e;
+            }
+
+            // Brugeren har forsøgt at oprette oplevelser for hurtigt.
+            http_response_code(429);
+
+            // Henter grupperne igen, så formularen kan vises korrekt.
+            $groups = $this->groupMemberRepository->findActiveGroupsByUser($userId);
+
+            // Viser formularen med fejlbeskeden og de indtastede værdier.
+            View::render('create-experience', [
+                'pageTitle' => 'Opret oplevelse',
+                'pageStyle' => 'create-experience',
+                'isLoggedIn' => true,
+                'groups' => $groups,
+                'selectedGroupId' => $groupId,
+                'createError' => $e->getMessage(),
+                'oldName' => $name,
+                'oldDescription' => $description,
+                'oldStartDate' => $startDate,
+                'oldEndDate' => $endDate
+            ]);
+
+            return;
+        }
+
+        // Oprettelsen lykkedes, så brugeren sendes til oplevelsen.
         redirect('/experience?id=' . $experienceId);
     }
 
@@ -139,19 +178,23 @@ class ExperienceController
         if ($experience === null) {
             abort(404, 'Oplevelsen blev ikke fundet.');
         }
+
         // Almindelige brugere skal være medlemmer af gruppen.
         // Operatorens adgang er allerede kontrolleret i showAsOperator().
         if (!$operatorView) {
             Auth::requireMember((int) $experience['group_id']);
         }
+
         $posts = $this->postFeedRepository->findByExperience($experienceId);
         $userId = Auth::userId();
+
         foreach ($posts as &$post) {
             // Finder ud af, om den indloggede bruger allerede har liket opslaget.
             $post['hasLiked'] = $this->likeRepository->hasLiked((int) $post['id'], $userId);
             $post['day'] = danishDate($post['date'], 'd');
             $post['month'] = danishDate($post['date'], 'MMM');
             $post['relative_date'] = danishDate($post['date'], 'dd.MM.y');
+
             // Billeder hentes gennem den beskyttede billedrute.
             if (!empty($post['image_id'])) {
                 $post['image'] = url('/post-image?id=' . (int) $post['image_id']);
@@ -159,10 +202,13 @@ class ExperienceController
                 $post['image'] = null;
             }
         }
+
         unset($post);
+
         $postsUsed = count($posts);
         $postCounts = $this->experienceService->getPostCounts($experience, $postsUsed);
         $experienceStatus = $this->experienceService->getStatus($experience);
+
         return array_merge([
             'experience' => $experience,
             'posts' => $posts
