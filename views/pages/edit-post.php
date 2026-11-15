@@ -1,4 +1,3 @@
-
 <?php
 // Breadcrumbs viser, hvor brugeren befinder sig på hjemmesiden.
 $breadcrumbs = [
@@ -40,6 +39,13 @@ $breadcrumbs = [
             <section class="card" aria-labelledby="form-heading">
                 <h2 class="section-title" id="form-heading">Dit opslag</h2>
 
+                <?php if (!empty($uploadError)): ?>
+                    <p class="alert alert--error" role="alert">
+                        <?= e($uploadError) ?>
+                        Vælg venligst dine nye billeder igen.
+                    </p>
+                <?php endif; ?>
+
                 <?php /* Formularen sender ændringerne til PostController::update(). */ ?>
                 <form class="form" action="<?= e(url('/edit-post')) ?>" method="post" enctype="multipart/form-data">
                     <?= \PostCard\Core\Csrf::field() ?>
@@ -51,7 +57,7 @@ $breadcrumbs = [
                         <input class="field__input js-photo-input"
                             type="file" id="photos" name="photos[]"
                             accept="image/jpeg,image/png,image/webp" multiple>
-                        <p class="meta">Du kan have mellem 1 og 5 billeder. JPG, PNG eller WebP, maks. 5 MB pr. billede.</p>
+                        <p class="meta">1–5 billeder i JPG, PNG eller WebP. Højst 5 MB, 8000 pixels i bredde eller højde og 30 millioner pixels i alt pr. billede.</p>
                         <?php /* JavaScript bruger listen til at vise alle billeder. */ ?>
                         <ul class="photo-preview js-photo-preview">
                             <?php /* Eksisterende billeder fra databasen. */ ?>

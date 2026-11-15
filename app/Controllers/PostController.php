@@ -228,9 +228,26 @@ class PostController
             ];
         }
 
-        // Gennemgår alle billederne og kontrollerer, at de er gyldige.
-        foreach ($photos as $photo) {
-            $this->cloudinaryService->validateImage($photo);
+        // Validerer hvert billede med CloudinaryService.
+        try {
+            foreach ($photos as $photo) {
+                $this->cloudinaryService->validateImage($photo);
+            }
+        } catch (\RuntimeException $e) {
+            http_response_code(422);
+        
+            View::render('create-post', [
+                'pageTitle' => 'Nyt opslag',
+                'pageStyle' => 'create-post',
+                'pageScripts' => ['photo-preview'],
+                'isLoggedIn' => true,
+                'experience' => $experience,
+                'postCounts' => $postCounts,
+                'uploadError' => $e->getMessage(),
+                'oldCaption' => $caption,
+                'oldLocation' => $location
+            ]);
+            return;
         }
 
         // Henter billedbeskrivelserne fra formularen.
@@ -500,6 +517,30 @@ class PostController
         }
         // Gemmer tekst, lokation og billedændringer gennem PostService.
         $postService = new PostService();
+        try {
+            foreach ($photos as $photo) {
+                $this->cloudinaryService->validateImage($photo);
+            }
+        } catch (\RuntimeException $e) {
+            http_response_code(422);
+        
+            $images = $this->postImageRepository->findImagesByPost($postId);
+        
+            View::render('edit-post', [
+                'pageTitle' => 'Rediger opslag',
+                'pageStyle' => 'create-post',
+                'pageScripts' => ['photo-preview'],
+                'isLoggedIn' => true,
+                'post' => array_merge($post, [
+                    'caption' => $caption,
+                    'location' => $location
+                ]),
+                'images' => $images,
+                'uploadError' => $e->getMessage()
+            ]);
+            return;
+        }
+        
         $postService->updatePostWithImages(
             $postId,
             Auth::userId(),

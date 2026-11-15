@@ -22,8 +22,9 @@ class CloudinaryService
         $this->apiSecret = Config::get('CLOUDINARY_API_SECRET');
     }
 
+    
     // Kontrollerer billedfilen, inden den sendes til Cloudinary.
-    // Funktionen kan bruges til både opslag og profilbilleder.
+    // Bruges til både opslag og profilbilleder.
     public function validateImage(array $file): void
     {
         // Kontrollerer at filen er modtaget korrekt.
@@ -46,8 +47,9 @@ class CloudinaryService
             throw new \RuntimeException('Ugyldig billedfil.');
         }
 
-        // Finder filtypen ud fra filens indhold,
-        // ikke blot filnavnet eller filendelsen.
+        
+
+        // Finder filtypen ud fra filens indhold.
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
         $mimeType = $finfo->file($file['tmp_name']);
 
@@ -61,6 +63,48 @@ class CloudinaryService
         if (!in_array($mimeType, $allowedTypes, true)) {
             throw new \RuntimeException(
                 'Kun JPG, PNG og WebP-billeder er tilladt.'
+            );
+        }
+
+        // Henter billedets faktiske dimensioner.
+        $imageInfo = @getimagesize($file['tmp_name']);
+
+        if ($imageInfo === false) {
+            throw new \RuntimeException('Ugyldig billedfil.');
+        }
+
+        if (($imageInfo['mime'] ?? null) !== $mimeType) {
+            throw new \RuntimeException('Billedets filtype er ugyldig.');
+        }
+
+        $width = (int) $imageInfo[0];
+        $height = (int) $imageInfo[1];
+
+        // Billedet må højst være 8000 pixels i hver retning.
+        $maxDimension = 8000;
+
+        if ($width < 1 || $height < 1 ||
+            $width > $maxDimension || $height > $maxDimension) {
+            throw new \RuntimeException(
+                'Billedet må højst være 8000 pixels bredt eller højt.'
+            );
+        }
+
+        // Begrænser også det samlede antal pixels.
+        $maxPixels = 30000000;
+
+        if ($width * $height > $maxPixels) {
+            throw new \RuntimeException(
+                'Billedets opløsning er for høj.'
+            );
+        }
+
+        // Afviser billeder med usædvanligt ekstreme proportioner.
+        $aspectRatio = max($width, $height) / min($width, $height);
+
+        if ($aspectRatio > 10) {
+            throw new \RuntimeException(
+                'Billedet er for langt eller smalt. Vælg et andet billede.'
             );
         }
     }
