@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace PostCard\Repositories;
 
-use PostCard\Services\RateLimiter;
 
 // Repository-klassen har ansvaret for at hente og oprette oplevelser i databasen.
 // extends Repository betyder, at vi arver de fælles databasefunktioner
@@ -147,51 +146,18 @@ class ExperienceRepository extends Repository
         ";
 
         
-        // Låser oprettelse for denne bruger, så samtidige requests ikke
-        // kan oprette flere oplevelser på én gang.
-        $lockName = 'postcard_experience_' . $userId;
-        $lock = $this->fetchValue(
-            'SELECT GET_LOCK(:lock_name, 5)',
-            ['lock_name' => $lockName]
-        );
-
-        if ((int) $lock !== 1) {
-            throw new \RuntimeException(
-                'Der er allerede en oprettelse i gang. Prøv igen om lidt.',
-                429
-            );
-        }
-
-        try {
-            // Kontrollerer de fælles grænser igen under låsen, så samtidige
-            // oprettelser ikke kan omgå kontrollen i controlleren.
-            $limiter = new RateLimiter();
-            foreach (['create_experience', 'create_experience_burst'] as $action) {
-                if ($limiter->tooMany($action, $userId)) {
-                    throw new \RuntimeException($limiter->message($action), 429);
-                }
-            }
-
-            // Indsætter oplevelsen gennem den fælles Repository-klasse.
-            // insert() returnerer ID'et på den nye oplevelse.
-            return $this->insert($sql, [
-                'user_id' => $userId,
-                'group_id' => $groupId,
-                'name' => $name,
-                'description' => $description,
-                'start_date' => $startDate,
-                'end_date' => $endDate,
-                'experience_status' => $status,
-                'post_limit' => $postLimit
-            ]);
-        } finally {
-            // Frigiver låsen, også hvis oprettelsen fejler.
-            $this->fetchValue(
-                'SELECT RELEASE_LOCK(:lock_name)',
-                ['lock_name' => $lockName]
-            );
-        }
-
+        // Indsætter oplevelsen gennem den fælles Repository-klasse.
+        // Spambegrænsningerne kontrolleres i ExperienceController via RateLimiter.
+        return $this->insert($sql, [
+            'user_id' => $userId,
+            'group_id' => $groupId,
+            'name' => $name,
+            'description' => $description,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'experience_status' => $status,
+            'post_limit' => $postLimit
+        ]);
     }
 
     // Henter alle oplevelser, som en bestemt bruger har oprettet

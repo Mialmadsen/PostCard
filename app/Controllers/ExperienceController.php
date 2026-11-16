@@ -156,8 +156,7 @@ class ExperienceController
             }
         }
 
-        // Forsøger at oprette oplevelsen.
-        // Repository kontrollerer, om brugeren opretter for hurtigt.
+        // Opretter oplevelsen, når begge spambegrænsninger er kontrolleret.
         try {
             $experienceId = $this->experienceRepository->create(
                 $userId,
