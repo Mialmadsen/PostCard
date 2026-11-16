@@ -16,6 +16,7 @@ use PostCard\Services\PostService;
 use PostCard\Repositories\CommentRepository;
 use PostCard\Repositories\LikeRepository;
 use PostCard\Repositories\PostViewRepository;
+use PostCard\Repositories\AdminSettingsRepository;
 
 // Controlleren håndterer oprettelse af opslag.
 class PostController
@@ -105,6 +106,10 @@ class PostController
             abort(403, 'Der er ikke flere opslag tilbage i denne oplevelse.');
         }
 
+        // Henter den maksimale billedstørrelse fra Admin Settings.
+        $siteSettings = (new AdminSettingsRepository())->findAll();
+        $maxUploadSizeMB = (int) ($siteSettings['max_upload_size'] ?? 5);
+
         // Sender oplysningerne videre til formularen
         View::render('create-post', [
             'pageTitle' => 'Nyt opslag',
@@ -112,7 +117,8 @@ class PostController
             'pageScripts' => ['photo-preview'],
             'isLoggedIn' => true,
             'experience' => $experience,
-            'postCounts' => $postCounts
+            'postCounts' => $postCounts,
+            'maxUploadSizeMB' => $maxUploadSizeMB
         ]);
     }
 
@@ -235,6 +241,10 @@ class PostController
             }
         } catch (\RuntimeException $e) {
             http_response_code(422);
+
+            // Henter uploadgrænsen, så den også vises ved fejl.
+            $siteSettings = (new AdminSettingsRepository())->findAll();
+            $maxUploadSizeMB = (int) ($siteSettings['max_upload_size'] ?? 5);
         
             View::render('create-post', [
                 'pageTitle' => 'Nyt opslag',
@@ -245,7 +255,8 @@ class PostController
                 'postCounts' => $postCounts,
                 'uploadError' => $e->getMessage(),
                 'oldCaption' => $caption,
-                'oldLocation' => $location
+                'oldLocation' => $location,
+                'maxUploadSizeMB' => $maxUploadSizeMB
             ]);
             return;
         }
@@ -413,6 +424,10 @@ class PostController
         // Henter opslagets eksisterende billeder.
         $images = $this->postImageRepository->findImagesByPost($postId);
 
+        // Henter den maksimale billedstørrelse fra Admin Settings.
+        $siteSettings = (new AdminSettingsRepository())->findAll();
+        $maxUploadSizeMB = (int) ($siteSettings['max_upload_size'] ?? 5);
+
         // Viser redigeringsformularen med opslagets nuværende oplysninger.
         View::render('edit-post', [
             'pageTitle' => 'Rediger opslag',
@@ -420,7 +435,8 @@ class PostController
             'pageScripts' => ['photo-preview'],
             'isLoggedIn' => true,
             'post' => $post,
-            'images' => $images
+            'images' => $images,
+            'maxUploadSizeMB' => $maxUploadSizeMB
         ]);
     }
 
@@ -525,6 +541,10 @@ class PostController
             http_response_code(422);
         
             $images = $this->postImageRepository->findImagesByPost($postId);
+
+            // Henter uploadgrænsen, så den også vises ved fejl.
+            $siteSettings = (new AdminSettingsRepository())->findAll();
+            $maxUploadSizeMB = (int) ($siteSettings['max_upload_size'] ?? 5);
         
             View::render('edit-post', [
                 'pageTitle' => 'Rediger opslag',
@@ -536,7 +556,8 @@ class PostController
                     'location' => $location
                 ]),
                 'images' => $images,
-                'uploadError' => $e->getMessage()
+                'uploadError' => $e->getMessage(),
+                'maxUploadSizeMB' => $maxUploadSizeMB
             ]);
             return;
         }

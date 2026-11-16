@@ -57,7 +57,9 @@ $breadcrumbs = [
                         <input class="field__input js-photo-input"
                             type="file" id="photos" name="photos[]"
                             accept="image/jpeg,image/png,image/webp" multiple>
-                        <p class="meta">1–5 billeder i JPG, PNG eller WebP. Højst 5 MB, 8000 pixels i bredde eller højde og 30 millioner pixels i alt pr. billede.</p>
+                            <p class="meta">1–5 billeder i JPG, PNG eller WebP. 
+                                Højst <?= e((string) $maxUploadSizeMB) ?> 
+                                MB, 8000 pixels i bredde eller højde og 30 millioner pixels i alt pr. billede.</p>
                         <?php /* JavaScript bruger listen til at vise alle billeder. */ ?>
                         <ul class="photo-preview js-photo-preview">
                             <?php /* Eksisterende billeder fra databasen. */ ?>

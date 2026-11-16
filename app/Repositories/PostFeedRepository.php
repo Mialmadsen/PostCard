@@ -130,11 +130,22 @@ class PostFeedRepository extends Repository
                 AND gm.member_status = 'active'
 
             -- Kun opslag fra de seneste 7 dage og godkendte/afsluttede oplevelser
-            WHERE v.created_at >= NOW() - INTERVAL 7 DAY
+            WHERE v.created_at >= NOW() - INTERVAL 20 DAY
             AND v.experience_status IN ('approved', 'closed')
 
-            -- Sorterer efter flest likes og derefter nyeste opslag
-            ORDER BY v.likes DESC, v.created_at DESC
+            -- Sorterer efter likes, når likes er aktiveret.
+            -- Ellers sorteres efter visninger.
+            ORDER BY
+                CASE
+                    WHEN (
+                        SELECT setting_value
+                        FROM site_settings
+                        WHERE setting_key = 'allow_likes'
+                    ) = '1'
+                    THEN v.likes
+                    ELSE v.views
+                END DESC,
+                v.created_at DESC
             LIMIT 3
         ";
 

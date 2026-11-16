@@ -7,6 +7,7 @@ namespace PostCard\Controllers;
 use PostCard\Core\Auth;
 use PostCard\Repositories\LikeRepository;
 use PostCard\Repositories\PostRepository;
+use PostCard\Repositories\AdminSettingsRepository;
 
 // Controlleren håndterer likes på opslag.
 class LikeController
@@ -26,6 +27,13 @@ class LikeController
     {
         // Kontrollerer, at brugeren er logget ind.
         Auth::requireLogin();
+
+        // Kontrollerer, om operatoren har tilladt likes.
+        $settings = (new AdminSettingsRepository())->findAll();
+
+        if (($settings['allow_likes'] ?? '0') !== '1') {
+            abort(403, 'Synes godt om er slået fra på PostCard.');
+        }
 
         // Henter opslagets ID fra formularen.
         $postId = inputId('post_id');
@@ -87,6 +95,13 @@ class LikeController
     {
         // Brugeren skal være logget ind.
         Auth::requireLogin();
+
+        // Kontrollerer, om operatoren har tilladt visning af likes.
+        $settings = (new AdminSettingsRepository())->findAll();
+
+        if (($settings['allow_likes'] ?? '0') !== '1') {
+            abort(403, 'Synes godt om er slået fra på PostCard.');
+        }
 
         // Henter opslagets ID fra URL'en.
         $postId = queryId('id');

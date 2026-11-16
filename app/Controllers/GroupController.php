@@ -11,6 +11,7 @@ use PostCard\Repositories\InvitationRepository;
 use PostCard\Repositories\GroupMemberRepository;
 use PostCard\Core\Config;
 use PostCard\Core\Session;
+use PostCard\Repositories\AdminSettingsRepository;
 use PostCard\Services\RateLimiter;
 
 // Create a group page: the login is checked, the form is rendered, read and validated, and errors are stored.
@@ -19,11 +20,17 @@ class GroupController
     public function create(): void
     {
         Auth::requireLogin();
+
+        // Henter standardgrænsen fra Admin Settings.
+        $siteSettings = (new AdminSettingsRepository())->findAll();
+        $defaultPostLimit = (int) ($siteSettings['default_post_limit'] ?? 20);
+
         View::render('create-group', [
             'pageTitle' => 'Ny gruppe',
             'isLoggedIn' => true,
             'errors' => [],
             'old' => [],
+            'defaultPostLimit' => $defaultPostLimit
         ]);
     }
 
@@ -43,9 +50,11 @@ class GroupController
             $errors['form'] = $limiter->message('create_group');
         }
 
-
         // We check if there are any errors and either stop and send the person back to form, or continue and create a new group
         if ($errors !== []) {
+            // Henter standardgrænsen, hvis formularen skal vises igen.
+            $siteSettings = (new AdminSettingsRepository())->findAll();
+            $defaultPostLimit = (int) ($siteSettings['default_post_limit'] ?? 20);
             http_response_code(isset($errors['form']) ? 429 : 422);
             View::render('create-group', [
                 'pageTitle' => 'Ny gruppe',
@@ -57,6 +66,7 @@ class GroupController
                     'posting_mode' => $postingMode,
                     'default_post_limit' => $postLimitText,
                 ],
+                'defaultPostLimit' => $defaultPostLimit,
             ]);
             return;
         }

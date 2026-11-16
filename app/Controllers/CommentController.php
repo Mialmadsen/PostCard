@@ -7,6 +7,7 @@ namespace PostCard\Controllers;
 use PostCard\Core\Auth;
 use PostCard\Repositories\CommentRepository;
 use PostCard\Repositories\PostRepository;
+use PostCard\Repositories\AdminSettingsRepository;
 
 // Controlleren håndterer oprettelse af kommentarer til opslag.
 class CommentController
@@ -26,6 +27,13 @@ class CommentController
     {
         // Kontrollerer, at brugeren er logget ind.
         Auth::requireLogin();
+
+        // Kontrollerer, om operatoren har tilladt nye kommentarer.
+        $settings = (new AdminSettingsRepository())->findAll();
+
+        if (($settings['allow_comments'] ?? '0') !== '1') {
+            abort(403, 'Kommentarer er slået fra af PostCard.');
+        }
 
         // Henter opslagets ID fra formularen.
         $postId = inputId('post_id');

@@ -109,11 +109,15 @@ class ExperienceRepository extends Repository
             : 'pending';
 
 
-        // Henter gruppens standardgrænse for opslag
-        // Hvis gruppen ikke har en grænse, gemmer vi 20 som standardværdi
+        // Henter den globale standardgrænse fra Admin Settings.
+        $siteSettings = (new AdminSettingsRepository())->findAll();
+        $defaultPostLimit = (int) ($siteSettings['default_post_limit'] ?? 20);
+
+        // Bruger gruppens egen grænse, hvis den er angivet.
+        // Ellers bruges den globale standardgrænse.
         $postLimit = $group['default_post_limit'] !== null
             ? (int) $group['default_post_limit']
-            : 20;
+            : $defaultPostLimit;
 
         // SQL-query til at indsætte den nye oplevelse i experiences-tabellen
         // Vi bruger placeholders i stedet for at indsætte værdier direkte
