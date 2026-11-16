@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace PostCard\Repositories;
 
+use PostCard\Services\RateLimiter;
+
 // Repository-klassen har ansvaret for at hente og oprette oplevelser i databasen.
 // extends Repository betyder, at vi arver de fælles databasefunktioner
 // fra parent-klassen Repository.php.
@@ -161,39 +163,13 @@ class ExperienceRepository extends Repository
         }
 
         try {
-            // Tillader højst én ny oplevelse hvert 60. sekund pr. bruger.
-            $recentExperience = $this->fetchValue(
-                "SELECT experience_id
-                 FROM experiences
-                 WHERE user_id = :user_id
-                   AND created_at >= NOW() - INTERVAL 60 SECOND
-                 ORDER BY created_at DESC
-                 LIMIT 1",
-                ['user_id' => $userId]
-            );
-
-            if ($recentExperience !== null) {
-                throw new \RuntimeException(
-                    'Vent venligst 60 sekunder, før du opretter en ny oplevelse.',
-                    429
-                );
-            }
-
-            // Tillader højst 10 oplevelser pr. bruger inden for de seneste 24 timer.
-            // Tæller på tværs af alle brugerens grupper.
-            $experienceCount = $this->fetchValue(
-                "SELECT COUNT(*)
-                 FROM experiences
-                 WHERE user_id = :user_id
-                   AND created_at >= NOW() - INTERVAL 24 HOUR",
-                ['user_id' => $userId]
-            );
-
-            if ((int) $experienceCount >= 10) {
-                throw new \RuntimeException(
-                    'Du kan højst oprette 10 oplevelser inden for 24 timer. Prøv igen senere.',
-                    429
-                );
+            // Kontrollerer de fælles grænser igen under låsen, så samtidige
+            // oprettelser ikke kan omgå kontrollen i controlleren.
+            $limiter = new RateLimiter();
+            foreach (['create_experience', 'create_experience_burst'] as $action) {
+                if ($limiter->tooMany($action, $userId)) {
+                    throw new \RuntimeException($limiter->message($action), 429);
+                }
             }
 
             // Indsætter oplevelsen gennem den fælles Repository-klasse.
@@ -371,4 +347,39 @@ class ExperienceRepository extends Repository
         ]) === 1;
 
     }
+    // Henter Cloudinary-billeder fra alle opslag i oplevelsen før sletning.
+    public function findImagesForDeletion(int $experienceId, int $userId): array
+    {
+        $sql = "
+            SELECT pi.public_id
+            FROM post_images AS pi
+            INNER JOIN posts AS p ON pi.post_id = p.post_id
+            INNER JOIN experiences AS e ON p.experience_id = e.experience_id
+            WHERE e.experience_id = :experience_id
+              AND e.user_id = :user_id
+        ";
+
+        return $this->fetchAll($sql, [
+            'experience_id' => $experienceId,
+            'user_id' => $userId
+        ]);
+    }
+
+    // Sletter kun oplevelsen, hvis den tilhører brugeren.
+    // Databasens ON DELETE CASCADE rydder op i opslag og tilhørende data.
+    public function deleteOwned(int $experienceId, int $userId): int
+    {
+        $sql = "
+            DELETE FROM experiences
+            WHERE experience_id = :experience_id
+              AND user_id = :user_id
+        ";
+
+        return $this->execute($sql, [
+            'experience_id' => $experienceId,
+            'user_id' => $userId
+        ]);
+    }
+
+
 }

@@ -100,7 +100,7 @@ class CloudinaryService
         }
 
         // Begrænser også det samlede antal pixels.
-        $maxPixels = 30000000;
+        $maxPixels = 25000000;
 
         if ($width * $height > $maxPixels) {
             throw new \RuntimeException(

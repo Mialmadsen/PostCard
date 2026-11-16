@@ -117,6 +117,7 @@ $router->add('GET', '/experience', [ExperienceController::class, 'show']);
 $router->add('GET', '/admin/experiences/show', [ExperienceController::class, 'showAsOperator']);
 $router->add('GET', '/create-experience', [ExperienceController::class, 'create']);
 $router->add('POST', '/create-experience', [ExperienceController::class, 'store']);
+$router->add('POST', '/delete-experience', [ExperienceController::class, 'delete']);
 $router->add('GET', '/create-post', [PostController::class, 'create']);
 $router->add('POST', '/create-post', [PostController::class, 'store']);
 $router->add('GET', '/post', [PostController::class, 'show']);

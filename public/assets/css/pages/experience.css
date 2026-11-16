@@ -50,3 +50,34 @@
 .experience-posts {
   margin-top: var(--space-section);
 }
+
+/* Knapper til at oprette og slette opslag */
+.experience-owner__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.experience-owner__actions p,
+.experience-owner__actions form {
+  margin: 0;
+}
+
+/* Slet oplevelse-knappen */
+.button--delete-experience {
+  background: transparent;
+  color: #a94e2b;
+  border: 1px solid #a94e2b;
+  border-radius: 50px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.button--delete-experience:hover {
+  background: #f5e3da;
+}

@@ -113,26 +113,39 @@ Viewet bruger de variabler, som controlleren sender videre, til at vise oplevels
                 $postLimit === null || $postsRemaining > 0
             );
             ?>
-            <?php if ($canCreatePost && $isOwner): ?>
-                <p>
-                    <a
-                        class="button button--primary"
-                        href="<?= e(url('/create-post?experience=' . $experience['experience_id'])) ?>">
-                        Nyt opslag
-                    </a>
-                </p>
-            <?php elseif ($isOwner): ?>
-                <p class="meta">
-                    <?php if ($experience['experience_status'] === 'pending'): ?>
-                        Oplevelsen afventer godkendelse fra en gruppeadministrator.
-                    <?php elseif ($experience['experience_status'] === 'rejected'): ?>
-                        Oplevelsen er blevet afvist og kan derfor ikke modtage opslag.
-                    <?php elseif (!$isActive): ?>
-                        Det er ikke muligt at oprette opslag uden for oplevelsens periode.
-                    <?php else: ?>
-                        Opslagsgrænsen for denne oplevelse er nået.
+            <?php if ($isOwner): ?>
+                <div class="experience-owner__actions">
+                    <?php if ($canCreatePost): ?>
+                        <a
+                            class="button button--primary"
+                            href="<?= e(url('/create-post?experience=' . $experience['experience_id'])) ?>">
+                            Nyt opslag
+                        </a>
                     <?php endif; ?>
-                </p>
+
+                    <?php // Kun ejeren kan se formularen til at slette oplevelsen. ?>
+                    <form class="js-confirm" method="post" action="<?= e(url('/delete-experience')) ?>"
+                          data-confirm="Er du sikker på, at du vil slette denne oplevelse? Alle opslag og billeder slettes permanent."
+                          data-confirm-button="Ja, slet oplevelse">
+                        <?= \PostCard\Core\Csrf::field() ?>
+                        <input type="hidden" name="experience_id" value="<?= (int) $experience['experience_id'] ?>">
+                        <button type="submit" class="button button--delete-experience">Slet oplevelse</button>
+                    </form>
+                </div>
+
+                <?php if (!$canCreatePost): ?>
+                    <p class="meta">
+                        <?php if ($experience['experience_status'] === 'pending'): ?>
+                            Oplevelsen afventer godkendelse fra en gruppeadministrator.
+                        <?php elseif ($experience['experience_status'] === 'rejected'): ?>
+                            Oplevelsen er blevet afvist og kan derfor ikke modtage opslag.
+                        <?php elseif (!$isActive): ?>
+                            Det er ikke muligt at oprette opslag uden for oplevelsens periode.
+                        <?php else: ?>
+                            Opslagsgrænsen for denne oplevelse er nået.
+                        <?php endif; ?>
+                    </p>
+                <?php endif; ?>
             <?php endif; ?>
         </section>
 

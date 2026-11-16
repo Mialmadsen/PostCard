@@ -17,6 +17,7 @@ use PostCard\Repositories\CommentRepository;
 use PostCard\Repositories\LikeRepository;
 use PostCard\Repositories\PostViewRepository;
 use PostCard\Repositories\AdminSettingsRepository;
+use PostCard\Services\RateLimiter;
 
 // Controlleren håndterer oprettelse af opslag.
 class PostController
@@ -152,6 +153,7 @@ class PostController
             abort(403, 'Du kan kun oprette opslag i dine egne oplevelser.');
         }
 
+
         // Genbruger ExperienceService til at kontrollere,
         // om oplevelsen er godkendt og aktiv i dag.
         $status = $this->experienceService->getStatus($experience);
@@ -159,6 +161,41 @@ class PostController
         // Opslag må kun oprettes i aktive oplevelser.
         if (!$status['isActive']) {
             abort(403, 'Du kan ikke oprette opslag i denne oplevelse lige nu.');
+        }
+
+        // Spam: højst 30 opslag i timen.
+        // Grænsen er defineret i RateLimiter.
+        $limiter = new RateLimiter();
+
+        if ($limiter->tooMany('create_post', Auth::userId())) {
+            http_response_code(429);
+
+            // Henter uploadgrænsen, så formularen stadig viser den korrekte størrelse.
+            $siteSettings = (new AdminSettingsRepository())->findAll();
+            $maxUploadSizeMB = (int) ($siteSettings['max_upload_size'] ?? 5);
+
+            // Henter opslagene for at beregne den aktuelle opslaggrænse.
+            $posts = $this->postFeedRepository->findByExperience($experienceId);
+            $postCounts = $this->experienceService->getPostCounts(
+                $experience,
+                count($posts)
+            );
+
+            // Viser formularen igen med en fejlbesked.
+            View::render('create-post', [
+                'pageTitle' => 'Nyt opslag',
+                'pageStyle' => 'create-post',
+                'pageScripts' => ['photo-preview'],
+                'isLoggedIn' => true,
+                'experience' => $experience,
+                'postCounts' => $postCounts,
+                'uploadError' => $limiter->message('create_post'),
+                'oldCaption' => $_POST['caption'] ?? '',
+                'oldLocation' => $_POST['location'] ?? '',
+                'maxUploadSizeMB' => $maxUploadSizeMB
+            ]);
+
+            return;
         }
 
         // Henter de opslag, der allerede findes i oplevelsen.
@@ -389,7 +426,7 @@ class PostController
         View::render('post', [
             'pageTitle' => 'Opslag',
             'pageStyle' => 'post',
-            'pageScripts' => ['lightbox', 'likes'],
+            'pageScripts' => ['lightbox', 'likes', 'confirm'],
             'isLoggedIn' => true,
             'post' => $post,
             'images' => $images,
