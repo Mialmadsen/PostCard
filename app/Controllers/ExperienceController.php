@@ -10,6 +10,7 @@ use PostCard\Repositories\LikeRepository;
 use PostCard\Core\View;
 use PostCard\Core\Auth;
 use PostCard\Services\ExperienceService;
+use PostCard\Repositories\AdminSettingsRepository;
 
 class ExperienceController
 {
@@ -188,6 +189,10 @@ class ExperienceController
         $posts = $this->postFeedRepository->findByExperience($experienceId);
         $userId = Auth::userId();
 
+        // Henter indstillingerne én gang til alle opslag på oplevelsen.
+        $siteSettings = (new AdminSettingsRepository())->findAll();
+        $likesEnabled = ($siteSettings['allow_likes'] ?? '0') === '1';
+
         foreach ($posts as &$post) {
             // Finder ud af, om den indloggede bruger allerede har liket opslaget.
             $post['hasLiked'] = $this->likeRepository->hasLiked((int) $post['id'], $userId);
@@ -211,7 +216,8 @@ class ExperienceController
 
         return array_merge([
             'experience' => $experience,
-            'posts' => $posts
+            'posts' => $posts,
+            'likesEnabled' => $likesEnabled
         ], $postCounts, $experienceStatus);
     }
 }

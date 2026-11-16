@@ -60,41 +60,43 @@ $postUrl = $operatorView
 
         <ul class="post-stats">
 
-            <li class="post-stats__item">
+            <?php if ($likesEnabled): ?>
+                <li class="post-stats__item">
 
-                <?php if (!$operatorView): ?>
-                    <?php /* Almindelige brugere kan like og unlike opslaget. */ ?>
-                    <form action="<?= e(url('/post-like')) ?>" method="post" data-like-form>
-                        <?= \PostCard\Core\Csrf::field() ?>
-                        <input type="hidden" name="post_id" value="<?= (int) $post['id'] ?>">
+                    <?php if (!$operatorView): ?>
+                        <?php /* Almindelige brugere kan like og unlike opslaget. */ ?>
+                        <form action="<?= e(url('/post-like')) ?>" method="post" data-like-form>
+                            <?= \PostCard\Core\Csrf::field() ?>
+                            <input type="hidden" name="post_id" value="<?= (int) $post['id'] ?>">
 
-                        <button type="submit" class="like-button"
-                                aria-pressed="<?= !empty($post['hasLiked']) ? 'true' : 'false' ?>"
-                                aria-label="<?= !empty($post['hasLiked']) ? 'Fjern like' : 'Synes godt om' ?>">
-                            <svg class="post-stats__icon" viewBox="0 0 24 24"
-                                 aria-hidden="true" focusable="false">
-                                <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" />
-                            </svg>
+                            <button type="submit" class="like-button"
+                                    aria-pressed="<?= !empty($post['hasLiked']) ? 'true' : 'false' ?>"
+                                    aria-label="<?= !empty($post['hasLiked']) ? 'Fjern like' : 'Synes godt om' ?>">
+                                <svg class="post-stats__icon" viewBox="0 0 24 24"
+                                     aria-hidden="true" focusable="false">
+                                    <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" />
+                                </svg>
+                            </button>
+                        </form>
+
+                        <?php /* Åbner en oversigt over brugere, der har liket opslaget. */ ?>
+                        <button
+                            type="button"
+                            class="like-count-button"
+                            data-like-users
+                            data-post-id="<?= (int) $post['id'] ?>"
+                            data-url="<?= e(url('/post-likes?id=' . (int) $post['id'])) ?>"
+                            aria-label="Se hvem der har liket opslaget">
+                            <span data-like-count><?= (int) $post['likes'] ?></span> likes
                         </button>
-                    </form>
 
-                    <?php /* Åbner en oversigt over brugere, der har liket opslaget. */ ?>
-                    <button
-                        type="button"
-                        class="like-count-button"
-                        data-like-users
-                        data-post-id="<?= (int) $post['id'] ?>"
-                        data-url="<?= e(url('/post-likes?id=' . (int) $post['id'])) ?>"
-                        aria-label="Se hvem der har liket opslaget">
-                        <span data-like-count><?= (int) $post['likes'] ?></span> likes
-                    </button>
+                    <?php else: ?>
+                        <?php /* Operatoren kan se antal likes, men ikke like opslaget. */ ?>
+                        <span><?= (int) $post['likes'] ?> likes</span>
+                    <?php endif; ?>
 
-                <?php else: ?>
-                    <?php /* Operatoren kan se antal likes, men ikke like opslaget. */ ?>
-                    <span><?= (int) $post['likes'] ?> likes</span>
-                <?php endif; ?>
-
-            </li>
+                </li>
+            <?php endif; ?>
 
             <li>
                 <a class="post-stats__item" href="<?= e($postUrl) ?>#comments">

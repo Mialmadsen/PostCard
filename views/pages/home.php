@@ -3,6 +3,12 @@
 // Header og footer bliver derfor indlæst automatisk
 ?>
 
+<?php
+// Kontrollerer, om likes er tilladt på PostCard.
+$siteSettings = (new \PostCard\Repositories\AdminSettingsRepository())->findAll();
+$likesEnabled = ($siteSettings['allow_likes'] ?? '0') === '1';
+?>
+
 <main id="main" class="site-main">
     <div class="container">
         <p class="eyebrow">Min forside</p>
@@ -139,6 +145,7 @@
                                         </time>
                                     </p>
                                     <ul class="post-stats">
+                                        <?php if ($likesEnabled): ?>
                                         <li>
                                             <form action="<?= e(url('/post-like')) ?>" method="post">
                                                 <?= \PostCard\Core\Csrf::field() ?>
@@ -149,6 +156,7 @@
                                                 </button>
                                             </form>
                                         </li>
+                                        <?php endif; ?>
                                         <li>
                                             <a class="post-stats__item" href="<?= url('/post?id=' . (int) $post['id'] . '#comments') ?>">
                                                 <svg class="post-stats__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5h16v11H9l-5 4V5Z" /></svg>
@@ -196,6 +204,7 @@
                                             <time datetime="<?= e($post['date']) ?>"><?= danishDate($post['date'], 'dd.MM.y') ?></time>
                                         </p>
                                         <ul class="post-stats">
+                                            <?php if ($likesEnabled): ?>
                                             <li>
                                                 <form action="<?= e(url('/post-like')) ?>" method="post">
                                                     <?= \PostCard\Core\Csrf::field() ?>
@@ -206,6 +215,7 @@
                                                     </button>
                                                 </form>
                                             </li>
+                                            <?php endif; ?>
                                             <li>
                                                 <a class="post-stats__item" href="<?= url('/post?id=' . (int) $post['id'] . '#comments') ?>">
                                                     <svg class="post-stats__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 5h16v11H9l-5 4V5Z" /></svg>

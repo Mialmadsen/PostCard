@@ -83,7 +83,7 @@
                         <label class="field__label" for="post-limit">Antal opslag pr. oplevelse</label>
                         <input class="field__input field__input--short" id="post-limit" name="default_post_limit"
                             type="number" min="1" max="50" required
-                            value="<?= e($old['default_post_limit'] ?? '20') ?>"
+                            value="<?= e($old['default_post_limit'] ?? $defaultPostLimit ?? 20) ?>"
                             <?php if (isset($errors['default_post_limit'])): ?>aria-invalid="true" aria-describedby="post-limit-hint post-limit-error"<?php else: ?>aria-describedby="post-limit-hint"<?php endif; ?>>
                         <p class="meta" id="post-limit-hint">Gælder hver ny oplevelse. Kræver gruppen tilladelse, kan du
                             ændre tallet, når du godkender en oplevelse.</p>

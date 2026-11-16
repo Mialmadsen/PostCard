@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PostCard\Services;
 
 use PostCard\Core\Config;
+use PostCard\Repositories\AdminSettingsRepository;
 
 // Fælles service til billedupload til Cloudinary.
 // Kan genbruges til både opslag og profilbilleder.
@@ -32,11 +33,19 @@ class CloudinaryService
             throw new \RuntimeException('Billedet kunne ikke uploades.');
         }
 
-        // Maksimal filstørrelse: 5 MB.
-        $maxSize = 5 * 1024 * 1024;
+        // Henter den maksimale billedstørrelse fra Admin Settings.
+        $siteSettings = (new AdminSettingsRepository())->findAll();
+
+        // Indstillingen gemmes som fx '10MB', så vi omdanner den til MB.
+        $maxSizeMB = (int) ($siteSettings['max_upload_size'] ?? 5);
+
+        // Omdanner MB til bytes.
+        $maxSize = $maxSizeMB * 1024 * 1024;
 
         if (($file['size'] ?? 0) <= 0 || $file['size'] > $maxSize) {
-            throw new \RuntimeException('Billedet må højst fylde 5 MB.');
+            throw new \RuntimeException(
+                'Billedet må højst fylde ' . $maxSizeMB . ' MB.'
+            );
         }
 
         // Kontrollerer at filen er en rigtig PHP-upload.

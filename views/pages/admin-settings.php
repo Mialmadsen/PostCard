@@ -6,28 +6,46 @@
 <?php /* Site-wide settings (site_settings: one row per setting_key).
      PHP checks every value before saving it, e.g. that numbers are whole numbers in range. */ ?>
 
+<?php
+// Henter de aktuelle værdier fra databasen.
+$postLimit = $settings['default_post_limit'] ?? '20';
+$uploadSize = $settings['max_upload_size'] ?? '10MB';
+$allowLikes = $settings['allow_likes'] ?? '1';
+$allowComments = $settings['allow_comments'] ?? '1';
+
+// Fjerner MB fra værdien, så talfeltet kun viser tallet.
+$uploadSizeNumber = preg_replace('/MB$/i', '', $uploadSize);
+?>
+
 <main id="main" class="site-main">
     <div class="container">
         <p class="eyebrow">Administration</p>
         <h1>Indstillinger</h1>
         <p>Gælder hele <span class="brand">PostCard</span> og alle grupper.</p>
 
-        <?php /* IF saved: <p class="alert" role="status">Indstillingerne er gemt.</p> */ ?>
+        <?php if ($saved): ?>
+            <p class="alert" role="status">Indstillingerne er gemt.</p>
+        <?php endif; ?>
+
+        <?php if ($error !== null): ?>
+            <p class="alert" role="alert"><?= e($error) ?></p>
+        <?php endif; ?>
 
         <div class="sidebar-layout">
-            <?php require __DIR__ . '/../views/partials/admin-nav.php'; ?>
-
+            <?php require __DIR__ . '/../partials/admin-nav.php'; ?>
             <section class="card" aria-labelledby="settings-heading">
                 <h2 class="visually-hidden" id="settings-heading">Indstillinger</h2>
 
                 <?php /* A CSRF token is added in Epic 2 */ ?>
-                <form class="form" action="admin-settings.php" method="post">
+                <form class="form" action="<?= url('/admin/settings') ?>" method="post">
+
+                    <?= \PostCard\Core\Csrf::field() ?>
 
                     <?php /* setting_key = 'default_post_limit' */ ?>
                     <div class="field">
                         <label class="field__label" for="default-post-limit">Antal opslag pr. oplevelse</label>
                         <input class="field__input field__input--short" id="default-post-limit" name="default_post_limit" type="number"
-                            min="1" max="50" value="10" required aria-describedby="default-post-limit-hint">
+                            min="1" max="50" value="<?= e((string) $postLimit) ?>" required aria-describedby="default-post-limit-hint">
                         <p class="meta" id="default-post-limit-hint">Forslaget, når nogen opretter en ny gruppe. Gruppens admin kan ændre det.</p>
                     </div>
 
@@ -35,7 +53,7 @@
                     <div class="field">
                         <label class="field__label" for="max-upload-size">Største billede i et opslag (MB)</label>
                         <input class="field__input field__input--short" id="max-upload-size" name="max_upload_size" type="number"
-                            min="1" max="20" value="10" required aria-describedby="max-upload-size-hint">
+                            min="1" max="20" value="<?= e((string) $uploadSizeNumber) ?>" required aria-describedby="max-upload-size-hint">
                         <p class="meta" id="max-upload-size-hint">Højst 20 MB. Serveren skal også tillade størrelsen.</p>
                     </div>
 
@@ -44,7 +62,8 @@
                     <fieldset class="fieldset">
                         <legend class="field__label fieldset__legend">Funktioner</legend>
                         <div class="field field--checkbox">
-                            <input class="field__checkbox" id="allow-likes" name="allow_likes" type="checkbox" value="1" checked
+                            <input class="field__checkbox" id="allow-likes" name="allow_likes" type="checkbox" value="1"
+                                <?= $allowLikes === '1' ? 'checked' : '' ?>
                                 aria-describedby="allow-likes-hint">
                             <div>
                                 <label for="allow-likes">Synes godt om</label>
@@ -52,7 +71,8 @@
                             </div>
                         </div>
                         <div class="field field--checkbox">
-                            <input class="field__checkbox" id="allow-comments" name="allow_comments" type="checkbox" value="1" checked
+                            <input class="field__checkbox" id="allow-comments" name="allow_comments" type="checkbox" value="1"
+                                <?= $allowComments === '1' ? 'checked' : '' ?>
                                 aria-describedby="allow-comments-hint">
                             <div>
                                 <label for="allow-comments">Kommentarer</label>
@@ -69,4 +89,3 @@
         </div>
     </div>
 </main>
-

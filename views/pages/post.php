@@ -1,6 +1,10 @@
 <?php
 // Angiver om opslaget vises af en operator.
 $operatorView = $operatorView ?? false;
+// Kontrollerer, om nye kommentarer er tilladt på PostCard.
+$siteSettings = (new \PostCard\Repositories\AdminSettingsRepository())->findAll();
+$commentsEnabled = ($siteSettings['allow_comments'] ?? '0') === '1';
+$likesEnabled = ($siteSettings['allow_likes'] ?? '0') === '1';
 
 // Breadcrumbs til almindelige brugere og operatorer.
 $breadcrumbs = $operatorView
@@ -73,31 +77,34 @@ $breadcrumbs = $operatorView
                     </p>
 
                     <ul class="post-stats">
-                        <li class="post-stats__item">
-                            <?php if (!$operatorView): ?>
-                                <!-- Almindelige brugere kan like opslaget -->
-                                <form action="<?= e(url('/post-like')) ?>" method="post" data-like-form>
-                                    <?= \PostCard\Core\Csrf::field() ?>
-                                    <input type="hidden" name="post_id" value="<?= (int) $post['id'] ?>">
-                                    <button type="submit" class="like-button"
-                                            aria-pressed="<?= $hasLiked ? 'true' : 'false' ?>"
-                                            aria-label="<?= $hasLiked ? 'Fjern like' : 'Synes godt om' ?>">
-                                        <svg class="post-stats__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                                            <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" />
-                                        </svg>
+                        <?php if ($likesEnabled): ?>
+                            <li class="post-stats__item">
+                                <?php if (!$operatorView): ?>
+                                    <!-- Almindelige brugere kan like opslaget -->
+                                    <form action="<?= e(url('/post-like')) ?>" method="post" data-like-form>
+                                        <?= \PostCard\Core\Csrf::field() ?>
+                                        <input type="hidden" name="post_id" value="<?= (int) $post['id'] ?>">
+                                        <button type="submit" class="like-button"
+                                                aria-pressed="<?= $hasLiked ? 'true' : 'false' ?>"
+                                                aria-label="<?= $hasLiked ? 'Fjern like' : 'Synes godt om' ?>">
+                                            <svg class="post-stats__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                                <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                    <button type="button" class="like-count-button" data-like-users
+                                            data-post-id="<?= (int) $post['id'] ?>"
+                                            data-url="<?= e(url('/post-likes?id=' . $post['id'])) ?>"
+                                            aria-label="Se hvem der har liket opslaget">
+                                        <span data-like-count><?= (int) $post['likes'] ?></span> likes
                                     </button>
-                                </form>
-                                <button type="button" class="like-count-button" data-like-users
-                                        data-post-id="<?= (int) $post['id'] ?>"
-                                        data-url="<?= e(url('/post-likes?id=' . $post['id'])) ?>"
-                                        aria-label="Se hvem der har liket opslaget">
-                                    <span data-like-count><?= (int) $post['likes'] ?></span> likes
-                                </button>
-                            <?php else: ?>
-                                <!-- Operatoren kan kun se antallet af likes -->
-                                <span><?= (int) $post['likes'] ?> likes</span>
-                            <?php endif; ?>
-                        </li>
+                                <?php else: ?>
+                                    <!-- Operatoren kan kun se antallet af likes -->
+                                    <span><?= (int) $post['likes'] ?> likes</span>
+                                <?php endif; ?>
+                            </li>
+                        <?php endif; ?>
+
                         <li class="post-stats__item">
                             <svg class="post-stats__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                                 <path d="M4 5h16v11H9l-5 4V5Z" />
@@ -193,7 +200,7 @@ $breadcrumbs = $operatorView
                                                 </button>
                                             </form>
                                         <?php endif; ?>
-                                        
+
                                     </div>
                                 </article>
                             <?php endforeach; ?>
@@ -202,7 +209,8 @@ $breadcrumbs = $operatorView
 
                     <!-- Operatoren kan ikke skrive kommentarer -->
                     <?php if (!$operatorView): ?>
-                        <form class="form" action="<?= e(url('/post-comment')) ?>" method="post">
+                        <?php if ($commentsEnabled): ?>
+                            <form class="form" action="<?= e(url('/post-comment')) ?>" method="post">
                             <?= \PostCard\Core\Csrf::field() ?>
                             <input type="hidden" name="post_id" value="<?= (int) $post['id'] ?>">
                             <div class="field">
@@ -214,9 +222,13 @@ $breadcrumbs = $operatorView
                             <div class="button-row">
                                 <button class="button button--primary" type="submit">Send kommentar</button>
                             </div>
-                        </form>
-                    <?php endif; ?>
-                </section>
+                            </form>
+                            <?php else: ?>
+                                <!-- Vises, når operatoren har slået nye kommentarer fra -->
+                                <p class="meta">Kommentarer er slået fra på PostCard.</p>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                        </section>
             </div>
         </div>
     </div>
