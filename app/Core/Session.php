@@ -42,7 +42,9 @@ class Session
         setcookie(session_name(), '', time() - 3600, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
 
         // Destroy the session
-        session_destroy();
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_destroy();
+        }
     }
 
     // creates a flash - message that informs user about success of his actions

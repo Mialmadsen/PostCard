@@ -37,6 +37,17 @@ class UserRepository extends Repository
         return $value === 1;
     }
 
+    // True while the account may be used (not blocked or deleted).
+    public function isActive(int $userId): bool
+    {
+        $value = $this->fetchValue(
+            'SELECT 1 FROM users WHERE user_id = :user_id AND user_status = \'active\'',
+            ['user_id' => $userId]
+        );
+
+        return $value !== null;
+    }
+
     // True if any user (also blocked or deleted) already has this email.
     public function emailExists(string $email, int $exceptUserId = 0): bool
     {

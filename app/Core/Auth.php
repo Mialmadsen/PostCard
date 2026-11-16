@@ -27,10 +27,19 @@ class Auth
         return $users->findById($userId);
     }
 
-    // Stop here and go to the login page if nobody is logged in.
+    // Stop here and go to the login page if nobody is logged in,
+    // or if the account was blocked or deleted after the login.
     public static function requireLogin(): void
     {
-        if (self::userId() === null) {
+        $userId = self::userId();
+        if ($userId === null) {
+            redirect('/login');
+        }
+
+        // The session only remembers who logged in. The database knows if they still may.
+        $users = new UserRepository();
+        if (!$users->isActive($userId)) {
+            self::logout();
             redirect('/login');
         }
     }
