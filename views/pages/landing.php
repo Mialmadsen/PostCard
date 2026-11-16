@@ -6,8 +6,8 @@
             <div class="envelope__back" aria-hidden="true"></div>
             <div class="envelope__letter flow">
                 <p class="eyebrow">Hilsen fra PostCard</p>
-                <h1>Del din oplevelse – ikke hele dit liv</h1>
-                <p>Et privat sted at dele rejseminder med de mennesker, der betyder noget.</p>
+                <h1><?= e($siteContent['welcome']['title'] ?? 'Del din oplevelse – ikke hele dit liv') ?></h1>
+                <p><?= nl2br(e($siteContent['welcome']['body'] ?? 'Et privat sted at dele rejseminder med de mennesker, der betyder noget.')) ?></p>
                 <p><a class="button button--primary" href="<?= url('/register') ?>">Opret bruger</a></p>
             </div>
             <div class="envelope__front" aria-hidden="true"></div>

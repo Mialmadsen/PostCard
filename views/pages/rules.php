@@ -1,23 +1,48 @@
+<?php
+// Henter reglerne fra databasen og deler dem op i linjer.
+$rulesText = $siteContent['rules']['body'] ?? '';
+
+// Hver linje bliver til et punkt på listen.
+$rules = preg_split('/\R/u', $rulesText) ?: [];
+
+// Fjerner tomme linjer.
+$rules = array_values(array_filter(
+    array_map('trim', $rules),
+    static fn(string $rule): bool => $rule !== ''
+));
+?>
+
 <main id="main" class="site-main">
     <div class="container container--text">
         <article class="card flow">
             <p class="eyebrow">PostCard</p>
-            <h1>Regler og retningslinjer</h1>
+
+            <h1>
+                <?= e($siteContent['rules']['title'] ?? 'Regler og retningslinjer') ?>
+            </h1>
 
             <?php /* CONTENT: rules — managed by the operator in /admin/content (Epic 2) */ ?>
-            <p><span class="brand">PostCard</span> er et privat sted for grupper, der kender hinanden. For at det skal føles trygt for alle, gælder disse regler:</p>
+
+            <p>
+                <span class="brand">PostCard</span>
+                er et privat sted for grupper, der kender hinanden.
+                For at det skal føles trygt for alle, gælder disse regler:
+            </p>
 
             <ol class="flow">
-                <li>Del kun billeder, du selv har taget eller har lov til at dele.</li>
-                <li>Spørg, før du deler billeder af andre – især af børn.</li>
-                <li>Det, der deles i en gruppe, bliver i gruppen. Del det ikke videre uden for <span class="brand">PostCard</span>.</li>
-                <li>Intet krænkende, voldeligt eller ulovligt indhold.</li>
-                <li>Skriv venligt og respektfuldt i kommentarer.</li>
-                <li>Gruppens admin kan fjerne opslag og medlemmer, der bryder reglerne. <span class="brand">PostCard</span> kan blokere brugere.</li>
+                <?php foreach ($rules as $rule): ?>
+                    <li><?= e($rule) ?></li>
+                <?php endforeach; ?>
             </ol>
 
-            <h2>Dine data</h2>
-            <p>Du kan altid slette din bruger. Så bliver dine oplysninger og dine opslag slettet.</p>
+            <h2>
+                <?= e($siteContent['privacy']['title'] ?? 'Dine data') ?>
+            </h2>
+
+            <p>
+                <?= nl2br(e($siteContent['privacy']['body'] ?? '')) ?>
+            </p>
+
         </article>
     </div>
 </main>

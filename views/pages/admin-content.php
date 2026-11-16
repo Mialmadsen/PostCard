@@ -1,142 +1,209 @@
 <?php
 // The controller shows this page with:
 // View::render('admin-content', ['pageTitle' => 'Administration · Indhold', 'isOperator' => true, 'pageStyle' => 'admin', 'adminPage' => 'content']);
-?>
 
-<?php /* The texts on the public pages (site_content). One form per text, so saving one
-     does not touch the others. PHP escapes the text when it shows it, and turns
-     an empty line into a new paragraph. */ ?>
+/* The texts on the public pages (site_content). One form per text, so saving one
+   does not touch the others. PHP escapes the text when it shows it, and turns
+   an empty line into a new paragraph. */
+
+// Operatoren kan redigere teksterne på PostCards offentlige sider.
+// $content, $saved og $error kommer fra AdminContentController.
+
+// De fire områder, der kan redigeres.
+// Hver sektion har sin egen formular.
+
+$sections = [
+    'welcome' => [
+        'label' => 'Forsiden: velkomst',
+        'button' => 'Gem velkomst',
+        'link' => '/'
+    ],
+    'rules' => [
+        'label' => 'Regler',
+        'button' => 'Gem regler',
+        'link' => '/rules'
+    ],
+    'privacy' => [
+        'label' => 'Regler: dine data',
+        'button' => 'Gem dine data',
+        'link' => '/rules'
+    ],
+    'contact' => [
+        'label' => 'Kontakt',
+        'button' => 'Gem kontakt',
+        'link' => '/contact'
+    ]
+];
+?>
 
 <main id="main" class="site-main">
     <div class="container">
+
         <p class="eyebrow">Administration</p>
         <h1>Indhold</h1>
-        <p>Teksterne på de offentlige sider. En tom linje giver et nyt afsnit.</p>
 
-        <?php /* IF saved: <p class="alert" role="status">Teksten er gemt.</p> */ ?>
+        <p>
+            Teksterne på de offentlige sider.
+            En tom linje giver et nyt afsnit.
+        </p>
+
+        <!-- Besked når en tekst er gemt -->
+        <?php if ($saved !== null): ?>
+            <p class="alert" role="status">
+                Teksten er gemt.
+            </p>
+        <?php endif; ?>
+
+        <!-- Viser fejl fra controlleren -->
+        <?php if ($error !== null): ?>
+            <p class="alert" role="alert">
+                <?= e($error) ?>
+            </p>
+        <?php endif; ?>
 
         <div class="sidebar-layout">
-            <?php require __DIR__ . '/../views/partials/admin-nav.php'; ?>
+
+            <!-- Operatorens navigationsmenu -->
+            <?php require __DIR__ . '/../partials/admin-nav.php'; ?>
 
             <div class="flow">
 
-                <?php /* LOOP: site_content rows */ ?>
-                <section class="card" aria-labelledby="welcome-heading">
-                    <h2 class="section-title" id="welcome-heading">Forsiden: velkomst</h2>
+                <!-- Gennemgår de fire indholdsområder -->
+                <?php foreach ($sections as $key => $section): ?>
 
-                    <?php /* A CSRF token is added in Epic 2 */ ?>
-                    <form class="form" action="admin-content.php" method="post">
-                        <input type="hidden" name="content_key" value="welcome">
+                    <section
+                        class="card"
+                        aria-labelledby="<?= e($key) ?>-heading"
+                    >
 
-                        <div class="field">
-                            <label class="field__label" for="welcome-title">Overskrift</label>
-                            <input class="field__input" id="welcome-title" name="title" type="text" maxlength="150" required
-                                value="Del din oplevelse – ikke hele dit liv">
-                        </div>
-                        <div class="field">
-                            <label class="field__label" for="welcome-body">Tekst</label>
-                            <textarea class="field__input" id="welcome-body" name="body" rows="3" required>Et privat sted at dele rejseminder med de mennesker, der betyder noget.</textarea>
-                        </div>
+                        <h2
+                            class="section-title"
+                            id="<?= e($key) ?>-heading"
+                        >
+                            <?= e($section['label']) ?>
+                        </h2>
 
-                        <p class="meta">Sidst ændret <time datetime="2026-09-20">20. sep. 2026</time> af Mia Nielsen · <a href="index.php">Se siden</a></p>
+                        <!-- Kontrollerer at området findes i databasen -->
+                        <?php if (!isset($content[$key])): ?>
 
-                        <div class="button-row">
-                            <button class="button button--primary" type="submit">Gem velkomst</button>
-                        </div>
-                    </form>
-                </section>
+                            <p role="alert">
+                                Indholdet mangler i databasen.
+                                Kontrollér seed-data.
+                            </p>
 
-                <section class="card" aria-labelledby="rules-heading">
-                    <h2 class="section-title" id="rules-heading">Regler</h2>
+                        <?php else: ?>
 
-                    <form class="form" action="admin-content.php" method="post">
-                        <input type="hidden" name="content_key" value="rules">
+                            <!-- Formular til dette indholdsområde -->
+                            <form
+                                class="form"
+                                action="<?= e(url('/admin/content')) ?>"
+                                method="post"
+                            >
 
-                        <div class="field">
-                            <label class="field__label" for="rules-title">Overskrift</label>
-                            <input class="field__input" id="rules-title" name="title" type="text" maxlength="150" required
-                                value="Regler og retningslinjer">
-                        </div>
-                        <div class="field">
-                            <label class="field__label" for="rules-body">Tekst</label>
-                            <textarea class="field__input" id="rules-body" name="body" rows="10" required>PostCard er et privat sted for grupper, der kender hinanden. For at det skal føles trygt for alle, gælder disse regler:
+                                <!-- Beskytter formularen mod CSRF -->
+                                <?= \PostCard\Core\Csrf::field() ?>
 
-Del kun billeder, du selv har taget eller har lov til at dele.
+                                <!-- Fortæller controlleren hvilket område -->
+                                <input
+                                    type="hidden"
+                                    name="content_key"
+                                    value="<?= e($key) ?>"
+                                >
 
-Spørg, før du deler billeder af andre – især af børn.
+                                <!-- Overskrift -->
+                                <div class="field">
 
-Det, der deles i en gruppe, bliver i gruppen. Del det ikke videre uden for PostCard.
+                                    <label
+                                        class="field__label"
+                                        for="<?= e($key) ?>-title"
+                                    >
+                                        Overskrift
+                                    </label>
 
-Intet krænkende, voldeligt eller ulovligt indhold.
+                                    <input
+                                        class="field__input"
+                                        id="<?= e($key) ?>-title"
+                                        name="title"
+                                        type="text"
+                                        maxlength="150"
+                                        required
+                                        value="<?= e($content[$key]['title']) ?>"
+                                    >
 
-Skriv venligt og respektfuldt i kommentarer.
+                                </div>
 
-Gruppens admin kan fjerne opslag og medlemmer, der bryder reglerne. PostCard kan blokere brugere.</textarea>
-                        </div>
+                                <!-- Brødtekst -->
+                                <div class="field">
 
-                        <p class="meta">Sidst ændret <time datetime="2026-09-21">21. sep. 2026</time> af Mia Nielsen · <a href="rules.php">Se siden</a></p>
+                                    <label
+                                        class="field__label"
+                                        for="<?= e($key) ?>-body"
+                                    >
+                                        Tekst
+                                    </label>
 
-                        <div class="button-row">
-                            <button class="button button--primary" type="submit">Gem regler</button>
-                        </div>
-                    </form>
-                </section>
+                                    <textarea
+                                        class="field__input"
+                                        id="<?= e($key) ?>-body"
+                                        name="body"
+                                        rows="<?= match ($key) {
+                                            'welcome' => 3,
+                                            'rules' => 10,
+                                            'privacy' => 3,
+                                            'contact' => 6,
+                                            default => 5
+                                        } ?>"
+                                        maxlength="10000"
+                                        required
+                                    ><?= e($content[$key]['body']) ?></textarea>
 
-                <section class="card" aria-labelledby="privacy-heading">
-                    <h2 class="section-title" id="privacy-heading">Regler: dine data</h2>
+                                </div>
 
-                    <form class="form" action="admin-content.php" method="post">
-                        <input type="hidden" name="content_key" value="privacy">
+                                <!-- Sidste ændring og link til offentlig side -->
+                                <p class="meta">
 
-                        <div class="field">
-                            <label class="field__label" for="privacy-title">Overskrift</label>
-                            <input class="field__input" id="privacy-title" name="title" type="text" maxlength="150" required
-                                value="Dine data">
-                        </div>
-                        <div class="field">
-                            <label class="field__label" for="privacy-body">Tekst</label>
-                            <textarea class="field__input" id="privacy-body" name="body" rows="3" required>Du kan altid slette din bruger. Så bliver dine oplysninger og dine opslag slettet.</textarea>
-                        </div>
+                                    Sidst ændret:
 
-                        <p class="meta">Sidst ændret <time datetime="2026-09-21">21. sep. 2026</time> af Mia Nielsen · <a href="rules.php">Se siden</a></p>
+                                    <?php if (!empty($content[$key]['updated_at'])): ?>
+                                        <time datetime="<?= e($content[$key]['updated_at']) ?>">
+                                            <?= e(date(
+                                                'd.m.Y H:i',
+                                                strtotime($content[$key]['updated_at'])
+                                            )) ?>
+                                        </time>
+                                    <?php else: ?>
+                                        Ukendt
+                                    <?php endif; ?>
 
-                        <div class="button-row">
-                            <button class="button button--primary" type="submit">Gem dine data</button>
-                        </div>
-                    </form>
-                </section>
+                                    ·
 
-                <section class="card" aria-labelledby="contact-heading">
-                    <h2 class="section-title" id="contact-heading">Kontakt</h2>
+                                    <a href="<?= e(url($section['link'])) ?>">
+                                        Se siden
+                                    </a>
 
-                    <form class="form" action="admin-content.php" method="post">
-                        <input type="hidden" name="content_key" value="contact">
+                                </p>
 
-                        <div class="field">
-                            <label class="field__label" for="contact-title">Overskrift</label>
-                            <input class="field__input" id="contact-title" name="title" type="text" maxlength="150" required
-                                value="Kontakt">
-                        </div>
-                        <div class="field">
-                            <label class="field__label" for="contact-body">Tekst</label>
-                            <textarea class="field__input" id="contact-body" name="body" rows="6" required>Har du spørgsmål, eller vil du anmelde indhold, der bryder reglerne? Skriv til os, så svarer vi inden for to hverdage.
+                                <!-- Gemmer kun denne sektions tekst -->
+                                <div class="button-row">
 
-E-mail: kontakt@postcard.example
+                                    <button
+                                        class="button button--primary"
+                                        type="submit"
+                                    >
+                                        <?= e($section['button']) ?>
+                                    </button>
 
-Adresse: PostCard, Eksempelvej 1, 6700 Esbjerg</textarea>
-                        </div>
+                                </div>
 
-                        <p class="meta">Sidst ændret <time datetime="2026-09-21">21. sep. 2026</time> af Mia Nielsen · <a href="contact.php">Se siden</a></p>
+                            </form>
 
-                        <div class="button-row">
-                            <button class="button button--primary" type="submit">Gem kontakt</button>
-                        </div>
-                    </form>
-                </section>
-                <?php /* /LOOP */ ?>
+                        <?php endif; ?>
+
+                    </section>
+
+                <?php endforeach; ?>
 
             </div>
         </div>
     </div>
 </main>
-

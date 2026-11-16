@@ -2,15 +2,16 @@
     <div class="container container--text">
         <article class="card flow">
             <img class="card__illustration" src="<?= asset('assets/images/illustrations/travel.svg') ?>" alt="" width="191" height="166">
+
             <p class="eyebrow">PostCard</p>
-            <h1>Kontakt</h1>
+
+            <h1><?= e($siteContent['contact']['title'] ?? 'Kontakt') ?></h1>
 
             <?php /* CONTENT: contact information — managed by the operator in /admin/content (Epic 2) */ ?>
-            <p>Har du spørgsmål, eller vil du anmelde indhold, der bryder reglerne? Skriv til os, så svarer vi inden for to hverdage.</p>
 
+            <!-- Henter kontaktoplysningerne fra databasen -->
             <address class="flow">
-                <p><strong>E-mail:</strong> <a href="mailto:kontakt@postcard.example">kontakt@postcard.example</a></p>
-                <p><strong>Adresse:</strong> <span class="brand">PostCard</span>, Eksempelvej 1, 6700 Esbjerg</p>
+                <?= nl2br(e($siteContent['contact']['body'] ?? 'Kontaktoplysninger er undervejs.')) ?>
             </address>
         </article>
     </div>

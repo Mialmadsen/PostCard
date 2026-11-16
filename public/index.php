@@ -27,6 +27,7 @@ use PostCard\Controllers\ProfileController;
 use PostCard\Controllers\SettingsController;
 use PostCard\Controllers\ProfileImageController;
 use PostCard\Controllers\AdminPostController;
+use PostCard\Controllers\AdminContentController;
 
 require __DIR__ . '/../app/autoload.php';
 require_once __DIR__ . '/../app/Helpers/escape.php';
@@ -133,6 +134,8 @@ $router->add('GET', '/admin/posts', [AdminPostController::class, 'index']);
 $router->add('GET', '/admin/posts/show', [AdminPostController::class, 'show']);
 $router->add('POST', '/admin/posts/delete', [AdminPostController::class, 'delete']);
 $router->add('POST', '/admin/posts/comments/delete', [AdminPostController::class, 'deleteComment']);
+$router->add('GET', '/admin/content', [AdminContentController::class, 'index']);
+$router->add('POST', '/admin/content', [AdminContentController::class, 'update']);
 
 
 // Find who handles this address, e.g. [PageController::class, 'landing'], or null if unknown.
