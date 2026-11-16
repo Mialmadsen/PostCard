@@ -21,7 +21,8 @@
                 <?php /* 
                      The same fields are on group-settings.php; later both pages share one form partial. */ ?>
                 <?php if ($errors !== []): ?>
-                    <p class="alert alert--error" role="alert">Noget mangler eller er forkert. Se de markerede felter nedenfor.</p>
+                    <?php /* A rate limit sets $errors['form']; a field mistake shows the general sentence */ ?>
+                    <p class="alert alert--error" role="alert"><?= e($errors['form'] ?? 'Noget mangler eller er forkert. Se de markerede felter nedenfor.') ?></p>
                 <?php endif; ?>
 
                 <form class="form" action="<?= url('/create-group') ?>" method="post">

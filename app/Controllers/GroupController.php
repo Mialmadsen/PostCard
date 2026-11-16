@@ -11,6 +11,7 @@ use PostCard\Repositories\InvitationRepository;
 use PostCard\Repositories\GroupMemberRepository;
 use PostCard\Core\Config;
 use PostCard\Core\Session;
+use PostCard\Services\RateLimiter;
 
 // Create a group page: the login is checked, the form is rendered, read and validated, and errors are stored.
 class GroupController
@@ -36,9 +37,16 @@ class GroupController
 
         $errors = $this->validateGroup($name, $description, $postingMode, $postLimitText);
 
+        // Spam guard: a user may create only a few groups per day, the number is set in RateLimiter
+        $limiter = new RateLimiter();
+        if ($limiter->tooMany('create_group', Auth::userId())) {
+            $errors['form'] = $limiter->message('create_group');
+        }
+
+
         // We check if there are any errors and either stop and send the person back to form, or continue and create a new group
         if ($errors !== []) {
-            http_response_code(422);
+            http_response_code(isset($errors['form']) ? 429 : 422);
             View::render('create-group', [
                 'pageTitle' => 'Ny gruppe',
                 'isLoggedIn' => true,
@@ -196,6 +204,13 @@ class GroupController
         }
 
         Auth::requireGroupAdmin($groupId);
+        // Spam guard: an admin may make only a few links per day, the number is set in RateLimiter
+        $limiter = new RateLimiter();
+        if ($limiter->tooMany('create_invite', Auth::userId())) {
+            Session::flash('invite_error', $limiter->message('create_invite'));
+            redirect('/invite?group_id=' . $groupId);
+        }
+
 
         // Make the token
         $token = bin2hex(random_bytes(32));
