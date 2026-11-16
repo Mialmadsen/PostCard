@@ -22,7 +22,7 @@ class CloudinaryService
         $this->apiSecret = Config::get('CLOUDINARY_API_SECRET');
     }
 
-    
+
     // Kontrollerer billedfilen, inden den sendes til Cloudinary.
     // Bruges til både opslag og profilbilleder.
     public function validateImage(array $file): void
@@ -47,7 +47,7 @@ class CloudinaryService
             throw new \RuntimeException('Ugyldig billedfil.');
         }
 
-        
+
 
         // Finder filtypen ud fra filens indhold.
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
@@ -123,7 +123,7 @@ class CloudinaryService
         // via en almindelig offentlig Cloudinary-URL.
         $params = [
             'timestamp' => $timestamp,
-            'transformation' => 'c_limit,w_2048',
+            'transformation' => 'c_limit,w_2048,h_2048',
             'type' => 'authenticated'
         ];
 

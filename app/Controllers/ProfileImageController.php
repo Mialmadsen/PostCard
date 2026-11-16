@@ -45,7 +45,7 @@ class ProfileImageController
             $imageData = $cloudinary->downloadImage(
                 $image['profile_image'],
                 (int) $image['profile_image_version'],
-                'c_limit,w_400,q_auto'
+                'c_limit,w_400,h_400,q_auto'
             );
 
             // Check that what came back really is a picture of that type

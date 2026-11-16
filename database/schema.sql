@@ -236,8 +236,8 @@ BEGIN
     JOIN user_groups AS g ON e.group_id = g.group_id
     WHERE e.experience_id = NEW.experience_id;
 
-    -- Kontrollerer om oplevelsen er aktiv på dags dato
-    IF CURDATE() < experience_start OR CURDATE() > experience_end THEN
+    -- Kontrollerer, at opslagets dato ligger inden for oplevelsens periode
+    IF DATE(NEW.created_at) < experience_start OR DATE(NEW.created_at) > experience_end THEN
         SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = 'Du kan kun oprette opslag under din experience.';
     END IF;

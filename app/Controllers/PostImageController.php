@@ -58,7 +58,7 @@ class PostImageController
         if (!$image) {
             abort(404, 'Billedet blev ikke fundet.');
         }
-        
+
         // Operatorer kan se billeder fra alle grupper.
         // Almindelige brugere skal være aktive gruppemedlemmer.
         $users = new \PostCard\Repositories\UserRepository();
@@ -75,7 +75,7 @@ class PostImageController
             $imageData = $cloudinary->downloadImage(
                 $image['public_id'],
                 (int) $image['cloudinary_version'],
-                'c_limit,w_1080,q_auto'    // max 1080 px wide, smart quality
+                'c_limit,w_1080,h_1080,q_auto'    // max 1080 px wide or high, smart quality
             );
 
             // Kontrollerer, at svaret faktisk er et billede.
