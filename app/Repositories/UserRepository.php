@@ -271,6 +271,17 @@ WHERE me.user_id = :user_id",
         );
     }
 
+    // The 5 newest accounts, for the operator's dashboard
+    public function findNewest(): array
+    {
+        return $this->fetchAll(
+            'SELECT user_id, first_name, last_name, user_status, created_at
+               FROM users
+              ORDER BY created_at DESC
+              LIMIT 5'
+        );
+    }
+
     // Changes a user's status, but only from the status the operator saw on the page,
     // and never for an operator (so no operator can block another, or themselves).
     // Returns how many rows changed: 1 = done, 0 = not allowed or not in that status (anymore).

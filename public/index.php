@@ -30,6 +30,8 @@ use PostCard\Controllers\AdminPostController;
 use PostCard\Controllers\AdminContentController;
 use PostCard\Controllers\AdminSettingsController;
 use PostCard\Controllers\AdminUserController;
+use PostCard\Controllers\AdminDashboardController;
+
 
 
 require __DIR__ . '/../app/autoload.php';
@@ -144,6 +146,8 @@ $router->add('GET', '/admin/settings', [AdminSettingsController::class, 'index']
 $router->add('POST', '/admin/settings', [AdminSettingsController::class, 'update']);
 $router->add('GET', '/admin/users', [AdminUserController::class, 'index']);
 $router->add('POST', '/admin/users', [AdminUserController::class, 'updateStatus']);
+$router->add('GET', '/admin', [AdminDashboardController::class, 'index']);
+
 
 
 

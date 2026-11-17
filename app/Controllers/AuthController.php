@@ -87,6 +87,11 @@ class AuthController
             redirect('/join?token=' . urlencode($invite));
         }
 
+        // Operators start on their dashboard, everyone else on their own home
+        if ($users->isOperator($user['user_id'])) {
+            redirect('/admin');
+        }
+
         redirect('/home');
     }
 
