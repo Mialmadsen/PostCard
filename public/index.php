@@ -147,6 +147,9 @@ $router->add('POST', '/admin/settings', [AdminSettingsController::class, 'update
 $router->add('GET', '/admin/users', [AdminUserController::class, 'index']);
 $router->add('POST', '/admin/users', [AdminUserController::class, 'updateStatus']);
 $router->add('GET', '/admin', [AdminDashboardController::class, 'index']);
+$router->add('GET', '/admin/user', [AdminUserController::class, 'show']);
+$router->add('POST', '/admin/user', [AdminUserController::class, 'update']);
+$router->add('POST', '/admin/user/picture/delete', [AdminUserController::class, 'removePicture']);
 
 
 

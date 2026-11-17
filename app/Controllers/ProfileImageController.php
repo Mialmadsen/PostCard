@@ -25,15 +25,17 @@ class ProfileImageController
             abort(400, 'Ugyldigt bruger-ID.');
         }
 
-        // You may see your own picture, or the picture of someone you share a group with
+        // You may see your own picture, the picture of someone you share a group with,
+        // and an operator may see every picture (to remove an unsuitable one)
         $members = new GroupMemberRepository();
+        $users = new UserRepository();
         $isMe = $userId === Auth::userId();
-        if (!$isMe && !$members->sharesGroup(Auth::userId(), $userId)) {
+        $isOperator = $users->isOperator(Auth::userId());
+        if (!$isMe && !$isOperator && !$members->sharesGroup(Auth::userId(), $userId)) {
             // 404, not 403: a stranger should not learn whether the user exists
             abort(404, 'Billedet blev ikke fundet.');
         }
 
-        $users = new UserRepository();
         $image = $users->findProfileImage($userId);
         if ($image === null) {
             abort(404, 'Billedet blev ikke fundet.');

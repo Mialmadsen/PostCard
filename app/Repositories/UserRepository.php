@@ -100,7 +100,7 @@ class UserRepository extends Repository
     public function findById(int $userId): ?array
     {
         return $this->fetchOne(
-            'SELECT user_id, first_name, last_name, username, bio, profile_image, profile_image_version
+            'SELECT user_id, first_name, last_name, username, bio, profile_image, profile_image_version, is_operator
          FROM users
          WHERE user_id = :user_id',
             ['user_id' => $userId]
@@ -279,6 +279,27 @@ WHERE me.user_id = :user_id",
                FROM users
               ORDER BY created_at DESC
               LIMIT 5'
+        );
+    }
+
+    // One user for the operator's user page, with how many groups and posts they have.
+    // null if the id doesn't exist.
+    public function findForAdmin(int $userId): ?array
+    {
+        return $this->fetchOne(
+            "SELECT u.user_id, u.first_name, u.last_name, u.username, u.email, u.birthdate,
+                    u.user_status, u.is_operator, u.email_verified_at, u.profile_image, u.profile_image_version, u.created_at,
+                    (SELECT COUNT(*)
+                       FROM group_members AS gm
+                      WHERE gm.user_id = u.user_id
+                        AND gm.member_status = 'active') AS group_count,
+                    (SELECT COUNT(*)
+                       FROM posts AS p
+                       JOIN experiences AS e ON e.experience_id = p.experience_id
+                      WHERE e.user_id = u.user_id) AS post_count
+               FROM users AS u
+              WHERE u.user_id = :user_id",
+            ['user_id' => $userId]
         );
     }
 

@@ -73,7 +73,14 @@ $pageScripts = $pageScripts ?? [];
     <header class="site-header">
         <div class="site-header__inner container">
 
-            <a class="logo" href="<?= url($currentUser !== null ? '/home' : '/') ?>" aria-label="PostCard">
+            <?php
+            // Where the logo leads: the operator's dashboard, the member's groups, or the front page
+            $logoPath = '/';
+            if ($currentUser !== null) {
+                $logoPath = (int) $currentUser['is_operator'] === 1 ? '/admin' : '/home';
+            }
+            ?>
+            <a class="logo" href="<?= url($logoPath) ?>" aria-label="PostCard">
                 <svg class="logo__stamp" viewBox="0 0 36 44" aria-hidden="true" focusable="false">
                     <defs>
                         <?php /* Perforation: a grid of holes, used only along the four edges */ ?>
@@ -132,6 +139,10 @@ $pageScripts = $pageScripts ?? [];
                                 </svg>
                             </button>
                             <ul class="user-menu__list" id="user-menu-list">
+                                <?php /* Only a shortcut for operators. The real check is Auth::requireOperator() on every /admin page */ ?>
+                                <?php if ((int) $currentUser['is_operator'] === 1): ?>
+                                    <li><a class="user-menu__item" href="<?= url('/admin') ?>">Administration</a></li>
+                                <?php endif; ?>
                                 <li><a class="user-menu__item" href="<?= url('/profile') ?>">Min profil</a></li>
                                 <li><a class="user-menu__item" href="<?= url('/settings') ?>">Indstillinger</a></li>
                                 <li>

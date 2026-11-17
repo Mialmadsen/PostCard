@@ -96,6 +96,26 @@ class GroupMemberRepository extends Repository
         ]);
     }
 
+    // All groups a user is or was in, for the operator's user page.
+    // Also groups they left or were removed from, so the operator sees the whole story.
+    public function findAllForAdminByUser(int $userId): array
+    {
+        return $this->fetchAll(
+            'SELECT g.group_id, g.name, gm.member_role, gm.member_status, gm.joined_at,
+                    (SELECT COUNT(*)
+                       FROM posts AS p
+                       JOIN experiences AS e ON e.experience_id = p.experience_id
+                      WHERE e.group_id = g.group_id
+                        AND e.user_id = gm.user_id) AS post_count
+               FROM group_members AS gm
+               JOIN user_groups AS g ON g.group_id = gm.group_id
+              WHERE gm.user_id = :user_id
+              ORDER BY gm.joined_at DESC',
+            ['user_id' => $userId]
+        );
+    }
+
+
     // Tæller aktive medlemmer i en bestemt gruppe
     public function countActiveMembers(int $groupId): int
     {
