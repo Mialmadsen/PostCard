@@ -1,6 +1,6 @@
 <?php
 // The controller shows this page with:
-// View::render('admin-users', ['pageTitle' => 'Administration · Brugere', 'isOperator' => true, 'pageStyle' => 'admin', 'pageScripts' => ['confirm'], 'adminPage' => 'users', 'users' => [...]]);
+// View::render('admin-users', ['pageTitle' => 'Administration · Brugere', 'isOperator' => true, 'pageStyle' => 'admin', 'pageScripts' => ['confirm'], 'adminPage' => 'users', 'users' => [...], 'search' => '', 'selectedStatus' => '', 'usersMessage' => null, 'usersError' => null]);
 
 // The database's status words, as the operator reads them
 $statusLabels = [
@@ -21,19 +21,39 @@ $statusLabels = [
             <section class="card flow" aria-labelledby="users-heading">
                 <h2 class="visually-hidden" id="users-heading">Alle brugere</h2>
 
+                <?php /* After Blokér / Fjern blokering: the seagull pop-up, success or error */ ?>
+                <?php if ($usersMessage !== null): ?>
+                    <?php
+                    $flashMessage = $usersMessage;
+                    $flashType = 'success';
+                    $flashLink = null;
+                    require __DIR__ . '/../partials/flash.php';
+                    ?>
+                <?php endif; ?>
+                <?php if ($usersError !== null): ?>
+                    <?php
+                    $flashMessage = $usersError;
+                    $flashType = 'error';
+                    $flashLink = null;
+                    require __DIR__ . '/../partials/flash.php';
+                    ?>
+                <?php endif; ?>
+
                 <?php /* GET, not POST: searching changes nothing, and the result can be bookmarked */ ?>
                 <form class="filter-bar" action="<?= url('/admin/users') ?>" method="get" role="search">
                     <div class="field">
                         <label class="field__label" for="search">Søg efter navn eller e-mail</label>
-                        <input class="field__input" id="search" name="q" type="search">
+                        <?php /* e(): the visitor's own text is printed back into the page (reflected XSS) */ ?>
+                        <input class="field__input" id="search" name="q" type="search" value="<?= e($search) ?>">
                     </div>
                     <div class="field">
                         <label class="field__label" for="status">Status</label>
+                        <?php /* The chosen status stays picked after the search; "Alle" is shown when none is */ ?>
                         <select class="field__input" id="status" name="status">
                             <option value="">Alle</option>
-                            <option value="active">Aktive</option>
-                            <option value="blocked">Blokerede</option>
-                            <option value="deleted">Slettede</option>
+                            <option value="active" <?= $selectedStatus === 'active' ? 'selected' : '' ?>>Aktive</option>
+                            <option value="blocked" <?= $selectedStatus === 'blocked' ? 'selected' : '' ?>>Blokerede</option>
+                            <option value="deleted" <?= $selectedStatus === 'deleted' ? 'selected' : '' ?>>Slettede</option>
                         </select>
                     </div>
                     <button class="button button--secondary" type="submit">Søg</button>

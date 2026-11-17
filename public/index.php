@@ -143,6 +143,7 @@ $router->add('POST', '/admin/content', [AdminContentController::class, 'update']
 $router->add('GET', '/admin/settings', [AdminSettingsController::class, 'index']);
 $router->add('POST', '/admin/settings', [AdminSettingsController::class, 'update']);
 $router->add('GET', '/admin/users', [AdminUserController::class, 'index']);
+$router->add('POST', '/admin/users', [AdminUserController::class, 'updateStatus']);
 
 
 

@@ -240,13 +240,53 @@ WHERE me.user_id = :user_id",
         );
     }
 
-    // Every user for the operator's list, newest first.
-    public function findAllForAdmin(): array
+    // Users for the operator's list, newest first. Both filters are optional.
+    public function findAllForAdmin(string $search = '', string $status = ''): array
     {
+        $where = [];
+        $params = [];
+
+        // Search in the full name and in the email
+        if ($search !== '') {
+            $where[] = "(CONCAT(first_name, ' ', last_name) LIKE :search_name OR email LIKE :search_email)";
+            $params['search_name'] = '%' . $search . '%';
+            $params['search_email'] = '%' . $search . '%';
+        }
+
+        // Only users with one status
+        if ($status !== '') {
+            $where[] = 'user_status = :status';
+            $params['status'] = $status;
+        }
+
+        // No filters: no WHERE at all. One or two: glued together with AND.
+        $whereSql = $where === [] ? '' : 'WHERE ' . implode(' AND ', $where);
+
         return $this->fetchAll(
-            'SELECT user_id, first_name, last_name, email, user_status, is_operator, created_at
+            "SELECT user_id, first_name, last_name, email, user_status, is_operator, created_at
                FROM users
-              ORDER BY created_at DESC'
+               $whereSql
+              ORDER BY created_at DESC",
+            $params
+        );
+    }
+
+    // Changes a user's status, but only from the status the operator saw on the page,
+    // and never for an operator (so no operator can block another, or themselves).
+    // Returns how many rows changed: 1 = done, 0 = not allowed or not in that status (anymore).
+    public function updateStatus(int $userId, string $fromStatus, string $toStatus): int
+    {
+        return $this->execute(
+            'UPDATE users
+                SET user_status = :to_status
+              WHERE user_id = :user_id
+                AND user_status = :from_status
+                AND is_operator = 0',
+            [
+                'user_id' => $userId,
+                'from_status' => $fromStatus,
+                'to_status' => $toStatus,
+            ]
         );
     }
 }
