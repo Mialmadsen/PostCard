@@ -239,4 +239,14 @@ WHERE me.user_id = :user_id",
             ]
         );
     }
+
+    // Every user for the operator's list, newest first.
+    public function findAllForAdmin(): array
+    {
+        return $this->fetchAll(
+            'SELECT user_id, first_name, last_name, email, user_status, is_operator, created_at
+               FROM users
+              ORDER BY created_at DESC'
+        );
+    }
 }

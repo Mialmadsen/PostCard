@@ -1,6 +1,13 @@
 <?php
 // The controller shows this page with:
-// View::render('admin-users', ['pageTitle' => 'Administration · Brugere', 'isOperator' => true, 'pageStyle' => 'admin', 'pageScripts' => ['confirm'], 'adminPage' => 'users']);
+// View::render('admin-users', ['pageTitle' => 'Administration · Brugere', 'isOperator' => true, 'pageStyle' => 'admin', 'pageScripts' => ['confirm'], 'adminPage' => 'users', 'users' => [...]]);
+
+// The database's status words, as the operator reads them
+$statusLabels = [
+    'active' => 'Aktiv',
+    'blocked' => 'Blokeret',
+    'deleted' => 'Slettet',
+];
 ?>
 
 <main id="main" class="site-main">
@@ -32,7 +39,7 @@
                     <button class="button button--secondary" type="submit">Søg</button>
                 </form>
 
-                <p class="meta">214 brugere</p>
+                <p class="meta"><?= count($users) ?> brugere</p>
 
                 <div class="table-wrap" tabindex="0" role="region" aria-labelledby="users-caption">
                     <table class="data-table">
@@ -47,75 +54,39 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php /* LOOP: users matching the search, newest first (users.created_at), 50 per page.
-                                 Blokér: user_status = 'blocked' (cannot log in). Fjern blokering: back to 'active'.
-                                 The operator's own row has no button. */ ?>
-                            <tr>
-                                <td><a href="<?= url('/admin/user?id=214') ?>">Morten Holm</a></td>
-                                <td>morten@example.com</td>
-                                <td>Aktiv</td>
-                                <td><time datetime="2026-10-11">11. okt. 2026</time></td>
-                                <td>
-                                    <form class="js-confirm" action="<?= url('/admin/users') ?>" method="post"
-                                        data-confirm="Vil du blokere Morten Holm? Brugeren kan ikke logge ind, før du fjerner blokeringen.">
-                                        <?= \PostCard\Core\Csrf::field() ?>
-                                        <input type="hidden" name="user_id" value="214">
-                                        <input type="hidden" name="action" value="block">
-                                        <button class="button button--secondary" type="submit">Blokér <span class="visually-hidden">Morten Holm</span></button>
-                                    </form>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><a href="<?= url('/admin/user?id=213') ?>">Ida Larsen</a></td>
-                                <td>ida@example.com</td>
-                                <td>Aktiv</td>
-                                <td><time datetime="2026-10-10">10. okt. 2026</time></td>
-                                <td>
-                                    <form class="js-confirm" action="<?= url('/admin/users') ?>" method="post"
-                                        data-confirm="Vil du blokere Ida Larsen? Brugeren kan ikke logge ind, før du fjerner blokeringen.">
-                                        <?= \PostCard\Core\Csrf::field() ?>
-                                        <input type="hidden" name="user_id" value="213">
-                                        <input type="hidden" name="action" value="block">
-                                        <button class="button button--secondary" type="submit">Blokér <span class="visually-hidden">Ida Larsen</span></button>
-                                    </form>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><a href="<?= url('/admin/user?id=198') ?>">Kasper Friis</a></td>
-                                <td>kasper@example.com</td>
-                                <td>Blokeret</td>
-                                <td><time datetime="2026-09-28">28. sep. 2026</time></td>
-                                <td>
-                                    <form action="<?= url('/admin/users') ?>" method="post">
-                                        <?= \PostCard\Core\Csrf::field() ?>
-                                        <input type="hidden" name="user_id" value="198">
-                                        <input type="hidden" name="action" value="unblock">
-                                        <button class="button button--secondary" type="submit">Fjern blokering <span class="visually-hidden">af Kasper Friis</span></button>
-                                    </form>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><a href="<?= url('/admin/user?id=150') ?>">Lene Bach</a></td>
-                                <td>lene@example.com</td>
-                                <td>Slettet</td>
-                                <td><time datetime="2026-09-17">17. sep. 2026</time></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td><a href="<?= url('/admin/user?id=1') ?>">Mia Nielsen</a></td>
-                                <td>mia@example.com</td>
-                                <td>Aktiv</td>
-                                <td><time datetime="2026-09-01">1. sep. 2026</time></td>
-                                <td>
-                                    <form class="js-confirm" action="<?= url('/admin/users') ?>" method="post"
-                                        data-confirm="Vil du blokere Mia Nielsen? Brugeren kan ikke logge ind, før du fjerner blokeringen.">
-                                        <?= \PostCard\Core\Csrf::field() ?>
-                                        <input type="hidden" name="user_id" value="1">
-                                        <input type="hidden" name="action" value="block">
-                                        <button class="button button--secondary" type="submit">Blokér <span class="visually-hidden">Mia Nielsen</span></button>
-                                    </form>
-                                </td>
-                            </tr>
+                            <?php /* One row per user, newest first. Blokér sets user_status = 'blocked':
+                                 the user is logged out on the next click and cannot log in again.
+                                 Fjern blokering sets it back to 'active'. Operators and deleted users have no button. */ ?>
+                            <?php foreach ($users as $user): ?>
+                                <?php $fullName = $user['first_name'] . ' ' . $user['last_name']; ?>
+                                <tr>
+                                    <td><a href="<?= url('/admin/user?id=' . (int) $user['user_id']) ?>"><?= e($fullName) ?></a></td>
+                                    <td><?= e($user['email']) ?></td>
+                                    <td><?= e($statusLabels[$user['user_status']]) ?></td>
+                                    <td><time datetime="<?= e(substr($user['created_at'], 0, 10)) ?>"><?= e(danishDate($user['created_at'])) ?></time></td>
+                                    <td>
+                                        <?php if ((int) $user['is_operator'] === 1): ?>
+                                            <span class="meta">Operatør</span>
+                                        <?php elseif ($user['user_status'] === 'active'): ?>
+                                            <form class="js-confirm" action="<?= url('/admin/users') ?>" method="post"
+                                                data-confirm="Vil du blokere <?= e($fullName) ?>? Brugeren bliver logget ud og kan ikke logge ind, før du fjerner blokeringen."
+                                                data-confirm-button="Blokér">
+                                                <?= \PostCard\Core\Csrf::field() ?>
+                                                <input type="hidden" name="user_id" value="<?= (int) $user['user_id'] ?>">
+                                                <input type="hidden" name="action" value="block">
+                                                <button class="button button--secondary" type="submit">Blokér <span class="visually-hidden"><?= e($fullName) ?></span></button>
+                                            </form>
+                                        <?php elseif ($user['user_status'] === 'blocked'): ?>
+                                            <form action="<?= url('/admin/users') ?>" method="post">
+                                                <?= \PostCard\Core\Csrf::field() ?>
+                                                <input type="hidden" name="user_id" value="<?= (int) $user['user_id'] ?>">
+                                                <input type="hidden" name="action" value="unblock">
+                                                <button class="button button--secondary" type="submit">Fjern blokering <span class="visually-hidden">af <?= e($fullName) ?></span></button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
