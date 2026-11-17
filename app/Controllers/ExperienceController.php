@@ -10,6 +10,7 @@ use PostCard\Repositories\LikeRepository;
 use PostCard\Core\View;
 use PostCard\Core\Auth;
 use PostCard\Services\ExperienceService;
+use PostCard\Services\RateLimiter;
 use PostCard\Repositories\AdminSettingsRepository;
 
 class ExperienceController
@@ -41,7 +42,7 @@ class ExperienceController
         $data = $this->getExperienceData($experienceId);
         View::render('experience', array_merge($data, [
             'pageTitle' => $data['experience']['name'],
-            'pageScripts' => ['likes'],
+            'pageScripts' => ['likes', 'confirm'],
             'pageStyle' => 'experience',
             'isLoggedIn' => true,
         ]));
@@ -126,8 +127,36 @@ class ExperienceController
             exit('Vælg en gyldig periode. Slutdatoen må ikke være før startdatoen.');
         }
 
-        // Forsøger at oprette oplevelsen.
-        // Repository kontrollerer, om brugeren opretter for hurtigt.
+        // Spam-værn: højst 10 oplevelser på 24 timer og højst 1 pr. minut.
+        // Begge grænser er defineret i RateLimiter.
+        $limiter = new RateLimiter();
+
+        foreach (['create_experience', 'create_experience_burst'] as $action) {
+            if ($limiter->tooMany($action, $userId)) {
+                http_response_code(429);
+
+                // Henter grupperne igen, så formularen kan vises korrekt.
+                $groups = $this->groupMemberRepository->findActiveGroupsByUser($userId);
+
+                // Viser formularen med fejlbeskeden og de indtastede værdier.
+                View::render('create-experience', [
+                    'pageTitle' => 'Opret oplevelse',
+                    'pageStyle' => 'create-experience',
+                    'isLoggedIn' => true,
+                    'groups' => $groups,
+                    'selectedGroupId' => $groupId,
+                    'createError' => $limiter->message($action),
+                    'oldName' => $name,
+                    'oldDescription' => $description,
+                    'oldStartDate' => $startDate,
+                    'oldEndDate' => $endDate
+                ]);
+
+                return;
+            }
+        }
+
+        // Opretter oplevelsen, når begge spambegrænsninger er kontrolleret.
         try {
             $experienceId = $this->experienceRepository->create(
                 $userId,
@@ -170,6 +199,40 @@ class ExperienceController
 
         // Oprettelsen lykkedes, så brugeren sendes til oplevelsen.
         redirect('/experience?id=' . $experienceId);
+    }
+
+    // Sletter en oplevelse, hvis den tilhører den indloggede bruger.
+    public function delete(): void
+    {
+        Auth::requireLogin();
+
+        // Sletning må kun udføres gennem en POST-request.
+        if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+            abort(405, 'Sletning kræver en POST-request.');
+        }
+
+        $experienceId = inputId('experience_id');
+        if ($experienceId === null) {
+            abort(400, 'Ugyldigt experience-ID.');
+        }
+
+        // Henter oplevelsen, så vi kan kontrollere ejerskab og finde gruppen.
+        $experience = $this->experienceRepository->find($experienceId);
+        if ($experience === null) {
+            abort(404, 'Oplevelsen blev ikke fundet.');
+        }
+
+        if ((int) $experience['user_id'] !== Auth::userId()) {
+            abort(403, 'Du kan kun slette dine egne oplevelser.');
+        }
+
+        $groupId = (int) $experience['group_id'];
+
+        // Servicen sletter oplevelsen fra databasen og rydder op i Cloudinary.
+        $this->experienceService->deleteExperience($experienceId, Auth::userId());
+
+        // Sender brugeren tilbage til gruppen efter sletningen.
+        redirect('/group?id=' . $groupId);
     }
 
     // Henter og samler oplysninger til experience-siden.

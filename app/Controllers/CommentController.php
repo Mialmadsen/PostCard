@@ -8,6 +8,7 @@ use PostCard\Core\Auth;
 use PostCard\Repositories\CommentRepository;
 use PostCard\Repositories\PostRepository;
 use PostCard\Repositories\AdminSettingsRepository;
+use PostCard\Services\RateLimiter;
 
 // Controlleren håndterer oprettelse af kommentarer til opslag.
 class CommentController
@@ -75,6 +76,12 @@ class CommentController
         // Begrænser kommentarens længde til 2000 tegn.
         if (mb_strlen($body) > 2000) {
             abort(400, 'Kommentaren må højst være 2000 tegn.');
+        }
+
+        // Spam: højst 30 kommentarer i timen. Grænsen står i RateLimiter.
+        $limiter = new RateLimiter();
+        if ($limiter->tooMany('post_comment', Auth::userId())) {
+            abort(429, $limiter->message('post_comment'));
         }
 
         // Gemmer kommentaren i databasen.

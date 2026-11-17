@@ -40,6 +40,36 @@ class RateLimiter
                          AND created_at > NOW() - INTERVAL :minutes MINUTE',
         ],
 
+        'create_post' => [
+            'max' => 30,
+            'minutes' => 60,
+            'message' => 'Du kan højst oprette 30 opslag i timen. Prøv igen om en time.',
+            'sql' => 'SELECT COUNT(*)
+                        FROM posts AS p
+                        JOIN experiences AS e ON p.experience_id = e.experience_id
+                       WHERE e.user_id = :user_id
+                         AND p.created_at > NOW() - INTERVAL :minutes MINUTE',
+        ],
+        'create_experience' => [
+        'max' => 10,
+        'minutes' => 24 * 60,
+        'message' => 'Du kan højst oprette 10 oplevelser på 24 timer. Prøv igen senere.',
+        'sql' => 'SELECT COUNT(*)
+                    FROM experiences
+                WHERE user_id = :user_id
+                    AND created_at > NOW() - INTERVAL :minutes MINUTE',
+        ],
+
+        'create_experience_burst' => [
+            'max' => 1,
+            'minutes' => 1,
+            'message' => 'Vent mindst ét minut, før du opretter en ny oplevelse.',
+            'sql' => 'SELECT COUNT(*)
+                        FROM experiences
+                    WHERE user_id = :user_id
+                        AND created_at > NOW() - INTERVAL :minutes MINUTE',
+        ],
+
     ];
 
     // True when the user has already done this action as often as allowed in the period.

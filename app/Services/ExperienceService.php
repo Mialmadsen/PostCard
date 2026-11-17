@@ -74,4 +74,35 @@ class ExperienceService
             'daysRemaining' => $daysRemaining
         ];
     }
+
+    // Sletter brugerens egen oplevelse og rydder op i billederne på Cloudinary.
+    public function deleteExperience(int $experienceId, int $userId): void
+    {
+        $repository = new \PostCard\Repositories\ExperienceRepository();
+
+        // Kontrollerer ejerskab, før der hentes eller slettes noget.
+        $experience = $repository->find($experienceId);
+        if ($experience === null || (int) $experience['user_id'] !== $userId) {
+            throw new \RuntimeException('Oplevelsen blev ikke fundet, eller du har ikke adgang til at slette den.');
+        }
+
+        // Gemmer Cloudinary-ID'erne, inden databasen slettes.
+        $images = $repository->findImagesForDeletion($experienceId, $userId);
+
+        // Sletter oplevelsen og tilhørende data via databasens ON DELETE CASCADE.
+        if ($repository->deleteOwned($experienceId, $userId) !== 1) {
+            throw new \RuntimeException('Oplevelsen kunne ikke slettes.');
+        }
+
+        // Rydder op i Cloudinary efter databasesletningen.
+        $cloudinary = new CloudinaryService();
+        foreach ($images as $image) {
+            try {
+                $cloudinary->delete($image['public_id']);
+            } catch (\Throwable $e) {
+                // Logges til senere oprydning, da databasen allerede er opdateret.
+                error_log('Cloudinary-sletning mislykkedes for ' . $image['public_id'] . ': ' . $e->getMessage());
+            }
+        }
+    }
 }

@@ -170,8 +170,12 @@ $breadcrumbs = $operatorView
                                                     <button class="button button--primary" type="submit">Gem ændringer</button>
                                                 </form>
                                             </details>
-                                            <form action="<?= e(url('/delete-comment')) ?>" method="post"
-                                                  onsubmit="return confirm('Er du sikker på, at du vil slette kommentaren?');">
+                                            <form
+                                                class="js-confirm"
+                                                action="<?= e(url('/delete-comment')) ?>"
+                                                method="post"
+                                                data-confirm="Er du sikker på, at du vil slette denne kommentar?"
+                                                data-confirm-button="Ja, slet kommentar">
                                                 <?= \PostCard\Core\Csrf::field() ?>
                                                 <input type="hidden" name="comment_id" value="<?= (int) $comment['comment_id'] ?>">
                                                 <button class="comment__action comment__action--delete" type="submit">Slet</button>
