@@ -273,10 +273,24 @@ $likesEnabled = ($siteSettings['allow_likes'] ?? '0') === '1';
                                                         <button class="button button--primary" type="submit">Gem ændringer</button>
                                                     </form>
                                                 </details>
-                                                <form action="<?= e(url('/delete-comment')) ?>" method="post" onsubmit="return confirm('Er du sikker på, at du vil slette kommentaren?');">
+                                                <form
+                                                    action="<?= e(url('/delete-comment')) ?>"
+                                                    method="post"
+                                                    class="js-confirm"
+                                                    data-confirm="Er du sikker på, at du vil slette kommentaren?"
+                                                    data-confirm-button="Ja, slet"
+                                                >
                                                     <?= \PostCard\Core\Csrf::field() ?>
-                                                    <input type="hidden" name="comment_id" value="<?= (int) $comment['comment_id'] ?>">
-                                                    <button class="comment__action comment__action--delete" type="submit">Slet</button>
+
+                                                    <input
+                                                        type="hidden"
+                                                        name="comment_id"
+                                                        value="<?= (int) $comment['comment_id'] ?>"
+                                                    >
+
+                                                    <button class="comment__action" type="submit">
+                                                        Slet
+                                                    </button>
                                                 </form>
                                             </div>
                                         <?php endif; ?>

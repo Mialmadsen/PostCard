@@ -79,8 +79,7 @@ class ExperienceController
         $selectedGroupId = queryId('group_id');
         $allowedGroupIds = array_map('intval', array_column($groups, 'group_id'));
         if ($selectedGroupId && !in_array($selectedGroupId, $allowedGroupIds, true)) {
-            http_response_code(403);
-            exit('Du har ikke adgang til denne gruppe.');
+            abort(403, 'Du har ikke adgang til denne gruppe.');
         }
         View::render('create-experience', [
             'pageTitle' => 'Opret oplevelse',
@@ -109,8 +108,7 @@ class ExperienceController
         Auth::requireMember($groupId);
 
         if ($name === '' || mb_strlen($name) > 100 || mb_strlen($description) > 1000) {
-            http_response_code(400);
-            exit('Kontroller oplevelsens navn og beskrivelse.');
+            abort(400, 'Kontroller oplevelsens navn og beskrivelse.');
         }
 
         $start = \DateTimeImmutable::createFromFormat('!Y-m-d', $startDate);
@@ -123,8 +121,7 @@ class ExperienceController
             $end->format('Y-m-d') !== $endDate ||
             $end < $start
         ) {
-            http_response_code(400);
-            exit('Vælg en gyldig periode. Slutdatoen må ikke være før startdatoen.');
+            abort(400, 'Vælg en gyldig periode. Slutdatoen må ikke være før startdatoen.');
         }
 
         // Spam-værn: højst 10 oplevelser på 24 timer og højst 1 pr. minut.
@@ -157,45 +154,14 @@ class ExperienceController
         }
 
         // Opretter oplevelsen, når begge spambegrænsninger er kontrolleret.
-        try {
-            $experienceId = $this->experienceRepository->create(
-                $userId,
-                $groupId,
-                $name,
-                $description,
-                $startDate,
-                $endDate
-            );
-
-        } catch (\RuntimeException $e) {
-
-            // Andre fejl skal stadig håndteres af den normale fejlhåndtering.
-            if ($e->getCode() !== 429) {
-                throw $e;
-            }
-
-            // Brugeren har forsøgt at oprette oplevelser for hurtigt.
-            http_response_code(429);
-
-            // Henter grupperne igen, så formularen kan vises korrekt.
-            $groups = $this->groupMemberRepository->findActiveGroupsByUser($userId);
-
-            // Viser formularen med fejlbeskeden og de indtastede værdier.
-            View::render('create-experience', [
-                'pageTitle' => 'Opret oplevelse',
-                'pageStyle' => 'create-experience',
-                'isLoggedIn' => true,
-                'groups' => $groups,
-                'selectedGroupId' => $groupId,
-                'createError' => $e->getMessage(),
-                'oldName' => $name,
-                'oldDescription' => $description,
-                'oldStartDate' => $startDate,
-                'oldEndDate' => $endDate
-            ]);
-
-            return;
-        }
+        $experienceId = $this->experienceRepository->create(
+            $userId,
+            $groupId,
+            $name,
+            $description,
+            $startDate,
+            $endDate
+        );
 
         // Oprettelsen lykkedes, så brugeren sendes til oplevelsen.
         redirect('/experience?id=' . $experienceId);

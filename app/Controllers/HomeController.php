@@ -88,7 +88,7 @@ class HomeController
         View::render('home', [
             'pageTitle' => 'Min forside',
             'pageStyle' => 'home',
-            'pageScripts' => ['likes'],
+            'pageScripts' => ['likes', 'confirm'],
             'isLoggedIn' => true,
             'firstName' => $firstName,
             'groups' => $groups,

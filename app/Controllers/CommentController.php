@@ -92,8 +92,7 @@ class CommentController
         );
 
         // Sender brugeren tilbage til opslagets kommentarer.
-        header('Location: ' . url('/post?id=' . $postId) . '#comments');
-        exit;
+        redirect('/post?id=' . $postId . '#comments');
     }
 
 
@@ -144,8 +143,7 @@ class CommentController
         $this->commentRepository->update($commentId, Auth::userId(), $body);
 
         // Sender brugeren tilbage til kommentarerne.
-        header('Location: ' . url('/post?id=' . $postId) . '#comments');
-        exit;
+        redirect('/post?id=' . $postId . '#comments');
     }
 
     // Sletter en kommentar, som brugeren selv har skrevet.
@@ -180,8 +178,7 @@ class CommentController
         $this->commentRepository->delete($commentId, Auth::userId());
 
         // Sender brugeren tilbage til kommentarerne.
-        header('Location: ' . url('/post?id=' . $postId) . '#comments');
-        exit;
+        redirect('/post?id=' . $postId . '#comments');
     }
 
 }
