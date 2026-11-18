@@ -43,6 +43,20 @@ class AuthController
         $email = mb_strtolower(input('email'));
         $password = input('password', false);
         $invite = input('invite');
+
+        // Longer than the database column: no real account can have it, so stop before any query
+        if (mb_strlen($email) > 255) {
+            View::render('login', [
+                'pageTitle' => 'Log ind',
+                'pageScripts' => ['password-toggle'],
+                'isLoggedIn' => false,
+                'error' => 'Forkert e-mail eller adgangskode.',
+                'email' => '',
+                'invite' => $invite,
+            ]);
+            return;
+        }
+
         $attempts = new LoginAttemptRepository();
 
         if ($attempts->countRecent($email) >= self::MAX_LOGIN_ATTEMPTS) {
