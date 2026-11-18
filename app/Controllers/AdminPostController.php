@@ -137,8 +137,7 @@ class AdminPostController
         }
 
         // Sender operatoren tilbage til opslagsoverblikket.
-        header('Location: ' . url('/admin/posts'));
-        exit;
+        redirect('/admin/posts');
     }
 
     // Sletter en kommentar som operator.
@@ -160,8 +159,8 @@ class AdminPostController
             abort(404, 'Kommentaren blev ikke fundet.');
         }
 
-        header('Location: ' . url('/admin/posts/show?id=' . $postId));
-        exit;
+        // Sender operatoren tilbage til opslaget.
+        redirect('/admin/posts/show?id=' . $postId);
     }
 
 

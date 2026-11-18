@@ -85,8 +85,7 @@ class LikeController
         }
 
         // Almindelig formular virker stadig uden JavaScript.
-        header('Location: ' . url('/post?id=' . $postId));
-        exit;
+        redirect('/post?id=' . $postId);
     }
 
 

@@ -106,7 +106,10 @@
 
 
                                         <td>
-                                            <?= e($post['first_name'] . ' ' . $post['last_name']) ?>
+                                            <!-- Link til forfatterens brugerside i operatorpanelet -->
+                                            <a href="<?= e(url('/admin/user?id=' . (int) $post['author_id'])) ?>">
+                                                <?= e($post['first_name'] . ' ' . $post['last_name']) ?>
+                                            </a>
                                         </td>
 
                                         <td>

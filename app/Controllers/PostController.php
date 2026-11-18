@@ -370,9 +370,9 @@ class PostController
 
         // Sender brugeren tilbage til oplevelsen,
         // hvor det nye opslag nu kan vises.
-        header('Location: ' . url('/experience?id=' . $experienceId));
-        exit;
+        redirect('/experience?id=' . $experienceId);
     }
+    
 
 
     // Viser et enkelt opslag med alle dets billeder og kommentarer.
@@ -421,7 +421,6 @@ class PostController
             Auth::userId()
         );
 
-        // Sender opslaget, billederne og kommentarerne videre til viewet.
         // Sender opslaget, billederne, kommentarerne og like-status videre til viewet.
         View::render('post', [
             'pageTitle' => 'Opslag',
@@ -612,8 +611,7 @@ class PostController
         );
 
         // Sender brugeren tilbage til det opdaterede opslag.
-        header('Location: ' . url('/post?id=' . $postId));
-        exit;
+        redirect('/post?id=' . $postId);
     }
 
 
@@ -658,8 +656,7 @@ class PostController
         );
 
         // Sender brugeren tilbage til oplevelsen.
-        header('Location: ' . url('/experience?id=' . $experienceId));
-        exit;
+        redirect('/experience?id=' . $experienceId);
     }
 
 }

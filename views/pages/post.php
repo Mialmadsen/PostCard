@@ -124,8 +124,12 @@ $breadcrumbs = $operatorView
                                href="<?= e(url('/edit-post?id=' . $post['id'])) ?>">
                                 Rediger opslag
                             </a>
-                            <form action="<?= e(url('/delete-post')) ?>" method="post"
-                                  onsubmit="return confirm('Er du sikker på, at du vil slette opslaget? Alle billeder, kommentarer og likes bliver også slettet.');">
+                            <form
+                                class="js-confirm"
+                                action="<?= e(url('/delete-post')) ?>"
+                                method="post"
+                                data-confirm="Er du sikker på, at du vil slette opslaget? Alle billeder, kommentarer og likes bliver også slettet."
+                                data-confirm-button="Ja, slet opslag">
                                 <?= \PostCard\Core\Csrf::field() ?>
                                 <input type="hidden" name="post_id" value="<?= (int) $post['id'] ?>">
                                 <button class="button button--secondary" type="submit">Slet opslag</button>
