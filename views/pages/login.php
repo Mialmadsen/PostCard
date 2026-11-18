@@ -1,5 +1,6 @@
 <?php
 /** @var string $invite the invitation token, or '' when the page was not opened from an invitation */
+/** @var string|null $message optional: a one-time message (Session::takeFlash('login_message') in showLogin) */
 ?>
 
 <main id="main" class="site-main">
@@ -12,6 +13,12 @@
 
                 <?php if (isset($error)): ?>
                     <p class="alert alert--error" role="alert"><?= e($error) ?></p>
+                <?php endif; ?>
+
+                <?php /* A one-time message from the page before, e.g. after register: "Vi har sendt et link til …".
+                     isset() is false both when showLogin() passes null and when login() passes no message at all */ ?>
+                <?php if (isset($message)): ?>
+                    <p class="alert" role="status"><?= e($message) ?></p>
                 <?php endif; ?>
 
                 <?php if ($invite !== ''): ?>
@@ -27,7 +34,7 @@
                     <div class="field">
                         <label class="field__label" for="email">E-mail</label>
                         <input class="field__input" id="email" name="email" type="email" autocomplete="email"
-                            value="<?= e($email ?? '') ?>" required>
+                            maxlength="255" value="<?= e($email ?? '') ?>" required>
                     </div>
 
                     <div class="field">

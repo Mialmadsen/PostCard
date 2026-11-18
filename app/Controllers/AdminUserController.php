@@ -56,21 +56,16 @@ class AdminUserController
     // Draws one user's page. Used by show(), and by update() when the form has errors
     private function renderUserPage(array $user, array $errors = [], ?array $old = null): void
     {
-        // 1.
         $fullName = $user['first_name'] . ' ' . $user['last_name'];
 
-        // 2.
         $members = new GroupMemberRepository();
         $groups = $members->findAllForAdminByUser((int) $user['user_id']);
 
-        // 3.
         $usersMessage = Session::takeFlash('admin_users_message');
         $usersError = Session::takeFlash('admin_users_error');
 
-        // 4.
         $old = $old ?? $user;
 
-        // 5.
         View::render('admin-user', [
             'pageTitle' => 'Administration · ' . $fullName,
             'pageStyle' => 'admin',
@@ -200,28 +195,23 @@ class AdminUserController
 
     public function removePicture(): void
     {
-        // 1.
         Auth::requireOperator();
 
-        // 2.
         $userId = inputId('user_id');
         if ($userId === null) {
             abort(400, 'Ugyldigt bruger-ID.');
         }
 
-        // 3.
         $users = new UserRepository();
         $user = $users->findForAdmin($userId);
         if ($user === null) {
             abort(404, 'Brugeren blev ikke fundet.');
         }
 
-        // 4.
         if ((int) $user['is_operator'] === 1) {
             abort(403, 'En operatørs billede kan ikke fjernes her.');
         }
 
-        // 5.
         if ($user['profile_image'] !== null) {
             $users->updateProfileImage($userId, null, null, null);
 
@@ -233,7 +223,6 @@ class AdminUserController
             }
         }
 
-        // 6.
         Session::flash('admin_users_message', 'Profilbilledet er fjernet.');
         redirect('/admin/user?id=' . $userId);
     }

@@ -9,6 +9,10 @@ use PostCard\Core\View;
 use PostCard\Repositories\UserRepository;
 use PostCard\Services\UserValidator;
 use PostCard\Repositories\LoginAttemptRepository;
+use PostCard\Services\EmailVerificationService;
+use PostCard\Core\Session;
+use PostCard\Repositories\UserTokenRepository;
+
 
 // Login, register, logout and password reset.
 
@@ -16,17 +20,20 @@ class AuthController
 {
     // After this many failed attempts in 15 minutes, login is paused for that e-mail
     private const MAX_LOGIN_ATTEMPTS = 5;
+    private const MAX_VERIFY_LINKS = 3;
 
     public function showLogin(): void
     {
         $invite = filter_input(INPUT_GET, 'invite');
         $invite = is_string($invite) ? $invite : '';
+        $message = Session::takeFlash('login_message');
 
         View::render('login', [
             'pageTitle' => 'Log ind',
             'pageScripts' => ['password-toggle'],
             'isLoggedIn' => false,
             'invite' => $invite,
+            'message' => $message
         ]);
     }
 
@@ -50,6 +57,7 @@ class AuthController
             ]);
             return;
         }
+
         $users = new UserRepository();
         $user = $users->findByEmail($email);
 
@@ -80,6 +88,33 @@ class AuthController
             ]);
             return;
         }
+
+        // Not confirmed yet: no login. Whoever knows the password gets a new link (at most 3 valid at a time)
+        if ($user['email_verified_at'] === null) {
+            $tokens = new UserTokenRepository();
+
+            if ($tokens->countValid((int) $user['user_id'], 'verify_email') >= self::MAX_VERIFY_LINKS) {
+                $error = 'Din e-mail er ikke bekræftet endnu. Vi har allerede sendt dig flere links. Tjek din indbakke og spam-mappe.';
+            } else {
+                $verification = new EmailVerificationService();
+                $sent = $verification->sendLink((int) $user['user_id'], $email, $user['first_name'], $invite);
+
+                $error = $sent
+                    ? 'Din e-mail er ikke bekræftet endnu. Vi har sendt et nyt link til ' . $email . '.'
+                    : 'Din e-mail er ikke bekræftet endnu, og vi kunne ikke sende et nyt link. Prøv igen senere.';
+            }
+
+            View::render('login', [
+                'pageTitle' => 'Log ind',
+                'pageScripts' => ['password-toggle'],
+                'isLoggedIn' => false,
+                'error' => $error,
+                'email' => $email,
+                'invite' => $invite,
+            ]);
+            return;
+        }
+
         $attempts->clear($email);
         Auth::login($user['user_id']);
 
@@ -180,12 +215,43 @@ class AuthController
             $passwordHash
         );
 
-        Auth::login($newUserId);
 
-        if ($invite !== '') {
-            redirect('/join?token=' . urlencode($invite));
+        $verification = new EmailVerificationService();
+        $sent = $verification->sendLink($newUserId, $email, $firstName, $invite);
+
+
+        if ($sent) {
+            Session::flash('login_message', 'Vi har sendt et link til ' . $email . '. Klik på det for at bekræfte din e-mail, og log så ind.');
+        } else {
+            Session::flash('login_message', 'Din bruger er oprettet, men vi kunne ikke sende mailen. Log ind for at få et nyt link.');
         }
 
-        redirect('/home');
+
+        redirect('/login');
+    }
+
+    // The link in the verification mail: /verify-email?token=…(&invite=…)
+    public function verifyEmail(): void
+    {
+        $token = filter_input(INPUT_GET, 'token');
+        $token = is_string($token) ? $token : '';
+        $invite = filter_input(INPUT_GET, 'invite');
+        $invite = is_string($invite) ? $invite : '';
+
+        $tokens = new UserTokenRepository();
+        $found = $tokens->findValid(hash('sha256', $token), 'verify_email');
+
+        if ($found === null) {
+            Session::flash('login_message', 'Linket er ugyldigt eller udløbet. Log ind for at få et nyt link.');
+            redirect('/login');
+        }
+
+        if ($tokens->markUsed((int) $found['token_id']) === 1) {
+            $users = new UserRepository();
+            $users->markEmailVerified((int) $found['user_id']);
+        }
+
+        Session::flash('login_message', 'Din e-mail er bekræftet. Du kan nu logge ind.');
+        redirect($invite !== '' ? '/login?invite=' . urlencode($invite) : '/login');
     }
 }

@@ -44,7 +44,7 @@ $statusLabels = [
                     <div class="field">
                         <label class="field__label" for="search">Søg efter navn eller e-mail</label>
                         <?php /* e(): the visitor's own text is printed back into the page (reflected XSS) */ ?>
-                        <input class="field__input" id="search" name="q" type="search" value="<?= e($search) ?>">
+                        <input class="field__input" id="search" name="q" type="search" maxlength="100" value="<?= e($search) ?>">
                     </div>
                     <div class="field">
                         <label class="field__label" for="status">Status</label>

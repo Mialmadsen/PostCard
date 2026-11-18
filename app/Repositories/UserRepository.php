@@ -10,7 +10,7 @@ class UserRepository extends Repository
     public function findByEmail(string $email): ?array
     {
         return $this->fetchOne(
-            'SELECT user_id, password_hash, user_status FROM users WHERE email = :email',
+            'SELECT user_id, first_name, password_hash, user_status, email_verified_at FROM users WHERE email = :email',
             ['email' => $email]
         );
     }
@@ -206,6 +206,15 @@ WHERE me.user_id = :user_id",
             ]
         );
     }
+
+    public function markEmailVerified(int $userId): void
+    {
+        $this->execute(
+            'UPDATE users SET email_verified_at = NOW() WHERE user_id = :user_id',
+            ['user_id' => $userId]
+        );
+    }
+
 
     // What Cloudinary needs to find the user's picture, or null if there is no picture
     public function findProfileImage(int $userId): ?array
