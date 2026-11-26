@@ -11,7 +11,7 @@ use PDO;
 
 // Controlleren håndterer adgang til private billeder fra opslag.
 // Før et billede må vises, kontrollerer vi brugerens gruppemedlemskab.
-class PostImageController
+class PostImageController extends BaseController
 {
     public function show(): void
     {
@@ -19,16 +19,11 @@ class PostImageController
         // so the page's other photos can load at the same time.
         session_write_close();
 
-        // Kontrollerer, at brugeren er logget ind.
-        Auth::requireLogin();
+        // Kontrollerer, at brugeren er logget ind, og henter brugerens ID.
+        $userId = $this->requireUser();
 
-        // Henter billedets ID fra URL'en, fx /post-image?id=1.
-        $imageId = queryId('id');
-
-        // Kontrollerer, at billedets ID er gyldigt.
-        if ($imageId === null) {
-            abort(400, 'Ugyldigt billed-ID.');
-        }
+        // Henter og validerer billedets ID fra URL'en, fx /post-image?id=1.
+        $imageId = $this->requireQueryId('id', 'Ugyldigt billed-ID.');
 
         // Finder billedet og gruppen, som opslaget tilhører.
         $sql = "
@@ -62,7 +57,7 @@ class PostImageController
         // Operatorer kan se billeder fra alle grupper.
         // Almindelige brugere skal være aktive gruppemedlemmer.
         $users = new \PostCard\Repositories\UserRepository();
-        $isOperator = $users->isOperator(Auth::userId());
+        $isOperator = $users->isOperator($userId);
 
         if (!$isOperator) {
             Auth::requireMember((int) $image['group_id']);
