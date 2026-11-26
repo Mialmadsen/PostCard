@@ -13,7 +13,7 @@ use PostCard\Services\ExperienceService;
 use PostCard\Services\RateLimiter;
 use PostCard\Repositories\AdminSettingsRepository;
 
-class ExperienceController
+class ExperienceController extends BaseController
 {
     private ExperienceRepository $experienceRepository;
     private PostFeedRepository $postFeedRepository;
@@ -35,10 +35,7 @@ class ExperienceController
     public function show(): void
     {
         Auth::requireLogin();
-        $experienceId = queryId('id');
-        if ($experienceId === null) {
-            abort(400, 'Ugyldigt experience-ID.');
-        }
+        $experienceId = $this->requireQueryId('id', 'Ugyldigt experience-ID.');
         $data = $this->getExperienceData($experienceId);
         View::render('experience', array_merge($data, [
             'pageTitle' => $data['experience']['name'],
@@ -53,10 +50,7 @@ class ExperienceController
     {
         Auth::requireOperator();
 
-        $experienceId = queryId('id');
-        if ($experienceId === null) {
-            abort(400, 'Ugyldigt experience-ID.');
-        }
+        $experienceId = $this->requireQueryId('id', 'Ugyldigt experience-ID.');
 
         $data = $this->getExperienceData($experienceId, true);
 
@@ -73,8 +67,7 @@ class ExperienceController
     // Viser formularen til at oprette en ny oplevelse.
     public function create(): void
     {
-        Auth::requireLogin();
-        $userId = Auth::userId();
+        $userId = $this->requireUser();
         $groups = $this->groupMemberRepository->findActiveGroupsByUser($userId);
         $selectedGroupId = queryId('group_id');
         $allowedGroupIds = array_map('intval', array_column($groups, 'group_id'));
@@ -93,17 +86,12 @@ class ExperienceController
     // Modtager formularen og opretter en ny oplevelse.
     public function store(): void
     {
-        Auth::requireLogin();
-        $userId = Auth::userId();
-        $groupId = inputId('group_id');
+        $userId = $this->requireUser();
+        $groupId = $this->requireInputId('group_id', 'Du skal vælge en gyldig gruppe.');
         $name = input('name');
         $description = input('description');
         $startDate = input('start_date');
         $endDate = input('end_date');
-
-        if ($groupId === null) {
-            abort(400, 'Du skal vælge en gyldig gruppe.');
-        }
 
         Auth::requireMember($groupId);
 
@@ -170,17 +158,14 @@ class ExperienceController
     // Sletter en oplevelse, hvis den tilhører den indloggede bruger.
     public function delete(): void
     {
-        Auth::requireLogin();
+        $userId = $this->requireUser();
 
         // Sletning må kun udføres gennem en POST-request.
         if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
             abort(405, 'Sletning kræver en POST-request.');
         }
 
-        $experienceId = inputId('experience_id');
-        if ($experienceId === null) {
-            abort(400, 'Ugyldigt experience-ID.');
-        }
+        $experienceId = $this->requireInputId('experience_id', 'Ugyldigt experience-ID.');
 
         // Henter oplevelsen, så vi kan kontrollere ejerskab og finde gruppen.
         $experience = $this->experienceRepository->find($experienceId);
@@ -188,14 +173,14 @@ class ExperienceController
             abort(404, 'Oplevelsen blev ikke fundet.');
         }
 
-        if ((int) $experience['user_id'] !== Auth::userId()) {
+        if ((int) $experience['user_id'] !== $userId) {
             abort(403, 'Du kan kun slette dine egne oplevelser.');
         }
 
         $groupId = (int) $experience['group_id'];
 
         // Servicen sletter oplevelsen fra databasen og rydder op i Cloudinary.
-        $this->experienceService->deleteExperience($experienceId, Auth::userId());
+        $this->experienceService->deleteExperience($experienceId, $userId);
 
         // Sender brugeren tilbage til gruppen efter sletningen.
         redirect('/group?id=' . $groupId);
