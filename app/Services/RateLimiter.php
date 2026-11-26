@@ -8,7 +8,16 @@ use PostCard\Core\Database;
 
 // One place for all "not too often" rules: how many times a user may do an action in a period.
 class RateLimiter
+
 {
+    // action => [max, minutes]. Limits public requests based on the user's e-mail address.
+    private const PUBLIC_LIMITS = [
+        'reset_password' => [
+            'max' => 5,
+            'minutes' => 15,
+        ],
+    ];
+
     // action => [max, minutes,message, query]. The query must count this user's rows in the period.
     private const LIMITS = [
         'create_group' => [
@@ -112,5 +121,58 @@ class RateLimiter
     public function message(string $action): string
     {
         return self::LIMITS[$action]['message'];
+    }
+
+    // Registrerer og begrænser offentlige anmodninger ud fra e-mailadressen.
+    public function tooManyPublic(string $action, string $email): bool
+    {
+        $limit = self::PUBLIC_LIMITS[$action] ?? null;
+
+        if ($limit === null) {
+            throw new \InvalidArgumentException(
+                'Unknown public rate limit action: ' . $action
+            );
+        }
+
+        $email = mb_strtolower(trim($email));
+
+        if (strlen($email) > 255 || filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            return true;
+        }
+
+        $db = Database::connection();
+
+        // Tæller anmodninger inden for den angivne periode.
+        $statement = $db->prepare(
+            'SELECT COUNT(*)
+               FROM public_rate_limits
+              WHERE action_name = :action
+                AND email = :email
+                AND attempted_at > NOW() - INTERVAL :minutes MINUTE'
+        );
+
+        $statement->execute([
+            'action' => $action,
+            'email' => $email,
+            'minutes' => $limit['minutes'],
+        ]);
+
+        // Stopper anmodningen, hvis grænsen er nået.
+        if ((int) $statement->fetchColumn() >= $limit['max']) {
+            return true;
+        }
+
+        // Registrerer den nye anmodning.
+        $statement = $db->prepare(
+            'INSERT INTO public_rate_limits (action_name, email)
+             VALUES (:action, :email)'
+        );
+
+        $statement->execute([
+            'action' => $action,
+            'email' => $email,
+        ]);
+
+        return false;
     }
 }
