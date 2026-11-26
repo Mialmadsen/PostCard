@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PostCard\Controllers;
 
-use PostCard\Core\Auth;
 use PostCard\Core\View;
 use PostCard\Repositories\GroupMemberRepository;
 use PostCard\Repositories\ExperienceRepository;
@@ -13,16 +12,13 @@ use PostCard\Repositories\CommentRepository;
 use PostCard\Repositories\LikeRepository;
 use PostCard\Repositories\UserRepository;
 
-class HomeController
+class HomeController extends BaseController
 {
     // Viser forsiden for den indloggede bruger
     public function index(): void
     {
-        // Kontrollerer, at brugeren er logget ind
-        Auth::requireLogin();
-
-        // Henter den indloggede brugers ID
-        $userId = Auth::userId();
+        // Kontrollerer login og henter den indloggede brugers ID
+        $userId = $this->requireUser();
 
         // Henter den indloggede brugers fornavn
         $userRepository = new UserRepository();
