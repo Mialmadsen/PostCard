@@ -9,53 +9,35 @@ use PostCard\Repositories\GroupRepository;
 use PostCard\Repositories\GroupMemberRepository;
 use PostCard\Repositories\ExperienceRepository;
 
-class GroupPageController
+
+class GroupPageController extends BaseController
 {
     // Viser gruppesiden for en bestemt gruppe
     public function show(): void
     {
         // Kontrollerer, at brugeren er logget ind
-        Auth::requireLogin();
+        $userId = $this->requireUser();
 
-        // Henter gruppens ID fra URL'en gennem den fælles helper
-        $groupId = queryId('id');
-
-        // Stopper, hvis gruppe-ID'et mangler eller er ugyldigt
-        if ($groupId === null) {
-            abort(400, 'Ugyldigt gruppe-ID');
-        }
+        // Henter og validerer gruppens ID fra URL'en
+        $groupId = $this->requireQueryId('id', 'Ugyldigt gruppe-ID');
 
         // Kontrollerer, at brugeren er medlem af gruppen
         Auth::requireMember($groupId);
 
-        // Henter gruppens oplysninger fra databasen
-        $groupRepository = new GroupRepository();
-        $group = $groupRepository->findById($groupId);
-
-        // Kontrollerer, at gruppen findes
-        if (!$group) {
-            abort(404, 'Gruppen blev ikke fundet');
-        }
-
-        // Henter antallet af aktive medlemmer, brugerens rolle og de første medlemmer i gruppen
-        $memberRepository = new GroupMemberRepository();
-        $memberCount = $memberRepository->countActiveMembers($groupId);
-        $memberRole = $memberRepository->findActiveRole(Auth::userId(), $groupId);
-        $members = $memberRepository->findFirstMembersByGroup($groupId);
-        $experienceRepository = new ExperienceRepository();
-        $experiences = $experienceRepository->findVisibleByGroup($groupId);
+        // Henter gruppens oplysninger, medlemmer og oplevelser
+        $data = $this->getGroupData($groupId, $userId);
 
         // Sender gruppens oplysninger videre til viewet
         View::render('group', [
-            'pageTitle' => $group['name'],
+            'pageTitle' => $data['group']['name'],
             'pageStyle' => 'group',
             'pageScripts' => ['confirm'],
             'isLoggedIn' => true,
-            'group' => $group,
-            'memberCount' => $memberCount,
-            'memberRole' => $memberRole,
-            'members' => $members,
-            'experiences' => $experiences,
+            'group' => $data['group'],
+            'memberCount' => $data['memberCount'],
+            'memberRole' => $data['memberRole'],
+            'members' => $data['members'],
+            'experiences' => $data['experiences'],
         ]);
     }
 
@@ -66,42 +48,66 @@ class GroupPageController
         // Kontrollerer, at brugeren er operator
         Auth::requireOperator();
 
-        // Henter gruppens ID fra URL'en
-        $groupId = queryId('id');
+        // Henter og validerer gruppens ID fra URL'en
+        $groupId = $this->requireQueryId('id', 'Ugyldigt gruppe-ID');
 
-        if ($groupId === null) {
-            abort(400, 'Ugyldigt gruppe-ID');
-        }
+        // Henter gruppens oplysninger, medlemmer og oplevelser
+        $data = $this->getGroupData($groupId);
 
-        // Henter gruppens oplysninger
+        // Genbruger gruppesiden i operator-visning
+        View::render('group', [
+            'pageTitle' => 'Administration · ' . $data['group']['name'],
+            'pageStyle' => 'group',
+            'pageScripts' => ['confirm'],
+            'isLoggedIn' => true,
+            'group' => $data['group'],
+            'memberCount' => $data['memberCount'],
+            'memberRole' => null,
+            'members' => $data['members'],
+            'experiences' => $data['experiences'],
+            'operatorView' => true
+        ]);
+    }
+
+
+    // Henter de fælles oplysninger til gruppesiden og operator-visningen
+    private function getGroupData(int $groupId, ?int $userId = null): array
+    {
+        // Henter gruppens oplysninger fra databasen
         $groupRepository = new GroupRepository();
         $group = $groupRepository->findById($groupId);
 
+        // Kontrollerer, at gruppen findes
         if (!$group) {
             abort(404, 'Gruppen blev ikke fundet');
         }
 
-        // Henter gruppens medlemmer og oplevelser
+        // Henter antallet af aktive medlemmer
         $memberRepository = new GroupMemberRepository();
         $memberCount = $memberRepository->countActiveMembers($groupId);
+
+        // Henter brugerens rolle, hvis der er angivet et bruger-ID
+        $memberRole = null;
+
+        if ($userId !== null) {
+            $memberRole = $memberRepository->findActiveRole($userId, $groupId);
+        }
+
+        // Henter de første medlemmer i gruppen
         $members = $memberRepository->findFirstMembersByGroup($groupId);
 
+        // Henter gruppens synlige oplevelser
         $experienceRepository = new ExperienceRepository();
         $experiences = $experienceRepository->findVisibleByGroup($groupId);
 
-        // Genbruger gruppesiden i operator-visning
-        View::render('group', [
-            'pageTitle' => 'Administration · ' . $group['name'],
-            'pageStyle' => 'group',
-            'pageScripts' => ['confirm'],
-            'isLoggedIn' => true,
+        // Returnerer de oplysninger, som gruppesiden skal bruge
+        return [
             'group' => $group,
             'memberCount' => $memberCount,
-            'memberRole' => null,
+            'memberRole' => $memberRole,
             'members' => $members,
             'experiences' => $experiences,
-            'operatorView' => true
-        ]);
+        ];
     }
 
 }
