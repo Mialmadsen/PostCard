@@ -132,7 +132,7 @@ class AuthController extends BaseController
         }
 
         $attempts->clear($email);
-        Auth::login($user['user_id']);
+        Auth::login((int) $user['user_id'], $user['password_hash']);
 
         if ($invite !== '') {
             redirect('/join?token=' . urlencode($invite));

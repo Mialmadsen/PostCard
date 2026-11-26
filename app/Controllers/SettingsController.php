@@ -9,6 +9,7 @@ use PostCard\Repositories\UserRepository;
 use PostCard\Services\UserValidator;
 use PostCard\Core\Session;
 use PostCard\Services\CloudinaryService;
+use PostCard\Core\Auth;
 
 // Shows information on settings page
 class SettingsController extends BaseController
@@ -208,10 +209,11 @@ class SettingsController extends BaseController
             return;
         }
 
-        $users->updatePassword($userId, password_hash($newPassword, PASSWORD_DEFAULT));
+        $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+        $users->updatePassword($userId, $passwordHash);
 
         //We need a new session
-        Session::regenerate();
+        Auth::login($userId, $passwordHash);
 
         $this->redirectWithFlash(
             'settings_message',
