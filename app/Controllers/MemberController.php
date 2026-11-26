@@ -10,17 +10,13 @@ use PostCard\Core\Session;
 use PostCard\Repositories\GroupRepository;
 use PostCard\Repositories\GroupMemberRepository;
 
-class MemberController
+
+class MemberController extends BaseController
 {
     public function index(): void
     {
         // The group id from the address
-        $groupId = queryId('group_id');
-
-        // If the id is not valid, we stop and give 404
-        if ($groupId === null) {
-            abort(404, 'Gruppen findes ikke.');
-        }
+        $groupId = $this->requireQueryId('group_id', 'Gruppen findes ikke.', 404);
 
         // Guard: ANY member may see the list
         Auth::requireMember($groupId);
@@ -54,12 +50,8 @@ class MemberController
     // It reads the two ids from the form, checks that the user is admin of that group, makes the change, saves a message, and sends the user back to the members page
     public function makeAdmin(): void
     {
-        $groupId = inputId('group_id');
-        $userId = inputId('user_id');
-
-        if ($groupId === null || $userId === null) {
-            abort(404, 'Medlemmet findes ikke.');
-        }
+        $groupId = $this->requireInputId('group_id', 'Medlemmet findes ikke.', 404);
+        $userId = $this->requireInputId('user_id', 'Medlemmet findes ikke.', 404);
 
         Auth::requireGroupAdmin($groupId);
         $members = new GroupMemberRepository();
@@ -76,12 +68,8 @@ class MemberController
     // Removes the user
     public function removeMember(): void
     {
-        $groupId = inputId('group_id');
-        $userId = inputId('user_id');
-
-        if ($groupId === null || $userId === null) {
-            abort(404, 'Medlemmet findes ikke.');
-        }
+        $groupId = $this->requireInputId('group_id', 'Medlemmet findes ikke.', 404);
+        $userId = $this->requireInputId('user_id', 'Medlemmet findes ikke.', 404);
 
         Auth::requireGroupAdmin($groupId);
         $members = new GroupMemberRepository();
@@ -98,11 +86,7 @@ class MemberController
     // To leave the group yourself
     public function leaveGroup(): void
     {
-        $groupId = inputId('group_id');
-
-        if ($groupId === null) {
-            abort(404, 'Gruppen findes ikke.');
-        }
+        $groupId = $this->requireInputId('group_id', 'Gruppen findes ikke.', 404);
 
         Auth::requireMember($groupId);
         $userId = Auth::userId();
@@ -115,8 +99,11 @@ class MemberController
                 throw $exception;
             }
 
-            Session::flash('member_error', 'Du er den eneste admin. Gør et andet medlem til admin, før du forlader gruppen.');
-            redirect('/members?group_id=' . $groupId);
+            $this->redirectWithFlash(
+                'member_error',
+                'Du er den eneste admin. Gør et andet medlem til admin, før du forlader gruppen.',
+                '/members?group_id=' . $groupId
+            );
         }
 
         redirect('/home');
