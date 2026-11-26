@@ -45,30 +45,23 @@ class PasswordResetService
         // Anvender brugerens registrerede e-mailadresse.
         $email = $user['email'];
 
-        // Begrænser antallet af reset-links pr. bruger.
-        $rateLimiter = new RateLimiter();
-
-        if ($rateLimiter->tooMany('reset_password', $userId)) {
-            return false;
-        }
-
         $tokens = new UserTokenRepository();
-
-        // Undgår at sende endnu et link, hvis brugeren allerede har et gyldigt.
-        if ($tokens->countValid($userId, self::TOKEN_TYPE) > 0) {
-            return false;
-        }
 
         // Genererer et sikkert, tilfældigt engangstoken.
         $token = bin2hex(random_bytes(32));
 
-        // Gemmer kun tokenets hash i databasen.
-        $tokenId = $tokens->create(
+        // Kontrollerer begrænsninger og opretter tokenet i samme transaktion.
+        $tokenId = $tokens->createPasswordReset(
             $userId,
+            $email,
             hash('sha256', $token),
-            self::TOKEN_TYPE,
             self::TOKEN_MINUTES
         );
+
+        // Stopper anmodningen, hvis der ikke kunne oprettes et nyt token.
+        if ($tokenId === null) {
+            return false;
+        }
 
         // Opretter linket til siden, hvor adgangskoden nulstilles.
         $link = rtrim(Config::get('APP_URL'), '/')
@@ -124,6 +117,8 @@ class PasswordResetService
             self::TOKEN_TYPE
         ) !== null;
     }
+
+
 
     // Validerer og gemmer brugerens nye adgangskode.
     public function resetPassword(
