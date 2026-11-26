@@ -20,7 +20,7 @@ use PostCard\Repositories\AdminSettingsRepository;
 use PostCard\Services\RateLimiter;
 
 // Controlleren håndterer oprettelse af opslag.
-class PostController
+class PostController extends BaseController
 {
     private ExperienceRepository $experienceRepository;
     private PostRepository $postRepository;
@@ -49,16 +49,11 @@ class PostController
     // Viser formularen til at oprette et nyt opslag
     public function create(): void
     {
-        // Kontrollerer, at brugeren er logget ind
-        Auth::requireLogin();
+        // Kontrollerer login og henter brugerens ID
+        $userId = $this->requireUser();
 
-        // Henter oplevelsens ID fra URL'en med den fælles helper
-        $experienceId = queryId('experience');
-
-        // Stopper, hvis oplevelsens ID mangler eller er ugyldigt
-        if ($experienceId === null) {
-            abort(400, 'Ugyldigt experience-ID.');
-        }
+        // Henter oplevelsens ID fra URL'en og validerer det
+        $experienceId = $this->requireQueryId('experience', 'Ugyldigt experience-ID.');
 
         // Henter oplevelsen fra databasen
         $experience = $this->experienceRepository->find($experienceId);
@@ -73,7 +68,7 @@ class PostController
 
         // Kontrollerer, at den indloggede bruger ejer oplevelsen.
         // Kun oplevelsens ejer må oprette opslag i den.
-        if ((int) $experience['user_id'] !== Auth::userId()) {
+        if ((int) $experience['user_id'] !== $userId) {
             abort(403, 'Du kan kun oprette opslag i dine egne oplevelser.');
         }
 
@@ -126,16 +121,11 @@ class PostController
     // Modtager formularen, når brugeren vil oprette et opslag
     public function store(): void
     {
-        // Kontrollerer, at brugeren er logget ind
-        Auth::requireLogin();
+        // Kontrollerer login og henter brugerens ID
+        $userId = $this->requireUser();
 
-        // Henter oplevelsens ID fra formularen med den fælles helper
-        $experienceId = inputId('experience_id');
-
-        // Stopper, hvis oplevelsens ID mangler eller er ugyldigt
-        if ($experienceId === null) {
-            abort(400, 'Ugyldigt experience-ID.');
-        }
+        // Henter oplevelsens ID fra formularen og validerer det
+        $experienceId = $this->requireInputId('experience_id', 'Ugyldigt experience-ID.');
 
         // Henter oplevelsen fra databasen
         $experience = $this->experienceRepository->find($experienceId);
@@ -149,7 +139,7 @@ class PostController
         Auth::requireMember((int) $experience['group_id']);
 
         // Kontrollerer, at brugeren ejer oplevelsen
-        if ((int) $experience['user_id'] !== Auth::userId()) {
+        if ((int) $experience['user_id'] !== $userId) {
             abort(403, 'Du kan kun oprette opslag i dine egne oplevelser.');
         }
 
@@ -167,7 +157,7 @@ class PostController
         // Grænsen er defineret i RateLimiter.
         $limiter = new RateLimiter();
 
-        if ($limiter->tooMany('create_post', Auth::userId())) {
+        if ($limiter->tooMany('create_post', $userId)) {
             http_response_code(429);
 
             // Henter uploadgrænsen, så formularen stadig viser den korrekte størrelse.
@@ -378,23 +368,18 @@ class PostController
     // Viser et enkelt opslag med alle dets billeder og kommentarer.
     public function show(): void
     {
-        // Kontrollerer, at brugeren er logget ind.
-        Auth::requireLogin();
+        // Kontrollerer login og henter brugerens ID.
+        $userId = $this->requireUser();
 
-        // Henter opslagets ID fra URL'en med den fælles helper.
-        $postId = queryId('id');
-
-        // Stopper, hvis opslagets ID mangler eller er ugyldigt.
-        if ($postId === null) {
-            abort(400, 'Ugyldigt post-ID.');
-        }
+        // Henter opslagets ID fra URL'en og validerer det.
+        $postId = $this->requireQueryId('id', 'Ugyldigt post-ID.');
 
         // Henter opslaget fra databasen.
         // Repository kontrollerer også, at brugeren er aktivt
         // medlem af gruppen, som opslaget tilhører.
         $post = $this->postRepository->findById(
             $postId,
-            Auth::userId()
+            $userId
         );
 
         // Stopper, hvis opslaget ikke findes, eller brugeren
@@ -404,10 +389,10 @@ class PostController
         }
 
         // Registrerer en unik visning, efter at adgang til opslaget er kontrolleret.
-        $this->postViewRepository->registerView($postId, Auth::userId());
+        $this->postViewRepository->registerView($postId, $userId);
 
         // Henter opslaget igen, så visningstælleren er opdateret.
-        $post = $this->postRepository->findById($postId, Auth::userId());
+        $post = $this->postRepository->findById($postId, $userId);
 
         // Henter alle billeder, der hører til opslaget.
         $images = $this->postImageRepository->findImagesByPost($postId);
@@ -418,7 +403,7 @@ class PostController
         // Kontrollerer, om den indloggede bruger allerede har liket opslaget.
         $hasLiked = $this->likeRepository->hasLiked(
             $postId,
-            Auth::userId()
+            $userId
         );
 
         // Sender opslaget, billederne, kommentarerne og like-status videre til viewet.
@@ -438,22 +423,19 @@ class PostController
     // Viser formularen til at redigere et eksisterende opslag.
     public function edit(): void
     {
-        Auth::requireLogin();
+        $userId = $this->requireUser();
 
-        // Henter opslagets ID fra URL'en.
-        $postId = queryId('id');
-        if ($postId === null) {
-            abort(400, 'Ugyldigt post-ID.');
-        }
+        // Henter og validerer opslagets ID fra URL'en.
+        $postId = $this->requireQueryId('id', 'Ugyldigt post-ID.');
 
         // Henter opslaget og kontrollerer gruppemedlemskab.
-        $post = $this->postRepository->findById($postId, Auth::userId());
+        $post = $this->postRepository->findById($postId, $userId);
         if ($post === null) {
             abort(404, 'Opslaget blev ikke fundet.');
         }
 
         // Kun opslagets forfatter må redigere det.
-        if ((int) $post['author_id'] !== Auth::userId()) {
+        if ((int) $post['author_id'] !== $userId) {
             abort(403, 'Du kan kun redigere dine egne opslag.');
         }
 
@@ -480,23 +462,20 @@ class PostController
     // Gemmer ændringerne i et eksisterende opslag.
     public function update(): void
     {
-        // Kontrollerer, at brugeren er logget ind.
-        Auth::requireLogin();
+        // Kontrollerer login og henter brugerens ID.
+        $userId = $this->requireUser();
 
-        // Henter opslagets ID fra formularen.
-        $postId = inputId('post_id');
-        if ($postId === null) {
-            abort(400, 'Ugyldigt post-ID.');
-        }
+        // Henter og validerer opslagets ID fra formularen.
+        $postId = $this->requireInputId('post_id', 'Ugyldigt post-ID.');
 
         // Henter opslaget og kontrollerer adgang til gruppen.
-        $post = $this->postRepository->findById($postId, Auth::userId());
+        $post = $this->postRepository->findById($postId, $userId);
         if ($post === null) {
             abort(404, 'Opslaget blev ikke fundet.');
         }
 
         // Kun opslagets forfatter må redigere det.
-        if ((int) $post['author_id'] !== Auth::userId()) {
+        if ((int) $post['author_id'] !== $userId) {
             abort(403, 'Du kan kun redigere dine egne opslag.');
         }
 
@@ -600,7 +579,7 @@ class PostController
         
         $postService->updatePostWithImages(
             $postId,
-            Auth::userId(),
+            $userId,
             $caption,
             $location,
             $photos,
@@ -618,20 +597,16 @@ class PostController
     // Sletter et opslag, som tilhører den indloggede bruger.
     public function delete(): void
     {
-        // Kontrollerer, at brugeren er logget ind.
-        Auth::requireLogin();
+        // Kontrollerer login og henter brugerens ID.
+        $userId = $this->requireUser();
 
-        // Henter opslagets ID fra formularen.
-        $postId = inputId('post_id');
-
-        if ($postId === null) {
-            abort(400, 'Ugyldigt post-ID.');
-        }
+        // Henter og validerer opslagets ID fra formularen.
+        $postId = $this->requireInputId('post_id', 'Ugyldigt post-ID.');
 
         // Henter opslaget og kontrollerer adgang til gruppen.
         $post = $this->postRepository->findById(
             $postId,
-            Auth::userId()
+            $userId
         );
 
         if ($post === null) {
@@ -639,7 +614,7 @@ class PostController
         }
 
         // Kun opslagets ejer må slette det.
-        if ((int) $post['author_id'] !== Auth::userId()) {
+        if ((int) $post['author_id'] !== $userId) {
             abort(403, 'Du kan kun slette dine egne opslag.');
         }
 
@@ -652,7 +627,7 @@ class PostController
 
         $postService->deletePost(
             $postId,
-            Auth::userId()
+            $userId
         );
 
         // Sender brugeren tilbage til oplevelsen.
