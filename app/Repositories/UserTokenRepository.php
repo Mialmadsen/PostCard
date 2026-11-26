@@ -78,6 +78,61 @@ class UserTokenRepository extends Repository
         );
     }
 
+    // Opretter et reset-token, hvis brugeren ikke allerede har et gyldigt.
+    public function createPasswordReset(
+        int $userId,
+        string $email,
+        string $tokenHash,
+        int $minutes
+    ): ?int {
+        return $this->transaction(function () use (
+            $userId,
+            $email,
+            $tokenHash,
+            $minutes
+        ): ?int {
+
+            // Kontrollerer og låser brugeren under transaktionen.
+            $user = $this->fetchOne(
+                "SELECT user_id
+                FROM users
+                WHERE user_id = :user_id
+                    AND email = :email
+                    AND user_status = 'active'
+                    AND email_verified_at IS NOT NULL
+                FOR UPDATE",
+                [
+                    'user_id' => $userId,
+                    'email' => $email,
+                ]
+            );
+
+            if ($user === null) {
+                return null;
+            }
+
+            // Begrænser antallet af reset-links pr. bruger.
+            $rateLimiter = new \PostCard\Services\RateLimiter();
+
+            if ($rateLimiter->tooMany('reset_password', $userId)) {
+                return null;
+            }
+
+            // Kontrollerer, om brugeren allerede har et gyldigt link.
+            if ($this->countValid($userId, 'reset_password') > 0) {
+                return null;
+            }
+
+            // Genbruger den eksisterende metode til oprettelse af tokens.
+            return $this->create(
+                $userId,
+                $tokenHash,
+                'reset_password',
+                $minutes
+            );
+        });
+    }
+
     // Opdaterer adgangskoden og ugyldiggør reset-tokens i samme transaktion.
     public function resetPassword(string $tokenHash, string $passwordHash): bool
     {
