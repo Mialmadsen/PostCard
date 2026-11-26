@@ -12,6 +12,7 @@ use PostCard\Repositories\LoginAttemptRepository;
 use PostCard\Services\EmailVerificationService;
 use PostCard\Core\Session;
 use PostCard\Repositories\UserTokenRepository;
+use PostCard\Services\PasswordResetService;
 
 
 // Login, register, logout and password reset.
@@ -271,6 +272,98 @@ class AuthController extends BaseController
             'login_message',
             'Din e-mail er bekræftet. Du kan nu logge ind.',
             $invite !== '' ? '/login?invite=' . urlencode($invite) : '/login'
+        );
+    }
+
+    // Viser formularen til glemt adgangskode.
+    public function forgotPassword(): void
+    {
+        View::render('forgot-password', [
+            'pageTitle' => 'Glemt adgangskode',
+            'isLoggedIn' => false,
+            'message' => Session::takeFlash('reset_message'),
+        ]);
+    }
+
+    // Modtager brugerens anmodning om en ny adgangskode.
+    public function sendResetLink(): void
+    {
+        $email = mb_strtolower(input('email'));
+
+        $passwordReset = new PasswordResetService();
+        $passwordReset->sendLink($email);
+
+        // Viser samme besked, uanset om e-mailadressen findes.
+        $this->redirectWithFlash(
+            'reset_message',
+            'Hvis e-mailen er registreret hos os, kan du modtage et link til at nulstille din adgangskode. Linket virker i 1 time.',
+            '/forgot-password'
+        );
+    }
+
+    // Viser formularen til valg af en ny adgangskode.
+    public function showResetPassword(): void
+    {
+        $token = filter_input(INPUT_GET, 'token');
+        $token = is_string($token) ? $token : '';
+
+        $passwordReset = new PasswordResetService();
+        $isValid = $passwordReset->isValidToken($token);
+
+        header('Referrer-Policy: no-referrer');
+        header('Cache-Control: no-store');
+
+        View::render('reset-password', [
+            'pageTitle' => 'Ny adgangskode',
+            'pageScripts' => ['password-toggle'],
+            'isLoggedIn' => false,
+            'token' => $isValid ? $token : '',
+            'isValid' => $isValid,
+            'errors' => [],
+        ]);
+    }
+
+    // Håndterer formularen og gemmer den nye adgangskode.
+    public function resetPassword(): void
+    {
+        $token = input('token');
+        $password = input('password', false);
+        $passwordConfirm = input('password_confirm', false);
+
+        $passwordReset = new PasswordResetService();
+
+        $errors = $passwordReset->resetPassword(
+            $token,
+            $password,
+            $passwordConfirm
+        );
+
+        // Viser formularen igen, hvis der er fejl.
+        if ($errors !== []) {
+            http_response_code(422);
+
+            header('Referrer-Policy: no-referrer');
+            header('Cache-Control: no-store');
+
+            $isValid = $passwordReset->isValidToken($token);
+
+            View::render('reset-password', [
+                'pageTitle' => 'Ny adgangskode',
+                'pageScripts' => ['password-toggle'],
+                'isLoggedIn' => false,
+                'token' => $isValid ? $token : '',
+                'isValid' => $isValid,
+                'errors' => $errors,
+            ]);
+
+            return;
+        }
+
+        // Sender brugeren tilbage til login med en bekræftelse.
+        $this->redirectWithFlash(
+            'login_message',
+            'Din adgangskode er ændret. Du kan nu logge ind med din nye adgangskode.',
+            '/login'
         );
     }
 }
