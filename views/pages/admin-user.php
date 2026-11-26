@@ -207,15 +207,32 @@ $memberStatusLabels = [
 
                 <section class="card flow" aria-labelledby="password-heading">
                     <h2 id="password-heading">Adgangskode</h2>
-                    <p>Operatører kan ikke se eller vælge en brugers adgangskode. Send i stedet et link, så brugeren selv kan vælge en ny.</p>
 
-                    <?php /* Makes a reset_password token (user_tokens) and e-mails the link. */ ?>
-                    <form action="<?= url('/admin/user') ?>" method="post">
-                        <?= \PostCard\Core\Csrf::field() ?>
-                        <input type="hidden" name="user_id" value="1">
-                        <input type="hidden" name="form" value="reset-password">
-                        <button class="button button--secondary" type="submit">Send link til ny adgangskode</button>
-                    </form>
+                    <?php if ((int) $user['is_operator'] === 1): ?>
+                        <p>En operatør nulstiller selv sin adgangskode.</p>
+
+                    <?php elseif ($user['user_status'] !== 'active'): ?>
+                        <p>Der kan kun sendes links til aktive brugere.</p>
+
+                    <?php elseif ($user['email_verified_at'] === null): ?>
+                        <p>Brugerens e-mail skal være bekræftet, før der kan sendes et link.</p>
+
+                    <?php else: ?>
+                        <p>Operatører kan ikke se eller vælge en brugers adgangskode. Send i stedet et link, så brugeren selv kan vælge en ny.</p>
+
+                        <form class="js-confirm" action="<?= url('/admin/user/password/reset') ?>" method="post"
+                            data-confirm="Vil du sende et link til nulstilling af adgangskoden til <?= e($fullName) ?>?"
+                            data-confirm-button="Send link">
+
+                            <?= \PostCard\Core\Csrf::field() ?>
+
+                            <input type="hidden" name="user_id" value="<?= $userId ?>">
+
+                            <button class="button button--secondary" type="submit">
+                                Send link til ny adgangskode
+                            </button>
+                        </form>
+                    <?php endif; ?>
                 </section>
 
                 <section class="card" aria-labelledby="groups-heading">
