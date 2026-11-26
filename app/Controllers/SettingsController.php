@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PostCard\Controllers;
 
-use PostCard\Core\Auth;
 use PostCard\Core\View;
 use PostCard\Repositories\UserRepository;
 use PostCard\Services\UserValidator;
@@ -12,14 +11,14 @@ use PostCard\Core\Session;
 use PostCard\Services\CloudinaryService;
 
 // Shows information on settings page
-class SettingsController
+class SettingsController extends BaseController
 {
     public function show(): void
     {
-        Auth::requireLogin();
+        $userId = $this->requireUser();
 
         $users = new UserRepository();
-        $user = $users->findForSettings(Auth::userId());
+        $user = $users->findForSettings($userId);
 
         // The "saved" message from the last save, shown once (F5 removes it)
         $settingsMessage = Session::takeFlash('settings_message');
@@ -41,8 +40,7 @@ class SettingsController
     // Changing details in profile
     public function updateDetails(): void
     {
-        Auth::requireLogin();
-        $userId = Auth::userId();
+        $userId = $this->requireUser();
 
         $firstName = input('first_name');
         $lastName = input('last_name');
@@ -86,15 +84,17 @@ class SettingsController
             $users->clearEmailVerified($userId);
         }
 
-        Session::flash('settings_message', 'Dine oplysninger er gemt.');
-        redirect('/settings');
+        $this->redirectWithFlash(
+            'settings_message',
+            'Dine oplysninger er gemt.',
+            '/settings'
+        );
     }
 
     // Saving a new profile picture: upload the new one, save it, then delete the old one
     public function updatePicture(): void
     {
-        Auth::requireLogin();
-        $userId = Auth::userId();
+        $userId = $this->requireUser();
 
         $users = new UserRepository();
         // the saved row: the old picture's public_id, and the fields if the page is shown again
@@ -134,15 +134,17 @@ class SettingsController
             }
         }
 
-        Session::flash('settings_message', 'Dit profilbillede er gemt.');
-        redirect('/settings');
+        $this->redirectWithFlash(
+            'settings_message',
+            'Dit profilbillede er gemt.',
+            '/settings'
+        );
     }
 
     // Removing the profile picture: the initials are shown again
     public function removePicture(): void
     {
-        Auth::requireLogin();
-        $userId = Auth::userId();
+        $userId = $this->requireUser();
 
         $users = new UserRepository();
         $user = $users->findForSettings($userId);
@@ -160,15 +162,17 @@ class SettingsController
             }
         }
 
-        Session::flash('settings_message', 'Dit profilbillede er fjernet.');
-        redirect('/settings');
+        $this->redirectWithFlash(
+            'settings_message',
+            'Dit profilbillede er fjernet.',
+            '/settings'
+        );
     }
 
     //We change password in profile 
     public function updatePassword(): void
     {
-        Auth::requireLogin();
-        $userId = Auth::userId();
+        $userId = $this->requireUser();
 
         // false = do not trim: a space is a real part of a password
         $currentPassword = input('current_password', false);
@@ -209,7 +213,10 @@ class SettingsController
         //We need a new session
         Session::regenerate();
 
-        Session::flash('settings_message', 'Din adgangskode er ændret.');
-        redirect('/settings');
+        $this->redirectWithFlash(
+            'settings_message',
+            'Din adgangskode er ændret.',
+            '/settings'
+        );
     }
 }
