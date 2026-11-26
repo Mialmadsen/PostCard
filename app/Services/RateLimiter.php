@@ -70,6 +70,18 @@ class RateLimiter
                         AND created_at > NOW() - INTERVAL :minutes MINUTE',
         ],
 
+        'reset_password' => [
+            'max' => 3,
+            'minutes' => 60,
+            'message' => 'Der er anmodet om for mange links. Prøv igen senere.',
+            'sql' => "SELECT COUNT(*)
+                        FROM user_tokens
+                    WHERE user_id = :user_id
+                        AND token_type = 'reset_password'
+                        AND DATE_SUB(expires_at, INTERVAL 60 MINUTE)
+                            > NOW() - INTERVAL :minutes MINUTE",
+        ],
+
     ];
 
     // True when the user has already done this action as often as allowed in the period.
