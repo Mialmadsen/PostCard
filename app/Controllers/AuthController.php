@@ -13,6 +13,7 @@ use PostCard\Services\EmailVerificationService;
 use PostCard\Core\Session;
 use PostCard\Repositories\UserTokenRepository;
 use PostCard\Services\PasswordResetService;
+use PostCard\Services\RateLimiter;
 
 
 // Login, register, logout and password reset.
@@ -285,21 +286,26 @@ class AuthController extends BaseController
         ]);
     }
 
-    // Modtager brugerens anmodning om en ny adgangskode.
-    public function sendResetLink(): void
-    {
-        $email = mb_strtolower(input('email'));
-
-        $passwordReset = new PasswordResetService();
-        $passwordReset->sendLink($email);
-
-        // Viser samme besked, uanset om e-mailadressen findes.
-        $this->redirectWithFlash(
-            'reset_message',
-            'Hvis e-mailen er registreret hos os, kan du modtage et link til at nulstille din adgangskode. Linket virker i 1 time.',
-            '/forgot-password'
-        );
-    }
+       // Modtager brugerens anmodning om en ny adgangskode.
+       public function sendResetLink(): void
+       {
+           $email = mb_strtolower(input('email'));
+   
+           // Begrænser antallet af offentlige anmodninger ud fra e-mailadressen.
+           $rateLimiter = new RateLimiter();
+   
+           if (!$rateLimiter->tooManyPublic('reset_password', $email)) {
+               $passwordReset = new PasswordResetService();
+               $passwordReset->sendLink($email);
+           }
+   
+           // Viser samme besked, uanset om e-mailadressen findes.
+           $this->redirectWithFlash(
+               'reset_message',
+               'Hvis e-mailen er registreret hos os, kan du modtage et link til at nulstille din adgangskode. Linket virker i 1 time.',
+               '/forgot-password'
+           );
+       }
 
     // Viser formularen til valg af en ny adgangskode.
     public function showResetPassword(): void
