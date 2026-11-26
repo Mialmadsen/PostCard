@@ -53,13 +53,22 @@ $breadcrumbs = [
 
                     <?php /* Billeder: eksisterende og nye billeder kan redigeres. */ ?>
                     <div class="field">
-                        <label class="field__label" for="photos">Billeder</label>
+                    <label class="field__label" for="photos">Billeder</label>
                         <input class="field__input js-photo-input"
-                            type="file" id="photos" name="photos[]"
-                            accept="image/jpeg,image/png,image/webp" multiple>
-                            <p class="meta">1–5 billeder i JPG, PNG eller WebP. 
-                                Højst <?= e((string) $maxUploadSizeMB) ?> 
-                                MB, 8000 pixels i bredde eller højde og 25 millioner pixels i alt pr. billede.</p>
+                            type="file"
+                            id="photos"
+                            name="photos[]"
+                            accept="image/jpeg,image/png,image/webp"
+                            data-max-size-mb="<?= e((string) $maxUploadSizeMB) ?>"
+                            aria-describedby="photos-hint"
+                            multiple>
+
+                        <p class="meta" id="photos-hint">
+                            1–5 billeder i JPG, PNG eller WebP.
+                            Store billeder tilpasses automatisk til højst
+                            <?= e((string) $maxUploadSizeMB) ?> MB pr. billede.
+                            Du vælger selv forsidebilledet.
+                        </p>
                         <?php /* JavaScript bruger listen til at vise alle billeder. */ ?>
                         <ul class="photo-preview js-photo-preview">
                             <?php /* Eksisterende billeder fra databasen. */ ?>

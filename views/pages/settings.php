@@ -54,7 +54,9 @@
 
                     <div class="field">
                         <input class="visually-hidden file-picker__input js-avatar-input" id="profile-image" name="profile_image" type="file"
-                            accept="image/jpeg,image/png,image/webp" required
+                            accept="image/jpeg,image/png,image/webp"
+                            data-max-size-mb="<?= e((string) $maxUploadSizeMB) ?>"
+                            required
                             <?php if ($pictureError !== null): ?>aria-invalid="true"
                             aria-describedby="profile-image-hint profile-image-error"
                             <?php else: ?>aria-describedby="profile-image-hint" <?php endif; ?>>

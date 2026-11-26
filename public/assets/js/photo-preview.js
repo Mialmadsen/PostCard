@@ -4,9 +4,10 @@
 // On edit-post.php the list starts with the post's saved photos, which PHP puts in the page.
 // This is only a convenience: the server checks number, type and size again.
 
+import { resizeImage } from './image-resize.js';
+
 const MAX_PHOTOS = 5;                                  // saved and new photos together
-const MAX_SIZE = 5 * 1024 * 1024;                      // 5 MB, the same as the hint text says
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_DIMENSION = 2048;
 
 const input = document.querySelector('.js-photo-input');
 const list = document.querySelector('.js-photo-preview');
@@ -20,7 +21,14 @@ const template = document.querySelector('.js-photo-template');
 let photos = [];
 let cover = null;                                      // the photo chosen as cover photo
 
+// Holder styr på, om billeder er ved at blive behandlet.
+let isProcessing = false;
+
 if (input && list && status && template) {
+    // Henter den maksimale billedstørrelse fra Admin Settings via HTML.
+    const maxSizeMB = Number(input.dataset.maxSizeMb) || 5;
+    const MAX_SIZE = maxSizeMB * 1024 * 1024;
+
     // edit-post.php: read the saved photos PHP put in the list. The first one is the cover today.
     list.querySelectorAll('[data-image-id]').forEach((item) => {
         photos.push({
@@ -30,28 +38,70 @@ if (input && list && status && template) {
             open: false,
         });
     });
+
     if (photos.length > 0) {
         cover = photos[0];
     }
+
     update();
 
-    input.addEventListener('change', () => {
-        const messages = [];
-
-        for (const file of input.files) {
-            if (!ALLOWED_TYPES.includes(file.type)) {
-                messages.push(`${file.name} er ikke et JPG-, PNG- eller WebP-billede.`);
-            } else if (file.size > MAX_SIZE) {
-                messages.push(`${file.name} er større end 5 MB.`);
-            } else if (photos.length >= MAX_PHOTOS) {
-                messages.push(`Du kan højst have ${MAX_PHOTOS} billeder.`);
-                break;
-            } else {
-                photos.push({ file, url: URL.createObjectURL(file), alt: '', open: false });
-            }
+    input.addEventListener('change', async () => {
+        if (isProcessing) {
+            return;
         }
 
-        update(messages);
+        const files = Array.from(input.files);
+        const messages = [];
+
+        isProcessing = true;
+        input.disabled = true;
+
+        try {
+            // Behandler ét billede ad gangen for at begrænse hukommelsesforbruget.
+            for (const file of files) {
+                if (photos.length >= MAX_PHOTOS) {
+                    messages.push(`Du kan højst have ${MAX_PHOTOS} billeder.`);
+                    break;
+                }
+
+                status.textContent = `Behandler ${file.name}...`;
+
+                try {
+                    // Skalerer og komprimerer billedet automatisk.
+                    const resizedFile = await resizeImage(
+                        file,
+                        MAX_DIMENSION,
+                        MAX_SIZE
+                    );
+
+                    // Tilføjer det optimerede billede til listen.
+                    photos.push({
+                        file: resizedFile,
+                        url: URL.createObjectURL(resizedFile),
+                        alt: '',
+                        open: false
+                    });
+
+                } catch (error) {
+                    messages.push(`${file.name}: ${error.message}`);
+                }
+            }
+        } finally {
+            isProcessing = false;
+            input.disabled = false;
+
+            update(messages);
+        }
+    });
+
+    // Forhindrer upload, mens billederne stadig behandles.
+    input.form.addEventListener('submit', (event) => {
+        if (isProcessing) {
+            event.preventDefault();
+
+            status.textContent =
+                'Vent venligst, mens billederne behandles.';
+        }
     });
 }
 
@@ -59,7 +109,9 @@ if (input && list && status && template) {
 function update(messages = []) {
     // The browser only sends what is in input.files, so we rebuild it from our list
     const transfer = new DataTransfer();
+
     photos.filter((photo) => photo.file).forEach((photo) => transfer.items.add(photo.file));
+
     input.files = transfer.files;
 
     // A post needs at least one photo: when no saved photo is left, a new one is required
@@ -88,18 +140,21 @@ function createItem(photo, index) {
     // The value tells PHP which photo: "saved-11" (post_images id) or "new-0" (its place among the new files).
     const coverInput = item.querySelector('.js-photo-cover');
     const coverLabel = item.querySelector('.js-photo-cover-label');
+
     coverInput.id = `cover-${number}`;
     coverLabel.htmlFor = coverInput.id;
     coverInput.value = photo.id
         ? `saved-${photo.id}`
         : `new-${photos.filter((other) => other.file).indexOf(photo)}`;
     coverInput.checked = photo === cover;
+
     coverInput.addEventListener('change', () => {
         cover = photo;
     });
 
     // Keep the description box open or closed when the list is drawn again
     const details = item.querySelector('details');
+
     details.open = photo.open;
     details.addEventListener('toggle', () => {
         photo.open = details.open;
@@ -109,28 +164,40 @@ function createItem(photo, index) {
     // Saved photos send their id with the text; new photos are matched by order.
     const altLabel = item.querySelector('.js-photo-alt-label');
     const altInput = item.querySelector('.js-photo-alt');
+
     altInput.id = `alt-text-${number}`;
     altLabel.htmlFor = altInput.id;
     altInput.name = photo.id ? `saved_alt_text[${photo.id}]` : 'alt_text[]';
     altInput.value = photo.alt;
+
     altInput.addEventListener('input', () => {
         photo.alt = altInput.value;                    // keep the text when the list is drawn again
     });
 
     const removeButton = item.querySelector('.js-photo-remove');
+
     removeButton.querySelector('.visually-hidden').textContent = `billede ${number}`;
+
     removeButton.addEventListener('click', () => {
+        // Forhindrer fjernelse af billeder under billedbehandlingen.
+        if (isProcessing) {
+            return;
+        }
+
         if (photo.id) {
             // A saved photo: tell the server to delete it when the form is saved
             const field = document.createElement('input');
             field.type = 'hidden';
             field.name = 'remove_images[]';
             field.value = photo.id;
+
             input.form.append(field);
         } else {
             URL.revokeObjectURL(photo.url);            // free the memory used by the preview
         }
+
         photos = photos.filter((other) => other !== photo);
+
         update();
         input.focus();                                 // the button is gone, so move focus somewhere sensible
     });

@@ -10,6 +10,7 @@ use PostCard\Services\UserValidator;
 use PostCard\Core\Session;
 use PostCard\Services\CloudinaryService;
 use PostCard\Core\Auth;
+use PostCard\Repositories\AdminSettingsRepository;
 
 // Shows information on settings page
 class SettingsController extends BaseController
@@ -33,8 +34,8 @@ class SettingsController extends BaseController
             'errors' => [],
             'pictureError' => null,
             'settingsMessage' => $settingsMessage,
-            'passwordErrors' => []
-
+            'passwordErrors' => [],
+            'maxUploadSizeMB' => $this->getMaxUploadSizeMB()
         ]);
     }
 
@@ -74,7 +75,8 @@ class SettingsController extends BaseController
                 'errors' => $errors,
                 'pictureError' => null,
                 'settingsMessage' => null,
-                'passwordErrors' => []
+                'passwordErrors' => [],
+                'maxUploadSizeMB' => $this->getMaxUploadSizeMB()
             ]);
             return;
         }
@@ -113,7 +115,8 @@ class SettingsController extends BaseController
                 'errors' => [],
                 'pictureError' => $e->getMessage(),
                 'settingsMessage' => null,
-                'passwordErrors' => []
+                'passwordErrors' => [],
+                'maxUploadSizeMB' => $this->getMaxUploadSizeMB()
             ]);
             return;
         }
@@ -200,7 +203,7 @@ class SettingsController extends BaseController
                 'errors' => [],
                 'pictureError' => null,
                 'settingsMessage' => null,
-
+                'maxUploadSizeMB' => $this->getMaxUploadSizeMB()
             ]);
             return;
         }
@@ -216,5 +219,14 @@ class SettingsController extends BaseController
             'Din adgangskode er ændret.',
             '/settings'
         );
+    }
+
+    // Henter den maksimale billedstørrelse fra Admin Settings.
+    // Genbruges alle steder, hvor indstillingssiden vises.
+    private function getMaxUploadSizeMB(): int
+    {
+        $siteSettings = (new AdminSettingsRepository())->findAll();
+
+        return (int) ($siteSettings['max_upload_size'] ?? 5);
     }
 }

@@ -51,10 +51,13 @@ $uploadSizeNumber = preg_replace('/MB$/i', '', $uploadSize);
 
                     <?php /* setting_key = 'max_upload_size' (saved as e.g. "10MB") */ ?>
                     <div class="field">
-                        <label class="field__label" for="max-upload-size">Største billede i et opslag (MB)</label>
+                        <label class="field__label" for="max-upload-size">Maksimal billedstørrelse (MB)</label>
                         <input class="field__input field__input--short" id="max-upload-size" name="max_upload_size" type="number"
                             min="1" max="20" value="<?= e((string) $uploadSizeNumber) ?>" required aria-describedby="max-upload-size-hint">
-                        <p class="meta" id="max-upload-size-hint">Højst 20 MB. Serveren skal også tillade størrelsen.</p>
+                        <p class="meta" id="max-upload-size-hint">
+                            Gælder både billeder i opslag og profilbilleder efter automatisk skalering og komprimering.
+                            Højst 20 MB. Serveren skal også tillade størrelsen.
+                        </p>
                     </div>
 
                     <?php /* setting_key = 'allow_likes' and 'allow_comments' (1 or 0).
