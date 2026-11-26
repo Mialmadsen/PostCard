@@ -14,7 +14,7 @@ class PasswordResetService
     private const TOKEN_MINUTES = 60;
 
     // Finder brugeren og sender et link til nulstilling af adgangskoden.
-    public function sendLink(string $email): void
+    public function sendLink(string $email): bool
     {
         $email = mb_strtolower(trim($email));
 
@@ -23,7 +23,7 @@ class PasswordResetService
             strlen($email) > 255 ||
             filter_var($email, FILTER_VALIDATE_EMAIL) === false
         ) {
-            return;
+            return false;
         }
 
         // Finder brugeren ud fra e-mailadressen.
@@ -36,17 +36,27 @@ class PasswordResetService
             $user['user_status'] !== 'active' ||
             $user['email_verified_at'] === null
         ) {
-            return;
+            return false;
         }
 
         $userId = (int) $user['user_id'];
         $firstName = $user['first_name'];
 
+        // Anvender brugerens registrerede e-mailadresse.
+        $email = $user['email'];
+
+        // Begrænser antallet af reset-links pr. bruger.
+        $rateLimiter = new RateLimiter();
+
+        if ($rateLimiter->tooMany('reset_password', $userId)) {
+            return false;
+        }
+
         $tokens = new UserTokenRepository();
 
         // Undgår at sende endnu et link, hvis brugeren allerede har et gyldigt.
         if ($tokens->countValid($userId, self::TOKEN_TYPE) > 0) {
-            return;
+            return false;
         }
 
         // Genererer et sikkert, tilfældigt engangstoken.
@@ -80,12 +90,17 @@ class PasswordResetService
         try {
             $mailer = new Mailer();
             $mailer->send($email, $firstName, $subject, $text);
+
+            return true;
+
         } catch (\RuntimeException $e) {
             // Ugyldiggør tokenet, hvis e-mailen ikke kunne sendes.
             $tokens->markUsed($tokenId);
 
-            // Logger fejlen uden at vise den til brugeren.
-            error_log('Password reset mail not sent: ' . $e->getMessage());
+            // Logger fejlen uden at afsløre følsomme oplysninger.
+            error_log('Password reset mail not sent.');
+
+            return false;
         }
     }
 
