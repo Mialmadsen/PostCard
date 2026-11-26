@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PostCard\Repositories;
 
-// All SQL for the user_tokens table: one-time links for e-mail verification (and later password reset).
+// All SQL for the user_tokens table: one-time links for e-mail verification and password reset.
 class UserTokenRepository extends Repository
 {
     public function create(int $userId, string $tokenHash, string $type, int $minutes): int
@@ -60,5 +60,21 @@ class UserTokenRepository extends Repository
         );
 
         return (int) $count;
+    }
+
+    // Ugyldiggør tidligere ubrugte tokens af en bestemt type for brugeren.
+    public function invalidatePrevious(int $userId, string $type): int
+    {
+        return $this->execute(
+            'UPDATE user_tokens
+                SET used_at = NOW()
+              WHERE user_id = :user_id
+                AND token_type = :token_type
+                AND used_at IS NULL',
+            [
+                'user_id' => $userId,
+                'token_type' => $type,
+            ]
+        );
     }
 }
