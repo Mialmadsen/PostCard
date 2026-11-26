@@ -77,4 +77,59 @@ class UserTokenRepository extends Repository
             ]
         );
     }
+
+    // Opdaterer adgangskoden og ugyldiggør reset-tokens i samme transaktion.
+    public function resetPassword(string $tokenHash, string $passwordHash): bool
+    {
+        return $this->transaction(function () use ($tokenHash, $passwordHash): bool {
+
+            // Finder det gyldige reset-token.
+            $token = $this->findValid($tokenHash, 'reset_password');
+
+            if ($token === null) {
+                return false;
+            }
+
+            $userId = (int) $token['user_id'];
+
+            // Kontrollerer og låser brugeren under transaktionen.
+            $user = $this->fetchOne(
+                "SELECT user_id
+                FROM users
+                WHERE user_id = :user_id
+                AND user_status = 'active'
+                AND email_verified_at IS NOT NULL
+                FOR UPDATE",
+                ['user_id' => $userId]
+            );
+
+            if ($user === null) {
+                return false;
+            }
+
+            // Markerer tokenet som brugt, hvis det stadig er gyldigt.
+            $changed = $this->execute(
+                "UPDATE user_tokens
+                SET used_at = NOW()
+                WHERE token_id = :token_id
+                AND token_type = 'reset_password'
+                AND used_at IS NULL
+                AND expires_at > NOW()",
+                ['token_id' => (int) $token['token_id']]
+            );
+
+            if ($changed !== 1) {
+                return false;
+            }
+
+            // Gemmer den nye hashede adgangskode.
+            $users = new UserRepository();
+            $users->updatePassword($userId, $passwordHash);
+
+            // Ugyldiggør brugerens øvrige reset-tokens.
+            $this->invalidatePrevious($userId, 'reset_password');
+
+            return true;
+        });
+    }
 }

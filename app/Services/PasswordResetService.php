@@ -88,4 +88,69 @@ class PasswordResetService
             error_log('Password reset mail not sent: ' . $e->getMessage());
         }
     }
+
+    // Kontrollerer, at tokenet har det forventede format.
+    private function hasValidFormat(string $token): bool
+    {
+        return strlen($token) === 64 && ctype_xdigit($token);
+    }
+
+    // Kontrollerer, om brugerens reset-link stadig er gyldigt.
+    public function isValidToken(string $token): bool
+    {
+        if (!$this->hasValidFormat($token)) {
+            return false;
+        }
+
+        $tokens = new UserTokenRepository();
+
+        return $tokens->findValid(
+            hash('sha256', $token),
+            self::TOKEN_TYPE
+        ) !== null;
+    }
+
+    // Validerer og gemmer brugerens nye adgangskode.
+    public function resetPassword(
+        string $token,
+        string $password,
+        string $passwordConfirm
+    ): array {
+        if (!$this->hasValidFormat($token)) {
+            return [
+                'token' => 'Linket er ugyldigt eller udløbet.'
+            ];
+        }
+
+        // Genbruger de eksisterende adgangskodekrav.
+        $validator = new UserValidator();
+
+        $errors = $validator->validatePassword(
+            $password,
+            $passwordConfirm
+        );
+
+        if ($errors !== []) {
+            return $errors;
+        }
+
+        // Hasher den nye adgangskode.
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
+        $tokens = new UserTokenRepository();
+
+        // Ændrer adgangskoden og forbruger tokenet.
+        $changed = $tokens->resetPassword(
+            hash('sha256', $token),
+            $passwordHash
+        );
+
+        if (!$changed) {
+            return [
+                'token' => 'Linket er ugyldigt eller udløbet.'
+            ];
+        }
+
+        return [];
+    }
 }
