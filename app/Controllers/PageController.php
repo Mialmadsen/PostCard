@@ -14,9 +14,7 @@ class PageController
     // Viser forsiden.
     public function landing(): void
     {
-        // Henter de redigerbare tekster fra databasen.
-        $contentRepository = new AdminContentRepository();
-        $siteContent = $contentRepository->findAll();
+        $siteContent = $this->getSiteContent();
 
         View::render('landing', [
             'pageTitle' => 'Velkommen',
@@ -29,9 +27,7 @@ class PageController
     // Viser regler og information om brugerdata.
     public function rules(): void
     {
-        // Henter de redigerbare tekster fra databasen.
-        $contentRepository = new AdminContentRepository();
-        $siteContent = $contentRepository->findAll();
+        $siteContent = $this->getSiteContent();
 
         View::render('rules', [
             'pageTitle' => 'Regler',
@@ -43,14 +39,20 @@ class PageController
     // Viser kontaktsiden.
     public function contact(): void
     {
-        // Henter de redigerbare tekster fra databasen.
-        $contentRepository = new AdminContentRepository();
-        $siteContent = $contentRepository->findAll();
+        $siteContent = $this->getSiteContent();
 
         View::render('contact', [
             'pageTitle' => 'Kontakt',
             'isLoggedIn' => Auth::userId() !== null,
             'siteContent' => $siteContent,
         ]);
+    }
+
+    // Henter de redigerbare tekster fra databasen.
+    private function getSiteContent(): array
+    {
+        $contentRepository = new AdminContentRepository();
+
+        return $contentRepository->findAll();
     }
 }
