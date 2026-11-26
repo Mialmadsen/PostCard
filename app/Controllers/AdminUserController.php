@@ -13,7 +13,7 @@ use PostCard\Services\CloudinaryService;
 use PostCard\Services\UserValidator;
 
 // The operator's pages about users: the list, and blocking or unblocking a user.
-class AdminUserController
+class AdminUserController extends BaseController
 {
     // Shows the list of all users.
     public function index(): void
@@ -87,11 +87,8 @@ class AdminUserController
     {
         Auth::requireOperator();
 
-        // The id from the address. A broken id (abc, -1, empty) becomes null
-        $userId = queryId('id');
-        if ($userId === null) {
-            abort(400, 'Ugyldigt bruger-ID.');
-        }
+        // Requires a valid id from the address
+        $userId = $this->requireQueryId('id', 'Ugyldigt bruger-ID.');
 
         $users = new UserRepository();
         $user = $users->findForAdmin($userId);
@@ -109,7 +106,7 @@ class AdminUserController
     {
         Auth::requireOperator();
 
-        $userId = inputId('user_id');
+        $userId = $this->requireInputId('user_id', 'Ugyldig handling.');
         $action = input('action');
 
         // The only two things the buttons may ask for: action => [from status, to status]
@@ -118,8 +115,8 @@ class AdminUserController
             'unblock' => ['blocked', 'active'],
         ];
 
-        // A broken id or an unknown action never comes from our own page
-        if ($userId === null || !isset($changes[$action])) {
+        // An unknown action never comes from our own page
+        if (!isset($changes[$action])) {
             abort(400, 'Ugyldig handling.');
         }
 
@@ -129,25 +126,29 @@ class AdminUserController
         $users = new UserRepository();
         $changed = $users->updateStatus($userId, $fromStatus, $toStatus);
 
-        if ($changed === 1) {
-            Session::flash('admin_users_message', $action === 'block' ? 'Brugeren er blokeret.' : 'Blokeringen er fjernet.');
-        } else {
-            Session::flash('admin_users_error', 'Status kunne ikke ændres. Brugeren har allerede en anden status.');
-        }
-
         // Back to where the button was: this user's page, or the list
         $backTo = input('from') === 'user' ? '/admin/user?id=' . $userId : '/admin/users';
-        redirect($backTo);
+
+        if ($changed === 1) {
+            $this->redirectWithFlash(
+                'admin_users_message',
+                $action === 'block' ? 'Brugeren er blokeret.' : 'Blokeringen er fjernet.',
+                $backTo
+            );
+        } else {
+            $this->redirectWithFlash(
+                'admin_users_error',
+                'Status kunne ikke ændres. Brugeren har allerede en anden status.',
+                $backTo
+            );
+        }
     }
 
     public function update(): void
     {
         Auth::requireOperator();
 
-        $userId = inputId('user_id');
-        if ($userId === null) {
-            abort(400, 'Ugyldigt bruger-ID.');
-        }
+        $userId = $this->requireInputId('user_id', 'Ugyldigt bruger-ID.');
 
         $users = new UserRepository();
         $user = $users->findForAdmin($userId);
@@ -189,18 +190,18 @@ class AdminUserController
             $users->clearEmailVerified($userId);
         }
 
-        Session::flash('admin_users_message', 'Brugerens oplysninger er gemt.');
-        redirect('/admin/user?id=' . $userId);
+        $this->redirectWithFlash(
+            'admin_users_message',
+            'Brugerens oplysninger er gemt.',
+            '/admin/user?id=' . $userId
+        );
     }
 
     public function removePicture(): void
     {
         Auth::requireOperator();
 
-        $userId = inputId('user_id');
-        if ($userId === null) {
-            abort(400, 'Ugyldigt bruger-ID.');
-        }
+        $userId = $this->requireInputId('user_id', 'Ugyldigt bruger-ID.');
 
         $users = new UserRepository();
         $user = $users->findForAdmin($userId);
@@ -223,7 +224,10 @@ class AdminUserController
             }
         }
 
-        Session::flash('admin_users_message', 'Profilbilledet er fjernet.');
-        redirect('/admin/user?id=' . $userId);
+        $this->redirectWithFlash(
+            'admin_users_message',
+            'Profilbilledet er fjernet.',
+            '/admin/user?id=' . $userId
+        );
     }
 }
