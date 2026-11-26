@@ -81,10 +81,6 @@ class SettingsController extends BaseController
 
         $users->updateDetails($userId, $firstName, $lastName, $username, $email, $birthdate);
 
-        if ($email !== $user['email']) {
-            $users->clearEmailVerified($userId);
-        }
-
         $this->redirectWithFlash(
             'settings_message',
             'Dine oplysninger er gemt.',

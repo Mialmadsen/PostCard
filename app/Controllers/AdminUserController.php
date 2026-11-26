@@ -187,9 +187,6 @@ class AdminUserController extends BaseController
 
         $users->updateDetails($userId, $firstName, $lastName, $username, $email, $birthdate);
 
-        if ($email !== $user['email']) {
-            $users->clearEmailVerified($userId);
-        }
 
         $this->redirectWithFlash(
             'admin_users_message',

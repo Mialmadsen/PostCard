@@ -66,6 +66,11 @@ abstract class Repository
     // Run several queries as one transaction: all are saved, or none. It receives the work as a function.
     protected function transaction(callable $work): mixed
     {
+        // Genbruger den aktive transaktion, hvis der allerede er startet en.
+        if ($this->pdo->inTransaction()) {
+            return $work();
+        }
+
         $this->pdo->beginTransaction();
 
         try {

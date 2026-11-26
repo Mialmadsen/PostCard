@@ -10,7 +10,7 @@ class UserRepository extends Repository
     public function findByEmail(string $email): ?array
     {
         return $this->fetchOne(
-            'SELECT user_id, first_name, password_hash, user_status, email_verified_at FROM users WHERE email = :email',
+            'SELECT user_id, first_name, email, password_hash, user_status, email_verified_at FROM users WHERE email = :email',
             ['email' => $email]
         );
     }
@@ -162,33 +162,54 @@ WHERE me.user_id = :user_id",
     // Saving my information in profile
     public function updateDetails(int $userId, string $firstName, string $lastName, string $username, string $email, string $birthdate): void
     {
-        $this->execute(
-            'UPDATE users
-         SET first_name = :first_name,
-             last_name = :last_name,
-             username = :username,
-             email = :email,
-             birthdate = :birthday
-         WHERE user_id = :user_id',
-            [
-                'user_id' => $userId,
-                'first_name' => $firstName,
-                'last_name' => $lastName,
-                'username' => $username,
-                'email' => $email,
-                'birthday' => $birthdate,
-            ]
-        );
+        $this->transaction(function () use ($userId, $firstName, $lastName, $username, $email, $birthdate): void {
+            // Henter og låser brugerens nuværende e-mailadresse.
+            $currentEmail = $this->fetchValue(
+                'SELECT email FROM users WHERE user_id = :user_id FOR UPDATE',
+                ['user_id' => $userId]
+            );
+
+            $this->execute(
+                'UPDATE users
+             SET first_name = :first_name,
+                 last_name = :last_name,
+                 username = :username,
+                 email = :email,
+                 birthdate = :birthday
+             WHERE user_id = :user_id',
+                [
+                    'user_id' => $userId,
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'username' => $username,
+                    'email' => $email,
+                    'birthday' => $birthdate,
+                ]
+            );
+
+            // Nulstiller e-mailbekræftelsen, hvis e-mailadressen er ændret.
+            if ($currentEmail !== $email) {
+                $this->clearEmailVerified($userId);
+            }
+        });
     }
 
     //  a new e-mail address has not been confirmed yet
     public function clearEmailVerified(int $userId): void
     {
-        $this->execute(
-            'UPDATE users SET email_verified_at = null WHERE user_id = :user_id',
-            ['user_id' => $userId]
-        );
+        $this->transaction(function () use ($userId): void {
+            $this->execute(
+                'UPDATE users SET email_verified_at = null WHERE user_id = :user_id',
+                ['user_id' => $userId]
+            );
+
+            // Ugyldiggør tokens sendt til den tidligere e-mailadresse.
+            $tokens = new UserTokenRepository();
+            $tokens->invalidatePrevious($userId, 'reset_password');
+            $tokens->invalidatePrevious($userId, 'verify_email');
+        });
     }
+    
     // Users profile image stored on Cloudinary
     public function updateProfileImage(int $userId, ?string $publicId, ?int $version, ?string $format): void
     {
@@ -240,13 +261,19 @@ WHERE me.user_id = :user_id",
     // We store new password
     public function updatePassword(int $userId, string $passwordHash): void
     {
-        $this->execute(
-            'UPDATE users SET password_hash = :password_hash WHERE user_id = :user_id',
-            [
-                'user_id' => $userId,
-                'password_hash' => $passwordHash,
-            ]
-        );
+        $this->transaction(function () use ($userId, $passwordHash): void {
+            $this->execute(
+                'UPDATE users SET password_hash = :password_hash WHERE user_id = :user_id',
+                [
+                    'user_id' => $userId,
+                    'password_hash' => $passwordHash,
+                ]
+            );
+
+            // Ugyldiggør tidligere reset-links.
+            $tokens = new UserTokenRepository();
+            $tokens->invalidatePrevious($userId, 'reset_password');
+        });
     }
 
     // Users for the operator's list, newest first. Both filters are optional.

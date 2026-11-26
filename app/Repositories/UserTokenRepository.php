@@ -181,9 +181,6 @@ class UserTokenRepository extends Repository
             $users = new UserRepository();
             $users->updatePassword($userId, $passwordHash);
 
-            // Ugyldiggør brugerens øvrige reset-tokens.
-            $this->invalidatePrevious($userId, 'reset_password');
-
             return true;
         });
     }
