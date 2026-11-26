@@ -11,6 +11,7 @@ use PostCard\Repositories\GroupMemberRepository;
 use PostCard\Core\Session;
 use PostCard\Services\CloudinaryService;
 use PostCard\Services\UserValidator;
+use PostCard\Services\PasswordResetService;
 
 // The operator's pages about users: the list, and blocking or unblocking a user.
 class AdminUserController extends BaseController
@@ -230,4 +231,43 @@ class AdminUserController extends BaseController
             '/admin/user?id=' . $userId
         );
     }
-}
+
+    // Sender et link til nulstilling af brugerens adgangskode.
+    public function sendPasswordReset(): void
+    {
+        Auth::requireOperator();
+
+        $userId = $this->requireInputId('user_id', 'Ugyldigt bruger-ID.');
+
+        $users = new UserRepository();
+        $user = $users->findForAdmin($userId);
+
+        if ($user === null) {
+            abort(404, 'Brugeren blev ikke fundet.');
+        }
+
+        // En operator må ikke administrere andre operatorers adgangskoder.
+        if ((int) $user['is_operator'] === 1) {
+            abort(403, 'En operatørs adgangskode kan ikke nulstilles her.');
+        }
+
+        // Der sendes kun reset-links til aktive brugere.
+        if ($user['user_status'] !== 'active') {
+            $this->redirectWithFlash(
+                'admin_users_error',
+                'Der kan kun sendes links til aktive brugere.',
+                '/admin/user?id=' . $userId
+            );
+        }
+
+        // Genbruger den eksisterende password reset-service.
+        $passwordReset = new PasswordResetService();
+        $passwordReset->sendLink($user['email']);
+
+        $this->redirectWithFlash(
+            'admin_users_message',
+            'Anmodningen om et link til nulstilling af adgangskoden er behandlet.',
+            '/admin/user?id=' . $userId
+        );
+    }
+    }
