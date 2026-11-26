@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace PostCard\Controllers;
 
-use PostCard\Core\Auth;
 use PostCard\Repositories\GroupMemberRepository;
 use PostCard\Repositories\UserRepository;
 use PostCard\Services\CloudinaryService;
 
 // Sends a private profile picture to the browser, e.g. /profile-image?user_id=3
-class ProfileImageController
+class ProfileImageController extends BaseController
 {
     public function show(): void
     {
@@ -18,20 +17,17 @@ class ProfileImageController
         // so the page's other photos can load at the same time.
         session_write_close();
 
-        Auth::requireLogin();
+        $currentUserId = $this->requireUser();
 
-        $userId = queryId('user_id');
-        if ($userId === null) {
-            abort(400, 'Ugyldigt bruger-ID.');
-        }
+        $userId = $this->requireQueryId('user_id', 'Ugyldigt bruger-ID.');
 
         // You may see your own picture, the picture of someone you share a group with,
         // and an operator may see every picture (to remove an unsuitable one)
         $members = new GroupMemberRepository();
         $users = new UserRepository();
-        $isMe = $userId === Auth::userId();
-        $isOperator = $users->isOperator(Auth::userId());
-        if (!$isMe && !$isOperator && !$members->sharesGroup(Auth::userId(), $userId)) {
+        $isMe = $userId === $currentUserId;
+        $isOperator = $users->isOperator($currentUserId);
+        if (!$isMe && !$isOperator && !$members->sharesGroup($currentUserId, $userId)) {
             // 404, not 403: a stranger should not learn whether the user exists
             abort(404, 'Billedet blev ikke fundet.');
         }
