@@ -14,7 +14,7 @@ abstract class BaseController
     protected function requireUser(): int
     {
         Auth::requireLogin();
-
+        
         return Auth::userId();
     }
 
