@@ -12,7 +12,7 @@ use PostCard\Repositories\PostImageRepository;
 use PostCard\Repositories\CommentRepository;
 use PostCard\Repositories\LikeRepository;
 
-class AdminPostController
+class AdminPostController extends BaseController
 {
     private AdminPostRepository $adminPostRepository;
 
@@ -22,7 +22,7 @@ class AdminPostController
         $this->adminPostRepository = new AdminPostRepository();
     }
 
-    
+
     public function index(): void
     {
         // Kun operatorer kan få adgang til siden.
@@ -75,10 +75,7 @@ class AdminPostController
     {
         Auth::requireOperator();
 
-        $postId = queryId('id');
-        if ($postId === null) {
-            abort(400, 'Ugyldigt opslag-ID.');
-        }
+        $postId = $this->requireQueryId('id', 'Ugyldigt opslag-ID.');
 
         $post = $this->adminPostRepository->findById($postId);
         if ($post === null) {
@@ -116,13 +113,11 @@ class AdminPostController
         // Kun operatorer må slette opslag fra hele platformen.
         Auth::requireOperator();
 
-        // Henter opslagets ID fra POST-formularen.
-        $postId = inputId('post_id');
-
-        // Kontrollerer, at ID'et er gyldigt.
-        if ($postId === null) {
-            abort(400, 'Ugyldigt opslag-ID.');
-        }
+        // Henter og validerer opslagets ID fra POST-formularen.
+        $postId = $this->requireInputId(
+            'post_id',
+            'Ugyldigt opslag-ID.'
+        );
 
         // Bruger PostService til at slette opslaget
         // og rydde op i Cloudinary.
@@ -145,12 +140,15 @@ class AdminPostController
     {
         Auth::requireOperator();
 
-        $commentId = inputId('comment_id');
-        $postId = inputId('post_id');
+        $commentId = $this->requireInputId(
+            'comment_id',
+            'Ugyldigt kommentar- eller opslag-ID.'
+        );
 
-        if ($commentId === null || $postId === null) {
-            abort(400, 'Ugyldigt kommentar- eller opslag-ID.');
-        }
+        $postId = $this->requireInputId(
+            'post_id',
+            'Ugyldigt kommentar- eller opslag-ID.'
+        );
 
         $commentRepository = new CommentRepository();
         $deleted = $commentRepository->deleteAsOperator($commentId, $postId);
