@@ -37,44 +37,20 @@ class HomeController extends BaseController
         $popularPosts = $postFeedRepository->findPopularByUser($userId);
         $stickyPosts = $postFeedRepository->findStickyByUser($userId);
 
-        // Henter like-status for hvert opslag, så knapperne viser korrekt status.
+        // Klargør like-status og billedadresser for opslagene
         $likeRepository = new LikeRepository();
-        foreach ($popularPosts as &$post) {
-            $post['hasLiked'] = $likeRepository->hasLiked((int) $post['id'], $userId);
-        }
-        unset($post);
-        foreach ($stickyPosts as &$post) {
-            $post['hasLiked'] = $likeRepository->hasLiked((int) $post['id'], $userId);
-        }
-        unset($post);
 
-        // Gør billedadresserne klar til populære opslag
-        foreach ($popularPosts as &$post) {
-            // Bruger den beskyttede billedrute til Cloudinary-billeder
-            if (!empty($post['image_id'])) {
-                $post['image'] = url('/post-image?id=' . (int) $post['image_id']);
-            } else {
-                // Opslag uden billeder får ingen billedadresse
-                $post['image'] = null;
-            }
-        }
+        $popularPosts = $this->preparePosts(
+            $popularPosts,
+            $userId,
+            $likeRepository
+        );
 
-        // Afslutter referencen fra foreach-løkken
-        unset($post);
-
-        // Gør billedadresserne klar til fastgjorte opslag
-        foreach ($stickyPosts as &$post) {
-            // Bruger den beskyttede billedrute til Cloudinary-billeder
-            if (!empty($post['image_id'])) {
-                $post['image'] = url('/post-image?id=' . (int) $post['image_id']);
-            } else {
-                // Opslag uden billeder får ingen billedadresse
-                $post['image'] = null;
-            }
-        }
-
-        // Afslutter referencen fra foreach-løkken
-        unset($post);
+        $stickyPosts = $this->preparePosts(
+            $stickyPosts,
+            $userId,
+            $likeRepository
+        );
 
         // Henter de nyeste kommentarer fra brugerens grupper
         $commentRepository = new CommentRepository();
@@ -93,5 +69,35 @@ class HomeController extends BaseController
             'stickyPosts' => $stickyPosts,
             'latestComments' => $latestComments,
         ]);
+    }
+
+    // Klargør like-status og billedadresser for en samling opslag
+    private function preparePosts(
+        array $posts,
+        int $userId,
+        LikeRepository $likeRepository
+    ): array {
+        foreach ($posts as &$post) {
+            // Henter like-status, så knappen viser korrekt status
+            $post['hasLiked'] = $likeRepository->hasLiked(
+                (int) $post['id'],
+                $userId
+            );
+
+            // Bruger den beskyttede billedrute til Cloudinary-billeder
+            if (!empty($post['image_id'])) {
+                $post['image'] = url(
+                    '/post-image?id=' . (int) $post['image_id']
+                );
+            } else {
+                // Opslag uden billeder får ingen billedadresse
+                $post['image'] = null;
+            }
+        }
+
+        // Afslutter referencen fra foreach-løkken
+        unset($post);
+
+        return $posts;
     }
 }
