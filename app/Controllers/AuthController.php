@@ -16,7 +16,7 @@ use PostCard\Repositories\UserTokenRepository;
 
 // Login, register, logout and password reset.
 
-class AuthController
+class AuthController extends BaseController
 {
     // After this many failed attempts in 15 minutes, login is paused for that e-mail
     private const MAX_LOGIN_ATTEMPTS = 5;
@@ -234,14 +234,13 @@ class AuthController
         $sent = $verification->sendLink($newUserId, $email, $firstName, $invite);
 
 
-        if ($sent) {
-            Session::flash('login_message', 'Vi har sendt et link til ' . $email . '. Klik på det for at bekræfte din e-mail, og log så ind.');
-        } else {
-            Session::flash('login_message', 'Din bruger er oprettet, men vi kunne ikke sende mailen. Log ind for at få et nyt link.');
-        }
-
-
-        redirect('/login');
+        $this->redirectWithFlash(
+            'login_message',
+            $sent
+                ? 'Vi har sendt et link til ' . $email . '. Klik på det for at bekræfte din e-mail, og log så ind.'
+                : 'Din bruger er oprettet, men vi kunne ikke sende mailen. Log ind for at få et nyt link.',
+            '/login'
+        );
     }
 
     // The link in the verification mail: /verify-email?token=…(&invite=…)
@@ -256,8 +255,11 @@ class AuthController
         $found = $tokens->findValid(hash('sha256', $token), 'verify_email');
 
         if ($found === null) {
-            Session::flash('login_message', 'Linket er ugyldigt eller udløbet. Log ind for at få et nyt link.');
-            redirect('/login');
+            $this->redirectWithFlash(
+                'login_message',
+                'Linket er ugyldigt eller udløbet. Log ind for at få et nyt link.',
+                '/login'
+            );
         }
 
         if ($tokens->markUsed((int) $found['token_id']) === 1) {
@@ -265,7 +267,10 @@ class AuthController
             $users->markEmailVerified((int) $found['user_id']);
         }
 
-        Session::flash('login_message', 'Din e-mail er bekræftet. Du kan nu logge ind.');
-        redirect($invite !== '' ? '/login?invite=' . urlencode($invite) : '/login');
+        $this->redirectWithFlash(
+            'login_message',
+            'Din e-mail er bekræftet. Du kan nu logge ind.',
+            $invite !== '' ? '/login?invite=' . urlencode($invite) : '/login'
+        );
     }
 }
