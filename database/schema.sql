@@ -193,13 +193,13 @@ CREATE TABLE login_attempts (
 
 -- Rate limiting for actions that do not require a logged-in user.
 CREATE TABLE public_rate_limits (
+    attempt_id INT NOT NULL AUTO_INCREMENT,
     action_name VARCHAR(50) NOT NULL,
-    identifier_hash CHAR(64) NOT NULL,
-    window_start DATETIME NOT NULL,
-    request_count INT UNSIGNED NOT NULL DEFAULT 1,
-    PRIMARY KEY (action_name, identifier_hash, window_start),
-    INDEX idx_rate_limit_window (window_start)
-) ENGINE=InnoDB;
+    email VARCHAR(255) NOT NULL,
+    attempted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (attempt_id),
+    INDEX idx_public_rate_limits (action_name, email, attempted_at)
+);
 
 -- Indexes
 CREATE INDEX idx_group_members_group_status ON group_members (group_id, member_status);
