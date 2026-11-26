@@ -260,14 +260,34 @@ class AdminUserController extends BaseController
             );
         }
 
+        // Brugerens e-mail skal være bekræftet.
+        if ($user['email_verified_at'] === null) {
+            $this->redirectWithFlash(
+                'admin_users_error',
+                'Brugerens e-mail er ikke bekræftet.',
+                '/admin/user?id=' . $userId
+            );
+        }
+
         // Genbruger den eksisterende password reset-service.
         $passwordReset = new PasswordResetService();
-        $passwordReset->sendLink($user['email']);
+        $sent = $passwordReset->sendLink($user['email']);
 
-        $this->redirectWithFlash(
-            'admin_users_message',
-            'Anmodningen om et link til nulstilling af adgangskoden er behandlet.',
-            '/admin/user?id=' . $userId
-        );
+        // Viser feedback ud fra resultatet af afsendelsen.
+        if ($sent) {
+            $this->redirectWithFlash(
+                'admin_users_message',
+                'Link til nulstilling af adgangskoden er sendt.',
+                '/admin/user?id=' . $userId
+            );
+        } else {
+            $this->redirectWithFlash(
+                'admin_users_error',
+                'Linket kunne ikke sendes. Brugeren har muligvis allerede et gyldigt link. Prøv igen senere.',
+                '/admin/user?id=' . $userId
+            );
+        }
     }
+
+    
     }
