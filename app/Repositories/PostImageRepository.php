@@ -8,6 +8,29 @@ namespace PostCard\Repositories;
 // Klassen arver de fælles databasefunktioner fra Repository.php.
 class PostImageRepository extends Repository
 {
+
+    // Finder et billede og den gruppe, som opslaget tilhører.
+    public function findImageWithGroup(int $imageId): ?array
+    {
+        $sql = "
+            SELECT
+                pi.public_id,
+                pi.cloudinary_version,
+                pi.image_format,
+                e.group_id
+            FROM post_images AS pi
+            INNER JOIN posts AS p
+                ON pi.post_id = p.post_id
+            INNER JOIN experiences AS e
+                ON p.experience_id = e.experience_id
+            WHERE pi.image_id = :image_id
+            LIMIT 1
+        ";
+
+        return $this->fetchOne($sql, [
+            'image_id' => $imageId
+        ]);
+    }
     // Henter alle billeder, der hører til et bestemt opslag.
     public function findImagesByPost(int $postId): array
     {

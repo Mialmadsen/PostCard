@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace PostCard\Controllers;
 
 use PostCard\Core\Auth;
-use PostCard\Core\Database;
+use PostCard\Repositories\PostImageRepository;
 use PostCard\Services\CloudinaryService;
-use PDO;
 
 // Controlleren håndterer adgang til private billeder fra opslag.
 // Før et billede må vises, kontrollerer vi brugerens gruppemedlemskab.
+
 class PostImageController extends BaseController
 {
     public function show(): void
@@ -26,31 +26,11 @@ class PostImageController extends BaseController
         $imageId = $this->requireQueryId('id', 'Ugyldigt billed-ID.');
 
         // Finder billedet og gruppen, som opslaget tilhører.
-        $sql = "
-            SELECT
-                pi.public_id,
-                pi.cloudinary_version,
-                pi.image_format,
-                e.group_id
-            FROM post_images AS pi
-            INNER JOIN posts AS p
-                ON pi.post_id = p.post_id
-            INNER JOIN experiences AS e
-                ON p.experience_id = e.experience_id
-            WHERE pi.image_id = :image_id
-            LIMIT 1
-        ";
-
-        $statement = Database::connection()->prepare($sql);
-
-        $statement->execute([
-            'image_id' => $imageId
-        ]);
-
-        $image = $statement->fetch(PDO::FETCH_ASSOC);
+        $postImageRepository = new PostImageRepository();
+        $image = $postImageRepository->findImageWithGroup($imageId);
 
         // Stopper, hvis billedet ikke findes.
-        if (!$image) {
+        if ($image === null) {
             abort(404, 'Billedet blev ikke fundet.');
         }
 
