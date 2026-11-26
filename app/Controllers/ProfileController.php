@@ -12,28 +12,28 @@ use PostCard\Repositories\ExperienceRepository;
 use PostCard\Services\ExperienceService;
 
 // User can manage the profile
-class ProfileController
+class ProfileController extends BaseController
 {
     public function show(): void
     {
         // only logged-in people have a profile
-        Auth::requireLogin();
+        $userId = $this->requireUser();
 
 
         // the same row the header uses: first name, last name, username
         $user = Auth::user();
 
         $groups = new GroupRepository();
-        $userGroups = $groups->findByUser(Auth::userId());
+        $userGroups = $groups->findByUser($userId);
         $users = new UserRepository();
-        $stats = $users->findAlbumStats(Auth::userId());
+        $stats = $users->findAlbumStats($userId);
 
         $experiences = new ExperienceRepository();
         $experienceService = new ExperienceService();
 
         // My experiences sorted into one list per group, each with its Danish status text
         $experiencesByGroup = [];
-        foreach ($experiences->findByUser(Auth::userId()) as $experience) {
+        foreach ($experiences->findByUser($userId) as $experience) {
             $status = $experienceService->getStatus($experience);
             $experience['statusText'] = $status['statusText'];
             $experiencesByGroup[$experience['group_id']][] = $experience;
