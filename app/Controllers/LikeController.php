@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace PostCard\Controllers;
 
-use PostCard\Core\Auth;
 use PostCard\Repositories\LikeRepository;
 use PostCard\Repositories\PostRepository;
 use PostCard\Repositories\AdminSettingsRepository;
 
+
 // Controlleren håndterer likes på opslag.
-class LikeController
+class LikeController extends BaseController
 {
     private LikeRepository $likeRepository;
     private PostRepository $postRepository;
@@ -26,48 +26,29 @@ class LikeController
     public function toggle(): void
     {
         // Kontrollerer, at brugeren er logget ind.
-        Auth::requireLogin();
+        $userId = $this->requireUser();
 
         // Kontrollerer, om operatoren har tilladt likes.
-        $settings = (new AdminSettingsRepository())->findAll();
+        $this->requireLikesEnabled();
 
-        if (($settings['allow_likes'] ?? '0') !== '1') {
-            abort(403, 'Synes godt om er slået fra på PostCard.');
-        }
+        // Henter og validerer opslagets ID fra formularen.
+        $postId = $this->requireInputId('post_id', 'Ugyldigt post-ID.');
 
-        // Henter opslagets ID fra formularen.
-        $postId = inputId('post_id');
-
-        // Stopper, hvis opslagets ID mangler eller er ugyldigt.
-        if ($postId === null) {
-            abort(400, 'Ugyldigt post-ID.');
-        }
-
-        // Henter opslaget og kontrollerer, at brugeren
-        // har adgang til gruppen, som opslaget tilhører.
-        $post = $this->postRepository->findById(
-            $postId,
-            Auth::userId()
-        );
-
-        // Stopper, hvis opslaget ikke findes,
-        // eller brugeren ikke har adgang til det.
-        if ($post === null) {
-            abort(404, 'Opslaget blev ikke fundet.');
-        }
+        // Kontrollerer, at brugeren har adgang til opslaget.
+        $this->requirePostAccess($postId, $userId);
 
         // Kontrollerer, om brugeren allerede har liket opslaget.
         $hasLiked = $this->likeRepository->hasLiked(
             $postId,
-            Auth::userId()
+            $userId
         );
 
         if ($hasLiked) {
             // Fjerner liket, hvis brugeren allerede har liket opslaget.
-            $this->likeRepository->delete($postId, Auth::userId());
+            $this->likeRepository->delete($postId, $userId);
         } else {
             // Gemmer et like, hvis brugeren ikke har liket opslaget.
-            $this->likeRepository->create($postId, Auth::userId());
+            $this->likeRepository->create($postId, $userId);
         }
 
         // Hvis anmodningen kommer fra JavaScript,
@@ -93,31 +74,16 @@ class LikeController
     public function users(): void
     {
         // Brugeren skal være logget ind.
-        Auth::requireLogin();
+        $userId = $this->requireUser();
 
         // Kontrollerer, om operatoren har tilladt visning af likes.
-        $settings = (new AdminSettingsRepository())->findAll();
+        $this->requireLikesEnabled();
 
-        if (($settings['allow_likes'] ?? '0') !== '1') {
-            abort(403, 'Synes godt om er slået fra på PostCard.');
-        }
-
-        // Henter opslagets ID fra URL'en.
-        $postId = queryId('id');
-
-        if ($postId === null) {
-            abort(400, 'Ugyldigt post-ID.');
-        }
+        // Henter og validerer opslagets ID fra URL'en.
+        $postId = $this->requireQueryId('id', 'Ugyldigt post-ID.');
 
         // Kontrollerer, at brugeren har adgang til opslaget.
-        $post = $this->postRepository->findById(
-            $postId,
-            Auth::userId()
-        );
-
-        if ($post === null) {
-            abort(404, 'Opslaget blev ikke fundet.');
-        }
+        $this->requirePostAccess($postId, $userId);
 
         // Henter brugerne, der har liket opslaget.
         $users = $this->likeRepository->findUsersByPost($postId);
@@ -146,6 +112,30 @@ class LikeController
         ]);
 
         exit;
+    }
+
+    // Kontrollerer, om operatoren har aktiveret likes på PostCard.
+    private function requireLikesEnabled(): void
+    {
+        $settings = (new AdminSettingsRepository())->findAll();
+
+        if (($settings['allow_likes'] ?? '0') !== '1') {
+            abort(403, 'Synes godt om er slået fra på PostCard.');
+        }
+    }
+
+    // Kontrollerer, at opslaget findes, og at brugeren har adgang til det.
+    private function requirePostAccess(int $postId, int $userId): void
+    {
+        // Repository kontrollerer adgang til gruppen, som opslaget tilhører.
+        $post = $this->postRepository->findById(
+            $postId,
+            $userId
+        );
+
+        if ($post === null) {
+            abort(404, 'Opslaget blev ikke fundet.');
+        }
     }
 
 }
