@@ -10,7 +10,7 @@ use PostCard\Repositories\ExperienceRepository;
 use PostCard\Repositories\GroupMemberRepository;
 use PostCard\Core\Session;
 
-class RequestController
+class RequestController extends BaseController
 {
     private ExperienceRepository $experienceRepository;
     private GroupMemberRepository $groupMemberRepository;
@@ -25,11 +25,8 @@ class RequestController
     // Henter administratorens grupper og de afventende oplevelser
     public function index(): void
     {
-        // Kontrollerer, at brugeren er logget ind
-        Auth::requireLogin();
-
-        // Henter den indloggede brugers ID
-        $userId = Auth::userId();
+        // Kontrollerer login og henter den indloggede brugers ID
+        $userId = $this->requireUser();
 
         // Finder alle grupper, hvor brugeren er administrator
         $groups = $this->groupMemberRepository->findAdminGroupsByUser($userId);
@@ -56,7 +53,7 @@ class RequestController
                 $groupName = $group['name'];
                 break;
             }
-}
+        }
 
         if ($groupId !== null) {
 
@@ -93,14 +90,17 @@ class RequestController
         // Brugeren skal være logget ind
         Auth::requireLogin();
 
-        // Henter ID'et på oplevelsen fra formularen med den fælles helper
-        $experienceId = inputId('experience_id');
+        // Henter og validerer ID'et på oplevelsen fra formularen
+        $experienceId = $this->requireInputId(
+            'experience_id',
+            'Ugyldig anmodning.'
+        );
 
         // Henter administratorens beslutning
         $decision = input('decision');
 
-        // Kontrollerer, at oplevelsens ID og beslutningen er gyldige
-        if ($experienceId === null || !in_array($decision, ['approve', 'reject'], true)) {
+        // Kontrollerer, at beslutningen er gyldig
+        if (!in_array($decision, ['approve', 'reject'], true)) {
             abort(400, 'Ugyldig anmodning.');
         }
 
@@ -175,17 +175,15 @@ class RequestController
             abort(409, 'Anmodningen er allerede blevet behandlet.');
         }
 
-        // Gemmer en bekræftelsesbesked som en flash message
+        // Gemmer en bekræftelsesbesked og sender administratoren tilbage
         // Beskeden afhænger af, om oplevelsen blev godkendt eller afvist
-        Session::flash(
+        $this->redirectWithFlash(
             'success',
             $decision === 'approve'
                 ? 'Oplevelsen er blevet godkendt.'
-                : 'Oplevelsen er blevet afvist.'
-);
-
-        // Sender administratoren tilbage til gruppens anmodninger gennem helper-funktionen redirect()
-        redirect('/requests?group_id=' . $groupId);
+                : 'Oplevelsen er blevet afvist.',
+            '/requests?group_id=' . $groupId
+        );
     }
 
 }
