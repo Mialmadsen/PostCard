@@ -140,6 +140,9 @@ class RateLimiter
             return true;
         }
 
+        // Rydder op i gamle registreringer.
+        $this->clearOldPublicAttempts();
+
         $db = Database::connection();
 
         // Tæller anmodninger inden for den angivne periode.
@@ -174,5 +177,16 @@ class RateLimiter
         ]);
 
         return false;
+    }
+
+    // Sletter gamle registreringer af offentlige anmodninger.
+    private function clearOldPublicAttempts(): void
+    {
+        $statement = Database::connection()->prepare(
+            'DELETE FROM public_rate_limits
+            WHERE attempted_at < NOW() - INTERVAL 1 DAY'
+        );
+
+        $statement->execute();
     }
 }
