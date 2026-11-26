@@ -154,6 +154,7 @@ $router->add('GET', '/admin', [AdminDashboardController::class, 'index']);
 $router->add('GET', '/admin/user', [AdminUserController::class, 'show']);
 $router->add('POST', '/admin/user', [AdminUserController::class, 'update']);
 $router->add('POST', '/admin/user/picture/delete', [AdminUserController::class, 'removePicture']);
+$router->add('POST', '/admin/user/password/reset', [AdminUserController::class, 'sendPasswordReset']);
 $router->add('GET', '/verify-email', [AuthController::class, 'verifyEmail']);
 
 
