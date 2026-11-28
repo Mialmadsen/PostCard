@@ -82,3 +82,10 @@
 .data-table th {
   font-weight: var(--weight-semibold);
 }
+
+/* Wider layout for operator pages */
+@media (min-width: 56rem) {
+  .container:has(.admin-nav) {
+    width: min(90rem, 100% - 2 * var(--page-gutter));
+  }
+}
