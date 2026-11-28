@@ -57,6 +57,8 @@
                             </p>
                         </div>
                     <?php else: ?>
+                        <p>Du er næsten klar! Klik på "Bliv medlem" for at acceptere invitationen og få adgang til gruppen.</p>
+
                         <form class="form__actions" action="<?= url('/join') ?>" method="post">
                             <?= \PostCard\Core\Csrf::field() ?>
                             <input type="hidden" name="token" value="<?= e($token) ?>">
