@@ -103,6 +103,7 @@ $router->add('GET', '/create-group', [GroupController::class, 'create']);
 $router->add('POST', '/create-group', [GroupController::class, 'store']);
 $router->add('GET', '/invite', [GroupController::class, 'invite']);
 $router->add('POST', '/invite', [GroupController::class, 'createInvitation']);
+$router->add('POST', '/invite/email', [GroupController::class, 'sendInvitationEmail']);
 $router->add('POST', '/cancel-invitation', [GroupController::class, 'cancelInvitation']);
 $router->add('GET', '/join', [GroupController::class, 'join']);
 $router->add('POST', '/join', [GroupController::class, 'acceptInvitation']);

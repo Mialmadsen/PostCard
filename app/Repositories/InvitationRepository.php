@@ -7,16 +7,17 @@ namespace PostCard\Repositories;
 // All SQL for the invitations table
 class InvitationRepository extends Repository
 {
-    // Saves the token's hash, valid for 7 days
-    public function create(int $groupId, int $createdBy, string $tokenHash): void
+    // Saves the token's hash, valid for 7 days.
+    // Returns the new invitation ID so it can be cancelled if needed.
+    public function create(int $groupId, int $createdBy, string $tokenHash): int
     {
-        $this->insert(
+        return $this->insert(
             'INSERT INTO invitations (group_id, created_by, token_hash, expires_at)
-             VALUES (:group_id, :created_by, :token_hash, DATE_ADD(NOW(), INTERVAL 7 DAY))',
+            VALUES (:group_id, :created_by, :token_hash, DATE_ADD(NOW(), INTERVAL 7 DAY))',
             [
                 'group_id' => $groupId,
                 'created_by' => $createdBy,
-                'token_hash' => $tokenHash
+                'token_hash' => $tokenHash,
             ]
         );
     }

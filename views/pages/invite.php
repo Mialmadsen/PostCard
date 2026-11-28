@@ -12,8 +12,7 @@
         <header class="page-header">
             <p class="group-label"><?= e($group['name']) ?> · kun for admins</p>
             <h1>Inviter nye medlemmer</h1>
-            <p>Lav et link og send det til én person, fx på sms eller mail. Linket virker én gang og udløber efter 7
-                dage.</p>
+            <p>Inviter nye medlemmer ved at sende et link direkte via e-mail eller ved selv at kopiere og dele det. Linket virker én gang og udløber efter 7 dage.</p>
         </header>
 
         <div class="card-stack">
@@ -41,10 +40,49 @@
                         <?php /* Filled by copy-link.js: "Linket er kopieret." */ ?>
                         <p class="meta js-copy-status" role="status"></p>
                     </div>
-                <?php endif; ?>
+                
+                    <?php endif; ?>
+            </section>
+
+            <section class="card flow" aria-labelledby="email-heading">
+                <h2 id="email-heading">Send invitation via e-mail</h2>
+
+                <p>
+                    Indtast e-mailadressen på den person, du vil invitere.
+                    Personen får et link, som kan bruges én gang og udløber efter 7 dage.
+                </p>
+
+                <form class="flow" action="<?= url('/invite/email') ?>" method="post">
+                    <?= \PostCard\Core\Csrf::field() ?>
+
+                    <input
+                        type="hidden"
+                        name="group_id"
+                        value="<?= e($group['group_id']) ?>"
+                    >
+
+                    <div class="field">
+                        <label class="field__label" for="invite-email">E-mailadresse</label>
+                        <input
+                            class="field__input"
+                            id="invite-email"
+                            name="email"
+                            type="email"
+                            placeholder="navn@eksempel.dk"
+                            autocomplete="email"
+                            maxlength="255"
+                            required
+                        >
+                    </div>
+
+                    <button class="button button--primary" type="submit">
+                        Send invitation
+                    </button>
+                </form>
             </section>
 
             <section class="card" aria-labelledby="sent-heading">
+
                 <h2 class="section-title" id="sent-heading">Dine links</h2>
 
                 <?php if ($inviteMessage !== null): ?>

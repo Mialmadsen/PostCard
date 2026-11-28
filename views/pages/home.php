@@ -31,7 +31,11 @@ $likesEnabled = ($siteSettings['allow_likes'] ?? '0') === '1';
                         <ul class="experience-list">
                             <?php foreach ($experiences as $experience): ?>
                                 <li class="experience-list__item flow">
-                                    <p class="group-label"><?= e($experience['group_name']) ?></p>
+                                    <p class="group-label">
+                                        <a href="<?= url('/group?id=' . (int) $experience['group_id']) ?>">
+                                            <?= e($experience['group_name']) ?>
+                                        </a>
+                                    </p>
 
                                     <?php if ($experience['experience_status'] === 'rejected'): ?>
                                         <h3 class="experience-list__name"><?= e($experience['name']) ?></h3>

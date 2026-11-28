@@ -13,6 +13,7 @@ use PostCard\Core\Config;
 use PostCard\Core\Session;
 use PostCard\Repositories\AdminSettingsRepository;
 use PostCard\Services\RateLimiter;
+use PostCard\Services\Mailer;
 
 // Create a group page: the login is checked, the form is rendered, read and validated, and errors are stored.
 class GroupController extends BaseController
@@ -206,6 +207,91 @@ class GroupController extends BaseController
         $link = Config::get('APP_URL') . '/join?token=' . $token;
         $this->redirectWithFlash('invite_link', $link, '/invite?group_id=' . $groupId);
     }
+
+
+    // Sender et nyt invitationslink direkte til en e-mailadresse.
+    public function sendInvitationEmail(): void
+    {
+        $groupId = $this->requireInputId('group_id', 'Gruppen findes ikke.', 404);
+        Auth::requireGroupAdmin($groupId);
+
+        $invitePage = '/invite?group_id=' . $groupId;
+
+        // Henter og validerer modtagerens e-mailadresse.
+        $email = trim(input('email'));
+
+        if (
+            strlen($email) > 255 ||
+            filter_var($email, FILTER_VALIDATE_EMAIL) === false
+        ) {
+            $this->redirectWithFlash(
+                'invite_error',
+                'Skriv en gyldig e-mailadresse.',
+                $invitePage
+            );
+        }
+
+        // Genbruger den eksisterende grænse for invitationslinks.
+        $userId = $this->requireUser();
+        $limiter = new RateLimiter();
+
+        if ($limiter->tooMany('create_invite', $userId)) {
+            $this->redirectWithFlash(
+                'invite_error',
+                $limiter->message('create_invite'),
+                $invitePage
+            );
+        }
+
+        // Henter gruppens navn til e-mailen.
+        $group = (new GroupRepository())->findById($groupId);
+
+        if ($group === null) {
+            abort(404, 'Gruppen findes ikke.');
+        }
+
+        // Opretter et sikkert invitationslink med 7 dages gyldighed.
+        $token = bin2hex(random_bytes(32));
+        $tokenHash = hash('sha256', $token);
+
+        $invitations = new InvitationRepository();
+        $invitationId = $invitations->create($groupId, $userId, $tokenHash);
+
+        $link = rtrim(Config::get('APP_URL'), '/') . '/join?token=' . $token;
+
+        $subject = 'Invitation til ' . $group['name'] . ' på PostCard';
+
+        $message = "Hej!\n\n"
+            . "Du er inviteret til gruppen \"" . $group['name'] . "\" på PostCard.\n\n"
+            . "Åbn dette link for at se og acceptere invitationen:\n"
+            . $link . "\n\n"
+            . "Linket kan kun bruges én gang og udløber efter 7 dage.\n\n"
+            . "Hvis du ikke ønsker at deltage, kan du ignorere denne mail.\n\n"
+            . "Venlig hilsen\nPostCard";
+
+        try {
+            // Genbruger mailservicen fra password reset.
+            (new Mailer())->send($email, '', $subject, $message);
+        } catch (\Throwable $e) {
+            // Hvis afsendelsen fejler, annulleres det nye link.
+            $invitations->cancel($invitationId, $groupId);
+
+            error_log('Group invitation email failed: ' . $e->getMessage());
+
+            $this->redirectWithFlash(
+                'invite_error',
+                'Invitationen kunne ikke sendes. Prøv igen senere.',
+                $invitePage
+            );
+        }
+
+        $this->redirectWithFlash(
+            'invite_message',
+            'Invitationen er sendt til ' . $email . '.',
+            $invitePage
+        );
+    }
+
 
     public function cancelInvitation(): void
     {

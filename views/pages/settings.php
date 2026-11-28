@@ -68,8 +68,13 @@
                             Vælg et nyt billede
                         </label>
                         <?php /* The empty span is filled by avatar-preview.js, e.g. "Du har valgt ferie.jpg. Tryk Gem billede." */ ?>
-                        <p class="meta" id="profile-image-hint">JPG, PNG eller WebP, højst 5 MB. Uden billede viser vi dine initialer.
-                            <span class="js-avatar-status" role="status"></span></p>
+                        <p class="meta" id="profile-image-hint">
+                            JPG, PNG eller WebP.
+                            Store billeder tilpasses automatisk til højst
+                            <?= e((string) $maxUploadSizeMB) ?> MB.
+                            Uden billede viser vi dine initialer.
+                            <span class="js-avatar-status" role="status"></span>
+                        </p>
                         <?php if ($pictureError !== null): ?>
                             <p class="field__error" id="profile-image-error"><?= e($pictureError) ?></p>
                         <?php endif; ?>
